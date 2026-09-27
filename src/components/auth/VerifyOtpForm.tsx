@@ -49,10 +49,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
 
   const isExpired = timeLeft <= 0;
 
-  /*
-   * Converts remaining OTP validity into
-   * MM:SS format.
-   */
   const formattedTime = useMemo(() => {
     const minutes = Math.floor(timeLeft / 60);
 
@@ -61,12 +57,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }, [timeLeft]);
 
-  /*
-   * OTP expiration countdown.
-   *
-   * Uses one interval instead of recreating
-   * an interval after every second.
-   */
   useEffect(() => {
     if (isExpired) {
       return;
@@ -89,12 +79,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
     };
   }, [isExpired]);
 
-  /*
-   * Verifies OTP for either:
-   *
-   * 1. Existing-user login
-   * 2. New-user registration
-   */
   const verifyMutation = useMutation({
     mutationFn: async () => {
       if (mode === "login") {
@@ -108,10 +92,10 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
         };
       }
 
-      const response = await authService.verifyRegistrationOtp({
-        mobileNumber,
-        otp,
-      });
+      console.log("register otp")
+      const msgAccessToken = await authService.verifyMsg91Otp(otp);
+
+      const response = await authService.verifyRegistrationOtp(msgAccessToken);
 
       return {
         type: "REGISTER" as const,
@@ -120,9 +104,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
     },
 
     onSuccess: async (result) => {
-      /*
-       * Login flow
-       */
       if (result.type === "LOGIN") {
         accessTokenSetter(result.response.data.accessToken);
 
@@ -133,11 +114,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
         const currentUser = await getUserProfile();
 
         router.refresh();
-
-        /*
-         * User originally wanted to become
-         * a seller.
-         */
         if (returnTo === "/become-seller") {
           if (currentUser?.sellerProfile) {
             router.replace("/seller/dashboard");
@@ -147,11 +123,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
 
           return;
         }
-
-        /*
-         * Existing sellers land directly
-         * on their dashboard.
-         */
         if (currentUser?.sellerProfile) {
           router.replace("/seller/dashboard");
 
@@ -163,11 +134,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
         return;
       }
 
-      /*
-       * Registration flow
-       *
-       * Continue to profile/account setup.
-       */
       const params = new URLSearchParams({
         registrationToken: result.response.data.registrationToken,
 

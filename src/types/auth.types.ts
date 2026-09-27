@@ -155,3 +155,11 @@ export interface Msg91RetryErrorResponse {
   message?: string;
   type?: string;
 }
+
+export interface Msg91SendOtpResult {
+  reqId?: string;
+  message?: string;
+  type?: string;
+  status?: string;
+  hasError?: boolean;
+}

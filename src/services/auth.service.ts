@@ -12,6 +12,7 @@ import type {
   VerifyRegistrationOtpResponse,
   Msg91VerifyErrorResponse,
   Msg91VerifySuccessResponse,
+  Msg91SendOtpResult,
 } from "@/types/auth.types";
 
 export const authService = {
@@ -25,7 +26,7 @@ export const authService = {
     msgAccessToken: string,
   ): Promise<VerifyLoginOtpResponse> {
     const response = await axiosInstance.post<VerifyLoginOtpResponse>(
-      "/auth/msg91/verify",
+      "/auth/msg91/verify/login",
       { msgAccessToken },
     );
 
@@ -41,13 +42,12 @@ export const authService = {
     return response.data;
   },
 
-  async verifyRegistrationOtp(payload: {
-    mobileNumber: string;
-    otp: string;
-  }): Promise<VerifyRegistrationOtpResponse> {
+  async verifyRegistrationOtp(
+    msgAccessToken: string,
+  ): Promise<VerifyRegistrationOtpResponse> {
     const response = await axiosInstance.post<VerifyRegistrationOtpResponse>(
-      "/auth/verify-otp",
-      payload,
+      "/auth/msg91/verify/register",
+      { msgAccessToken },
     );
 
     return response.data;
@@ -85,6 +85,7 @@ export const authService = {
   },
 
   async verifyMsg91Otp(otp: string): Promise<string> {
+      console.log("register otp verify")
     return new Promise((resolve, reject) => {
       if (typeof window === "undefined" || !window.verifyOtp) {
         reject(new Error("MSG91 verifyOtp is not ready."));
@@ -107,6 +108,34 @@ export const authService = {
         (error) => {
           const response = error as Msg91VerifyErrorResponse;
           reject(new Error(response.message ?? "OTP verification failed."));
+        },
+      );
+    });
+  },
+
+  async sendMsg91Otp(mobileNumber: string): Promise<Msg91SendOtpResult> {
+    return new Promise((resolve, reject) => {
+      if (typeof window === "undefined" || !window.sendOtp) {
+        reject(new Error("MSG91 OTP service is not ready."));
+
+        return;
+      }
+
+      const identifier = `91${mobileNumber}`;
+
+      window.sendOtp(
+        identifier,
+
+        (data) => {
+          if (data.reqId) {
+            sessionStorage.setItem("msg91ReqId", data.reqId);
+          }
+
+          resolve(data);
+        },
+
+        (error) => {
+          reject(new Error(error.message ?? "Unable to send OTP."));
         },
       );
     });

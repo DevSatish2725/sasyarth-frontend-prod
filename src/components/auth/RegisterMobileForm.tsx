@@ -1,8 +1,6 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-
-import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, LoaderCircle } from "lucide-react";
@@ -12,6 +10,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
 import { authService } from "@/services/auth.service";
+import axios from "axios";
 
 export default function RegisterMobileForm() {
   const router = useRouter();
@@ -24,12 +23,11 @@ export default function RegisterMobileForm() {
 
   const returnTo = searchParams.get("returnTo") || "/sellers";
 
-  /*
-   * Sends registration OTP to the entered
-   * mobile number.
-   */
   const sendOtpMutation = useMutation({
-    mutationFn: authService.sendRegistrationOtp,
+    mutationFn: async ({ mobileNumber }: { mobileNumber: string }) => {
+      await authService.sendRegistrationOtp({ mobileNumber });
+      await authService.sendMsg91Otp(mobileNumber);
+    },
 
     onSuccess: () => {
       const params = new URLSearchParams({
@@ -43,6 +41,12 @@ export default function RegisterMobileForm() {
     onError: (mutationError) => {
       if (axios.isAxiosError(mutationError)) {
         setError(mutationError.response?.data?.message ?? t("sendOtpError"));
+
+        return;
+      }
+
+      if (mutationError instanceof Error) {
+        setError(mutationError.message);
 
         return;
       }
@@ -95,7 +99,6 @@ export default function RegisterMobileForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="w-full">
-
       <Input
         id="mobileNumber"
         name="mobileNumber"

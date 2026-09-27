@@ -11,9 +11,9 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
 import { authService } from "@/services/auth.service";
-import { useSendOTP } from "@/hooks/useSendOTP";
 
 export default function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const t = useTranslations("Login");
@@ -21,28 +21,45 @@ export default function LoginForm() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
 
-  const sendOTP = useSendOTP();
-
   const returnTo = searchParams.get("returnTo") || "/sellers";
 
-  /*
-   * Sends login OTP to the entered mobile number.
-   *
-   * After successful OTP generation, user is redirected
-   * to OTP verification page with mobile number and
-   * original destination.
-   */
-
   const sendOtpMutation = useMutation({
-    mutationFn: authService.sendLoginOtp,
+    mutationFn: async ({
+      mobileNumber,
+      returnTo,
+    }: {
+      mobileNumber: string;
+      returnTo: string;
+    }) => {
+      await authService.sendLoginOtp({
+        mobileNumber,
+      });
+      const msg91Response = await authService.sendMsg91Otp(mobileNumber);
+      return {
+        msg91Response,
+        mobileNumber,
+        returnTo,
+      };
+    },
 
-    onSuccess: () => {
-      sendOTP(mobileNumber, returnTo);
+    onSuccess: ({ mobileNumber, returnTo }) => {
+      const params = new URLSearchParams({
+        mobileNumber,
+        returnTo,
+      });
+
+      router.push(`/login/verify-otp?${params.toString()}`);
     },
 
     onError: (mutationError) => {
       if (axios.isAxiosError(mutationError)) {
         setError(mutationError.response?.data?.message ?? t("sendOtpError"));
+
+        return;
+      }
+
+      if (mutationError instanceof Error) {
+        setError(mutationError.message);
 
         return;
       }
@@ -72,6 +89,7 @@ export default function LoginForm() {
     setError("");
     sendOtpMutation.mutate({
       mobileNumber: cleanedMobileNumber,
+      returnTo,
     });
   };
 
@@ -93,7 +111,6 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="w-full">
-
       <Input
         id="mobileNumber"
         name="mobileNumber"
