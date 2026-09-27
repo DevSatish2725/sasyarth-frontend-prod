@@ -206,7 +206,7 @@ function SellerInventoryContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fff8e9] px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#fff8e9] px-4 pt-8 pb-22 lg:pt-8 lg:pb-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <Link
           href="/seller/dashboard"
@@ -216,14 +216,14 @@ function SellerInventoryContent() {
           {t("backToDashboard")}
         </Link>
 
-        <div className="mt-6">
+        <div className="mt-2">
           <p className="text-sm font-semibold text-[#159447]">{t("eyebrow")}</p>
 
           <h1 className="mt-1 text-3xl font-extrabold text-[#17201a]">
             {t("title")}
           </h1>
 
-          <p className="mt-2 text-[#536157]">{t("subtitle")}</p>
+          <p className="my-2 text-[#536157]">{t("subtitle")}</p>
         </div>
         {renderInventoryContent()}
       </div>

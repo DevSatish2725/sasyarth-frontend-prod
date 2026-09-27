@@ -5,7 +5,6 @@ import type { SellerApply, SellerResponse, SellerSearchParams } from "@/types/se
 
 export const sellerService = {
   async getSellers(params: SellerSearchParams): Promise<SellerResponse> {
-    console.log("params", params);
     const response = await axiosInstance.get<SellerResponse>("/sellers", {
       params: {
         ...params,

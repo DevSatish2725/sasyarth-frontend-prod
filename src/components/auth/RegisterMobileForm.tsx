@@ -5,24 +5,29 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowRight, LoaderCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
 import { authService } from "@/services/auth.service";
-import { useTranslations } from "next-intl";
 
 export default function RegisterMobileForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const t = useTranslations("Register");
+
   const [mobileNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
 
-  const t = useTranslations("Register");
-
   const returnTo = searchParams.get("returnTo") || "/sellers";
 
+  /*
+   * Sends registration OTP to the entered
+   * mobile number.
+   */
   const sendOtpMutation = useMutation({
     mutationFn: authService.sendRegistrationOtp,
 
@@ -35,9 +40,9 @@ export default function RegisterMobileForm() {
       router.push(`/register/verify-otp?${params.toString()}`);
     },
 
-    onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message ?? t("sendOtpError"));
+    onError: (mutationError) => {
+      if (axios.isAxiosError(mutationError)) {
+        setError(mutationError.response?.data?.message ?? t("sendOtpError"));
 
         return;
       }
@@ -46,8 +51,16 @@ export default function RegisterMobileForm() {
     },
   });
 
+  /*
+   * Validates Indian mobile number
+   * before requesting OTP.
+   */
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (sendOtpMutation.isPending) {
+      return;
+    }
 
     const cleanedMobileNumber = mobileNumber.replace(/\D/g, "");
 
@@ -64,46 +77,98 @@ export default function RegisterMobileForm() {
     });
   };
 
+  /*
+   * Keeps mobile input numeric and
+   * limited to 10 digits.
+   */
+  const handleMobileNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = event.target.value.replace(/\D/g, "").slice(0, 10);
+
+    setMobileNumber(value);
+
+    if (error) {
+      setError("");
+    }
+  };
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="
-        rounded-2xl border border-border
-        bg-surface p-5 shadow-sm
-      "
-    >
-      <div>
-        <Input
-          id="mobileNumber"
-          label={t("mobileNumber")}
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel"
-          placeholder={t("mobilePlaceholder")}
-          maxLength={10}
-          value={mobileNumber}
-          error={error}
-          disabled={sendOtpMutation.isPending}
-          onChange={(event) => {
-            const value = event.target.value.replace(/\D/g, "").slice(0, 10);
+    <form onSubmit={handleSubmit} noValidate className="w-full">
 
-            setMobileNumber(value);
-            setError("");
-          }}
-        />
-      </div>
+      <Input
+        id="mobileNumber"
+        name="mobileNumber"
+        label={t("mobileNumber")}
+        type="tel"
+        inputMode="numeric"
+        autoComplete="tel"
+        autoFocus
+        placeholder={t("mobilePlaceholder")}
+        maxLength={10}
+        value={mobileNumber}
+        error={error}
+        disabled={sendOtpMutation.isPending}
+        onChange={handleMobileNumberChange}
+      />
 
-      <p className="mt-3 text-sm leading-6 text-text-secondary">
-        {t("otpHint")}
-      </p>
+      {!error && (
+        <p
+          className="
+            mt-2.5
+            text-xs
+            leading-5
+            text-text-secondary
+            sm:text-sm
+          "
+        >
+          {t("otpHint")}
+        </p>
+      )}
 
       <Button
         type="submit"
         fullWidth
-        className="mt-6"
         disabled={sendOtpMutation.isPending}
+        className="
+          mt-6
+          min-h-12
+          rounded-xl
+          text-base
+          font-bold
+          shadow-sm
+          transition-all
+          duration-200
+          active:scale-[0.99]
+        "
       >
-        {sendOtpMutation.isPending ? t("sendingOtp") : t("sendOtp")}
+        {sendOtpMutation.isPending ? (
+          <span
+            className="
+              flex
+              items-center
+              justify-center
+              gap-2
+            "
+          >
+            <LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin" />
+
+            {t("sendingOtp")}
+          </span>
+        ) : (
+          <span
+            className="
+              flex
+              items-center
+              justify-center
+              gap-2
+            "
+          >
+            {t("sendOtp")}
+
+            <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </span>
+        )}
       </Button>
     </form>
   );

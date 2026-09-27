@@ -149,13 +149,13 @@ export default function EditDraftInventoryForm({
         </p>
       </div>
 
-      <div className="mt-6 space-y-5">
+      <div className="mt-6 flex flex-wrap gap-6">
         {items.map((item, index) => (
           <div
             key={item.id}
             className="rounded-2xl border border-[#e7d8b9] bg-[#fffdf8] p-4 sm:p-5"
           >
-            <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <h3 className="font-bold text-[#17201a]">
                 {t("vegetable")} {index + 1}
               </h3>

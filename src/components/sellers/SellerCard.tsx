@@ -12,7 +12,7 @@ export default function SellerCard({
   getCallSellerId,
   isLoading,
   handleSaveToggle,
-  guestCallModalOpen,
+  guestCallModalOpen
 }: {
   seller: SellerCardProps;
   isProcessing: boolean;
@@ -24,8 +24,6 @@ export default function SellerCard({
 }) {
   const t = useTranslations("FindSellers");
   const visibleVegetables = seller.vegetables.slice(0, 3);
-
-  console.log("visibleVegetables", visibleVegetables);
 
   const remainingCount = seller.vegetables.length - visibleVegetables.length;
 
@@ -40,125 +38,63 @@ export default function SellerCard({
   return (
     <article
       className="
-        rounded-2xl
-        border border-border
-        bg-surface
-        p-3
-        shadow-sm
-        sm:p-4
-      "
-    >
-      {/* Seller top section */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 items-start gap-2.5">
-          {/* Farmer avatar */}
-          <div
-            className="
-              flex h-12 w-12 shrink-0
-              items-center justify-center
-              overflow-hidden rounded-xl
-              bg-accent-light
-              text-2xl
-            "
-          >
-            👨‍🌾
-          </div>
+    overflow-hidden
+    rounded-2xl
+    border
+    border-border
+    bg-surface
+    shadow-[0_2px_12px_rgba(0,0,0,0.04)]
 
-          <div className="min-w-0">
-            {/* Name + verified */}
-            <div className="flex flex-wrap items-center gap-2">
-              <h2
-                className="
+    sm:p-4
+  "
+    >
+      <div className="p-4 sm:p-0">
+        <div>
+          <div className="flex justify-between items-center gap-2">
+            <h2
+              className="
                   truncate
-                  text-sm
+                  text-lg
                   font-bold
                   text-text-primary
                   sm:text-base
                 "
-              >
-                {seller.fullName}
-              </h2>
-
-              {seller.isVerified && (
-                <span
-                  className="
-                    rounded-full
-                    bg-primary
-                    px-2 py-0.5
-                    text-[10px]
-                    font-semibold
-                    text-white
-                    sm:text-xs
-                  "
-                >
-                  ✓ {t("sellers.verified")}
-                </span>
-              )}
-            </div>
-
-            {/* Location */}
-            <div
-              className="
-                mt-1
-                flex flex-wrap
-                items-center
-                gap-x-2
-                gap-y-1
-                text-[11px]
-                text-text-secondary
-                sm:text-xs
-              "
             >
-              {locationText && (
-                <span className="truncate">📍 {locationText}</span>
-              )}
+              {seller.fullName}
+            </h2>
+            <div className="flex gap-2 items-center">
+              <div className="shrink-0 text-right">
+                {seller.ratingCount > 0 ? (
+                  <>
+                    <span className="text-[#efa536]">★</span>
 
-              {seller.distanceInKm !== undefined && (
-                <>
-                  <span className="text-text-muted">•</span>
+                    <span className="font-semibold text-[#17201a]">
+                      {seller.averageRating.toFixed(1)}
+                    </span>
 
-                  <span>
-                    📍{" "}
-                    {t("sellers.distanceAway", {
-                      distance: seller.distanceInKm.toFixed(1),
-                    })}
+                    <span className="text-[#536157]">
+                      ({seller.ratingCount})
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-[#536157]">
+                    {t("sellers.noRatingsYet")}
                   </span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex">
-          {/* Rating */}
-          <div className="shrink-0 text-right">
-            {seller.ratingCount > 0 ? (
-              <>
-                <span className="text-[#efa536]">★</span>
-
-                <span className="font-semibold text-[#17201a]">
-                  {seller.averageRating.toFixed(1)}
-                </span>
-
-                <span className="text-[#536157]">({seller.ratingCount})</span>
-              </>
-            ) : (
-              <span className="text-[#536157]">
-                {t("sellers.noRatingsYet")}
-              </span>
-            )}
-          </div>{" "}
-          |
-          <button
-            type="button"
-            onClick={() => handleSaveToggle(seller.sellerId)}
-            disabled={isProcessing}
-            aria-label={isSaved ? "Remove from saved sellers" : "Save seller"}
-            title={isSaved ? "Remove saved seller" : "Save seller"}
-            className="
+                )}
+              </div>{" "}
+              <span className="h-1 w-1 bg-black rounded-full"></span>
+              <button
+                type="button"
+                onClick={() => handleSaveToggle(seller.sellerId)}
+                disabled={isProcessing}
+                aria-label={
+                  isSaved ? "Remove from saved sellers" : "Save seller"
+                }
+                title={isSaved ? "Remove saved seller" : "Save seller"}
+                className="
       flex
-      h-9
-      w-9
+      h-8
+      w-8
       shrink-0
       justify-center
       items-center
@@ -168,83 +104,121 @@ export default function SellerCard({
       disabled:cursor-not-allowed
       disabled:opacity-50
     "
+              >
+                <Bookmark
+                  size={20}
+                  className={
+                    isSaved
+                      ? "fill-primary text-primary"
+                      : "text-text-secondary"
+                  }
+                />
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="
+                mt-1
+                flex flex-wrap
+                items-center
+                gap-x-2
+                gap-y-1
+                text-[11px]
+                text-text-secondary
+                sm:text-xs
+              "
           >
-            <Bookmark
-              size={20}
-              className={
-                isSaved ? "fill-primary text-primary" : "text-text-secondary"
-              }
-            />
-          </button>
+            {locationText && (
+              <span className="truncate">📍 {locationText}</span>
+            )}
+
+            {seller.distanceInKm !== undefined && (
+              <>
+                <span className="text-text-muted">•</span>
+
+                <span>
+                  📍{" "}
+                  {t("sellers.distanceAway", {
+                    distance: seller.distanceInKm.toFixed(1),
+                  })}
+                </span>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Available today */}
-      {/* Available vegetables */}
       <div
         className="
-    mt-3
-    rounded-xl
-    border border-primary/10
-    bg-surface-muted
-    p-3
+    border-y
+    border-border/70
+    bg-surface-muted/60
+    px-4
+    py-3
+
+    sm:mt-3
+    sm:rounded-xl
+    sm:border
+    sm:border-primary/10
   "
       >
-        {/* Section header */}
-        <div className="mb-2.5 flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <div
+        <div
+          className="
+      mb-3
+      flex
+      items-center
+      justify-between
+      gap-3
+    "
+        >
+          <div
+            className="
+        flex
+        items-center
+        gap-2
+      "
+          >
+            <Package className="h-4 w-4 text-primary" />
+
+            <p
               className="
-          flex h-7 w-7 shrink-0
-          items-center justify-center
-          rounded-lg
-          bg-primary-light
-          text-primary
+          text-xs
+          font-bold
+          text-text-primary
         "
             >
-              <Package className="h-4 w-4" />
-            </div>
-
-              <p
-                className="
-            text-xs
-            font-bold
-            text-text-primary
-            sm:text-sm
-          "
-              >
-                {t("sellers.availableToday")}
-              </p>
+              {t("sellers.availableToday")}
+            </p>
           </div>
 
           {remainingCount > 0 && (
             <Link
               href={`/sellers/${seller.sellerId}`}
               className="
-          shrink-0
           rounded-full
           bg-primary-light
-          px-2.5 py-1.5
+          px-2.5
+          py-1
           text-[10px]
-          font-semibold
-          text-success
-          transition-colors
-          hover:bg-primary/10
-          sm:text-xs
+          font-bold
+          text-primary
         "
             >
-              +{t("sellers.more", { count: remainingCount })} ›
+              +
+              {t("sellers.more", {
+                count: remainingCount,
+              })}
             </Link>
           )}
         </div>
 
-        {/* Vegetable preview cards */}
         <div
           className="
       grid
       grid-cols-1
       gap-2
-      sm:grid-cols-3
+      lg:grid-cols-3
     "
         >
           {visibleVegetables.map((vegetable) => (
@@ -262,7 +236,6 @@ export default function SellerCard({
           p-2
         "
             >
-              {/* Vegetable image */}
               <div
                 className="
             relative
@@ -298,9 +271,7 @@ export default function SellerCard({
                 )}
               </div>
 
-              {/* Vegetable information */}
               <div className="min-w-0 flex-1">
-                {/* Name */}
                 <p
                   title={vegetable.name}
                   className="
@@ -315,7 +286,6 @@ export default function SellerCard({
                   {vegetable.name}
                 </p>
 
-                {/* Price */}
                 <div className="mt-1 flex items-baseline">
                   <span
                     className="
@@ -342,7 +312,6 @@ export default function SellerCard({
                   </span>
                 </div>
 
-                {/* Quantity */}
                 <div
                   className="
               mt-1.5
@@ -376,8 +345,17 @@ export default function SellerCard({
         </div>
       </div>
 
-      {/* Bottom actions */}
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div
+        className="
+    grid
+    grid-cols-2
+    gap-2
+    p-4
+
+    sm:px-0
+    sm:pb-0
+  "
+      >
         <CallSellerButton
           sellerId={seller.sellerId}
           getCallSellerId={getCallSellerId}

@@ -36,25 +36,52 @@ export default function CallSellerCard({
   return (
     <div
       className="
-        fixed inset-0 z-50
-        flex items-end justify-center
-        bg-black/30
-        sm:items-center
-        sm:p-4
+         fixed
+    inset-0
+    z-50
+    flex
+    items-end
+    justify-center
+    bg-black/40
+
+    sm:items-center
+    sm:p-4
       "
     >
       <div
         className="
-          w-full
-          rounded-t-2xl
-          bg-surface
-          p-5
-          shadow-lg
-          sm:max-w-md
-          sm:rounded-2xl
+         w-full
+      rounded-t-[28px]
+      bg-surface
+      px-4
+      pb-[calc(16px+env(safe-area-inset-bottom))]
+      pt-2
+      shadow-2xl
+
+      sm:max-w-md
+      sm:rounded-2xl
+      sm:p-5
         "
       >
-        {/* Header */}
+        <div
+          className="
+        mb-2
+        flex
+        justify-center
+
+        sm:hidden
+      "
+        >
+          <span
+            className="
+          h-1
+          w-10
+          rounded-full
+          bg-border
+        "
+          />
+        </div>
+
         <div
           className="
           flex
@@ -93,7 +120,7 @@ export default function CallSellerCard({
                 text-text-primary
               "
               >
-                ={t("callSeller")}
+                {t("callSeller")}
               </h2>
 
               <p
@@ -127,7 +154,6 @@ export default function CallSellerCard({
           </button>
         </div>
 
-        {/* Seller */}
         <div
           className="
           mt-5
@@ -163,7 +189,6 @@ export default function CallSellerCard({
           )}
         </div>
 
-        {/* Phone */}
         <div className="mt-5">
           <p
             className="
@@ -177,20 +202,21 @@ export default function CallSellerCard({
             {t("contactNumber")}
           </p>
 
-          <p
+          <a
+            href={`tel:${mobileNumber}`}
             className="
-            mt-1
-            text-xl
-            font-bold
-            tracking-wide
-            text-text-primary
-          "
+    mt-1
+    block
+    text-2xl
+    font-extrabold
+    tracking-wide
+    text-primary
+  "
           >
             {mobileNumber}
-          </p>
+          </a>
         </div>
 
-        {/* Helper */}
         <div
           className="
           mt-4
@@ -211,7 +237,6 @@ export default function CallSellerCard({
           </p>
         </div>
 
-        {/* Actions */}
         <div
           className="
           mt-5

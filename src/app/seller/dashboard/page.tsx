@@ -34,7 +34,7 @@ function SellerDashboard() {
   const t = useTranslations("SellerDashboard");
 
   return (
-    <main className="min-h-screen bg-[#fff8e9] px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#fff8e9] px-4 pt-8 pb-22 lg:pt-8 lg:pb-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <section className="mb-8">
           <div className="flex flex-wrap items-center justify-between gap-3">

@@ -10,6 +10,8 @@ import type {
   RefreshTokenResponse,
   VerifyLoginOtpResponse,
   VerifyRegistrationOtpResponse,
+  Msg91VerifyErrorResponse,
+  Msg91VerifySuccessResponse,
 } from "@/types/auth.types";
 
 export const authService = {
@@ -19,13 +21,12 @@ export const authService = {
     return response.data;
   },
 
-  async verifyLoginOtp(payload: {
-    mobileNumber: string;
-    otp: string;
-  }): Promise<VerifyLoginOtpResponse> {
+  async verifyLoginOtp(
+    msgAccessToken: string,
+  ): Promise<VerifyLoginOtpResponse> {
     const response = await axiosInstance.post<VerifyLoginOtpResponse>(
-      "/auth/login",
-      payload,
+      "/auth/msg91/verify",
+      { msgAccessToken },
     );
 
     return response.data;
@@ -68,7 +69,6 @@ export const authService = {
 
   async getMe(): Promise<MeResponse> {
     const response = await axiosInstance.get<MeResponse>("/auth/me");
-
     return response.data;
   },
 
@@ -82,5 +82,59 @@ export const authService = {
 
   async logout(): Promise<void> {
     await axiosInstance.post("/auth/logout");
+  },
+
+  async verifyMsg91Otp(otp: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (typeof window === "undefined" || !window.verifyOtp) {
+        reject(new Error("MSG91 verifyOtp is not ready."));
+
+        return;
+      }
+      window.verifyOtp(
+        otp,
+        (data) => {
+          const response = data as Msg91VerifySuccessResponse;
+          const accessToken = response.message;
+          if (!accessToken) {
+            reject(new Error("MSG91 access token was not returned."));
+
+            return;
+          }
+          resolve(accessToken);
+        },
+
+        (error) => {
+          const response = error as Msg91VerifyErrorResponse;
+          reject(new Error(response.message ?? "OTP verification failed."));
+        },
+      );
+    });
+  },
+
+  async resendMsg91Otp(reqId: string, channel: string = "11") {
+    return new Promise((resolve, reject) => {
+      if (typeof window === "undefined" || !window.retryOtp) {
+        reject(new Error("MSG91 retryOtp is not ready."));
+
+        return;
+      }
+
+      window.retryOtp(
+        channel,
+
+        (data) => {
+          resolve(data);
+        },
+
+        (error) => {
+          console.error("MSG91 RESEND ERROR:", error);
+
+          reject(error);
+        },
+
+        reqId,
+      );
+    });
   },
 };

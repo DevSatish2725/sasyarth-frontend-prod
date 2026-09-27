@@ -40,8 +40,6 @@ export default function SellerApplicationStatus({
         sm:px-5
       "
     >
-      {/* Main compact row */}
-
       <div
         className="
           flex
@@ -52,7 +50,6 @@ export default function SellerApplicationStatus({
           lg:justify-between
         "
       >
-        {/* Title */}
 
         <div className="shrink-0">
           <p className="text-sm font-bold text-text-primary">
@@ -61,8 +58,6 @@ export default function SellerApplicationStatus({
 
           <p className="text-xs text-text-secondary">Verification progress</p>
         </div>
-
-        {/* Steps */}
 
         <div
           className="
@@ -93,8 +88,6 @@ export default function SellerApplicationStatus({
             }
           />
         </div>
-
-        {/* Actions */}
 
         <div
           className="
@@ -170,8 +163,6 @@ export default function SellerApplicationStatus({
           )}
         </div>
       </div>
-
-      {/* Expand only when requested */}
 
       {isRejected && showReason && (
         <div

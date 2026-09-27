@@ -30,10 +30,6 @@ function SavedSellersContent() {
 
   const t = useTranslations("SavedSellers");
 
-  // --------------------------------
-  // Saved sellers query
-  // --------------------------------
-
   const {
     data: sellers = [],
     isLoading,
@@ -44,10 +40,6 @@ function SavedSellersContent() {
 
     queryFn: savedSellerService.getSavedSellers,
   });
-
-  // --------------------------------
-  // Remove saved seller
-  // --------------------------------
 
   const removeMutation = useMutation<void, API_ERROR, string>({
     mutationFn: savedSellerService.removeSavedSeller,
@@ -65,17 +57,9 @@ function SavedSellersContent() {
     },
   });
 
-  // --------------------------------
-  // Loading
-  // --------------------------------
-
   if (isLoading) {
     return <PageLoader message={t("loadingSavedSellers")} />;
   }
-
-  // --------------------------------
-  // Error
-  // --------------------------------
 
   if (isError) {
     return <SavedSellersError onRetry={() => void refetch()} />;
@@ -83,8 +67,7 @@ function SavedSellersContent() {
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-[#fff8e9]">
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Page heading */}
+      <div className="mx-auto w-full max-w-6xl px-4 pt-8 pb-22 lg:pt-8 lg:pb-8 sm:px-6 lg:px-8">
 
         <div className="mb-7">
           <div className="flex items-center gap-3">
@@ -114,7 +97,6 @@ function SavedSellersContent() {
           </div>
         </div>
 
-        {/* Content */}
 
         {sellers.length === 0 ? (
           <EmptySavedSellers />

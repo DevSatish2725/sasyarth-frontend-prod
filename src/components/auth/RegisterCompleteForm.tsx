@@ -1,79 +1,156 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-
-import { useMutation } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import {
+  FormEvent,
+  useState,
+} from "react";
 
 import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import {
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+
+import {
+  ArrowRight,
+  Languages,
+  LoaderCircle,
+  UserRound,
+} from "lucide-react";
 
 import Button from "@/components/ui/Button";
+import Dropdown from "@/components/ui/Dropdown";
 import Input from "@/components/ui/Input";
 
 import { authService } from "@/services/auth.service";
 import { useAuth } from "@/providers/AuthProvider";
-import Dropdown from "../ui/Dropdown";
-import { SupportedLanguage } from "@/types/common.types";
-import { languages } from "@/constants/common.constants";
-import { setClientLanguage } from "@/utils/language.utils";
+
+import {
+  SupportedLanguage,
+} from "@/types/common.types";
+
+import {
+  languages,
+} from "@/constants/common.constants";
+
+import {
+  setClientLanguage,
+} from "@/utils/language.utils";
+
 import { useTranslations } from "next-intl";
 
-export default function RegisterForm() {
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<SupportedLanguage>("en");
-
+export default function RegisterCompleteForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { accessTokenSetter, getUserProfile } = useAuth();
 
-  const registrationToken = searchParams.get("registrationToken") ?? "";
-
-  const returnTo = searchParams.get("returnTo") || "/sellers";
-
-  const [fullName, setFullName] = useState("");
-  const [error, setError] = useState("");
+  const {
+    accessTokenSetter,
+    getUserProfile,
+  } = useAuth();
 
   const t = useTranslations("Register");
 
-  const languageChangeHandler = (language: SupportedLanguage) => {
+  const registrationToken =
+    searchParams.get("registrationToken") ?? "";
+
+  const returnTo =
+    searchParams.get("returnTo") || "/sellers";
+
+  const [fullName, setFullName] =
+    useState("");
+
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<SupportedLanguage>("en");
+
+  const [error, setError] =
+    useState("");
+
+  /*
+   * Updates preferred app language.
+   */
+  const languageChangeHandler = (
+    language: SupportedLanguage,
+  ) => {
     setSelectedLanguage(language);
   };
 
+  /*
+   * Completes registration after OTP verification.
+   */
   const registerMutation = useMutation({
-    mutationFn: authService.completeRegistration,
+    mutationFn:
+      authService.completeRegistration,
 
     onSuccess: async (response) => {
-      accessTokenSetter(response.data.accessToken);
-      if (response.data.user.preferredLanguage) {
-        setClientLanguage(response.data.user.preferredLanguage);
+      accessTokenSetter(
+        response.data.accessToken,
+      );
+
+      if (
+        response.data.user.preferredLanguage
+      ) {
+        setClientLanguage(
+          response.data.user
+            .preferredLanguage,
+        );
       }
+
       await getUserProfile();
+
       router.refresh();
+
       router.replace(returnTo);
     },
 
-    onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message ?? t("createAccountError"));
+    onError: (mutationError) => {
+      if (
+        axios.isAxiosError(mutationError)
+      ) {
+        setError(
+          mutationError.response?.data
+            ?.message ??
+            t("createAccountError"),
+        );
+
         return;
       }
 
-      setError(t("somethingWentWrong"));
+      setError(
+        t("somethingWentWrong"),
+      );
     },
   });
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  /*
+   * Validates the final profile details
+   * and creates the user account.
+   */
+  const handleSubmit = (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
-    const name = fullName.trim();
+    if (registerMutation.isPending) {
+      return;
+    }
+
+    const name =
+      fullName.trim();
 
     if (name.length < 2) {
-      setError(t("fullNameRequired"));
+      setError(
+        t("fullNameRequired"),
+      );
+
       return;
     }
 
     if (!registrationToken) {
-      setError(t("registrationSessionExpired"));
+      setError(
+        t("registrationSessionExpired"),
+      );
+
       return;
     }
 
@@ -81,7 +158,8 @@ export default function RegisterForm() {
 
     registerMutation.mutate({
       fullName: name,
-      preferredLanguage: selectedLanguage,
+      preferredLanguage:
+        selectedLanguage,
       registrationToken,
     });
   };
@@ -89,48 +167,179 @@ export default function RegisterForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="
-        rounded-2xl border border-border
-        bg-surface p-5 shadow-sm
-      "
+      noValidate
+      className="w-full"
     >
-      <Input
-        id="fullName"
-        label={t("fullName")}
-        type="text"
-        autoComplete="name"
-        placeholder={t("fullNamePlaceholder")}
-        value={fullName}
-        error={error}
-        disabled={registerMutation.isPending}
-        onChange={(event) => {
-          setFullName(event.target.value);
-          setError("");
-        }}
-      />
 
-      <div className="mt-2">
-        <label className="mb-2 block text-sm font-medium text-text-primary">
-          {t("preferredLanguage")}
-        </label>
+      <div>
+        <div
+          className="
+            mb-2
+            flex
+            items-center
+            gap-2
+          "
+        >
+          <UserRound
+            aria-hidden="true"
+            className="
+              h-4
+              w-4
+              text-primary
+            "
+          />
+
+          <span
+            className="
+              text-sm
+              font-semibold
+              text-text-primary
+            "
+          >
+            {t("fullName")}
+          </span>
+        </div>
+
+        <Input
+          id="fullName"
+          name="fullName"
+          label=""
+          type="text"
+          autoComplete="name"
+          autoFocus
+          placeholder={
+            t("fullNamePlaceholder")
+          }
+          value={fullName}
+          error={error}
+          disabled={
+            registerMutation.isPending
+          }
+          onChange={(event) => {
+            setFullName(
+              event.target.value,
+            );
+
+            if (error) {
+              setError("");
+            }
+          }}
+        />
+      </div>
+
+
+      <div className="mt-5">
+        <div
+          className="
+            mb-2
+            flex
+            items-center
+            gap-2
+          "
+        >
+          <Languages
+            aria-hidden="true"
+            className="
+              h-4
+              w-4
+              text-primary
+            "
+          />
+
+          <label
+            className="
+              text-sm
+              font-semibold
+              text-text-primary
+            "
+          >
+            {t("preferredLanguage")}
+          </label>
+        </div>
+
         <Dropdown
           value={selectedLanguage}
           options={languages}
           onChange={(value) =>
-            languageChangeHandler(value as SupportedLanguage)
+            languageChangeHandler(
+              value as SupportedLanguage,
+            )
           }
-          getOptionLabel={(option) => option.label}
-          getOptionValue={(option) => option.value}
+          getOptionLabel={(option) =>
+            option.label
+          }
+          getOptionValue={(option) =>
+            option.value
+          }
         />
+
+        <p
+          className="
+            mt-2
+            text-xs
+            leading-5
+            text-text-secondary
+          "
+        >
+          {t("languageHint")}
+        </p>
       </div>
 
       <Button
         type="submit"
         fullWidth
-        className="mt-6"
-        disabled={registerMutation.isPending}
+        disabled={
+          registerMutation.isPending
+        }
+        className="
+          mt-6
+          min-h-12
+          rounded-xl
+          text-base
+          font-bold
+          shadow-sm
+          transition-all
+          duration-200
+          active:scale-[0.99]
+        "
       >
-        {registerMutation.isPending ? t("creatingAccount") : t("continue")}
+        {registerMutation.isPending ? (
+          <span
+            className="
+              flex
+              items-center
+              justify-center
+              gap-2
+            "
+          >
+            <LoaderCircle
+              aria-hidden="true"
+              className="
+                h-5
+                w-5
+                animate-spin
+              "
+            />
+
+            {t("creatingAccount")}
+          </span>
+        ) : (
+          <span
+            className="
+              flex
+              items-center
+              justify-center
+              gap-2
+            "
+          >
+            {t("continue")}
+
+            <ArrowRight
+              aria-hidden="true"
+              className="h-4 w-4"
+            />
+          </span>
+        )}
       </Button>
     </form>
   );

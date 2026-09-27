@@ -1,42 +1,88 @@
-import type {
-  InventoryItem,
-} from "@/types/inventory.types";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 
-export default function InventoryItemCard({
-  item,
-}: {
-  item: InventoryItem;
-  }) {
-  const t = useTranslations("SellerInventory");
-  return (
-    <article className="rounded-2xl border border-[#e7d8b9] bg-white p-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-[#7a857d]">
-            {t("vegetable")}
-          </p>
+import type { InventoryItem } from "@/types/inventory.types";
 
-          <h3 className="mt-1 font-bold text-[#17201a]">
-            {item.vegetableId.name}  
+export default function InventoryItemCard({ item }: { item: InventoryItem }) {
+  const t = useTranslations("SellerInventory");
+
+  const vegetable = item.vegetableId;
+
+  return (
+    <article
+      className="
+        overflow-hidden rounded-2xl
+        border border-[#e7d8b9]
+        bg-white
+        transition-shadow
+        hover:shadow-sm
+      "
+    >
+      <div className="flex items-center gap-4 p-4 sm:p-5">
+        <div
+          className="
+            relative h-20 w-20 shrink-0
+            overflow-hidden rounded-xl
+            border border-[#e4eadf]
+            sm:h-24 sm:w-24
+          "
+        >
+          <Image
+            src={vegetable.imageUrl || "/images/vegetables/default.webp"}
+            alt={vegetable.name}
+            fill
+            sizes="(max-width: 640px) 80px, 96px"
+            className="
+                object-contain
+                p-2
+                transition-transform
+                duration-300
+                group-hover:scale-[1.03]
+              "
+          />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium text-[#7a857d]">{t("vegetable")}</p>
+
+          <h3
+            className="
+              mt-0.5 truncate
+              text-base font-bold
+              text-[#17201a]
+              sm:text-lg
+            "
+          >
+            {vegetable.name}
           </h3>
 
-          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#536157]">
-            <span>
-              {t("price")}: ₹{item.sellerPrice}/
-              {item.unit}
+          <div className="mt-2 flex items-baseline gap-1">
+            <span className="text-lg font-bold text-[#159447]">
+              ₹{item.sellerPrice}
             </span>
 
-            <span>
+            <span className="text-xs text-[#7a857d]">/ {item.unit}</span>
+          </div>
+
+          <div
+            className="
+              mt-2 flex flex-wrap
+              items-center gap-x-4 gap-y-1
+              text-xs sm:text-sm
+            "
+          >
+            <span className="text-[#536157]">
               {t("available")}:{" "}
-              {item.availableQty}{" "}
-              {item.unit}
+              <strong className="font-semibold text-[#17201a]">
+                {item.availableQty} {item.unit}
+              </strong>
             </span>
 
-            <span>
-              {t("market")}: ₹{item.marketPrice}/
-              {item.unit}
-            </span>
+            {item.marketPrice != null && (
+              <span className="text-[#7a857d]">
+                {t("market")}: ₹{item.marketPrice}/{item.unit}
+              </span>
+            )}
           </div>
         </div>
       </div>

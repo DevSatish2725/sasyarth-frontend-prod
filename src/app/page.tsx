@@ -1,12 +1,19 @@
-import HeroSection from "@/components/home/HeroSection";
 import AudienceCards from "@/components/home/AudienceCards";
+import HeroSection from "@/components/home/HeroSection";
+import HomeCTA from "@/components/home/HomeCTA";
 import HowGreenBridgeWorks from "@/components/home/HowGreenBridgeWorks";
 import WhyGreenBridge from "@/components/home/WhyGreenbridge";
-import HomeCTA from "@/components/home/HomeCTA";
 
 export default function HomePage() {
   return (
-    <main className="bg-background">
+    <main
+      className="
+        overflow-x-hidden
+        bg-background
+        pb-[calc(72px+env(safe-area-inset-bottom))]
+        lg:pb-0
+      "
+    >
       <HeroSection />
       <AudienceCards />
       <HowGreenBridgeWorks />

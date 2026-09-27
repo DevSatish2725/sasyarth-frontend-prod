@@ -105,29 +105,16 @@ export function VegetableMultiSelect({
    */
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  /*
-   * Selected vegetable horizontal scroll area.
-   */
   const chipsRef = useRef<HTMLDivElement>(null);
 
-  /*
-   * Search input.
-   */
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // ============================================================
-  // SELECTED VEGETABLES
-  // ============================================================
 
   const selectedVegetables = useMemo(() => {
     return vegetables.filter((vegetable) =>
       selectedIds.includes(vegetable._id),
     );
   }, [vegetables, selectedIds]);
-
-  // ============================================================
-  // AVAILABLE VEGETABLES
-  // ============================================================
 
   const matchesVegetableSearch = (
     vegetable: VegetableResponse,
@@ -159,10 +146,6 @@ export function VegetableMultiSelect({
       return matchesVegetableSearch(vegetable, search);
     });
   }, [vegetables, selectedIds, search]);
-
-  // ============================================================
-  // DROPDOWN POSITION
-  // ============================================================
 
   const updateDropdownPosition = useCallback(() => {
     const trigger = triggerRef.current;
@@ -209,10 +192,6 @@ export function VegetableMultiSelect({
       Math.min(rect.left, viewportWidth - width - VIEWPORT_PADDING),
     );
 
-    // ----------------------------------------------------------
-    // OPEN ABOVE
-    // ----------------------------------------------------------
-
     if (shouldOpenAbove) {
       const availableHeight = Math.max(0, spaceAbove - DROPDOWN_GAP);
 
@@ -230,10 +209,6 @@ export function VegetableMultiSelect({
       return;
     }
 
-    // ----------------------------------------------------------
-    // OPEN BELOW
-    // ----------------------------------------------------------
-
     const availableHeight = Math.max(0, spaceBelow - DROPDOWN_GAP);
 
     const maxHeight = Math.min(DROPDOWN_MAX_HEIGHT, availableHeight);
@@ -247,10 +222,6 @@ export function VegetableMultiSelect({
     });
   }, []);
 
-  // ============================================================
-  // MEASURE WHEN DROPDOWN OPENS
-  // ============================================================
-
   useLayoutEffect(() => {
     if (!isOpen) {
       return;
@@ -258,10 +229,6 @@ export function VegetableMultiSelect({
 
     updateDropdownPosition();
   }, [isOpen, updateDropdownPosition]);
-
-  // ============================================================
-  // REPOSITION ON SCROLL / RESIZE
-  // ============================================================
 
   useEffect(() => {
     if (!isOpen) {
@@ -289,10 +256,6 @@ export function VegetableMultiSelect({
     };
   }, [isOpen, updateDropdownPosition]);
 
-  // ============================================================
-  // SELECTED CHIP SCROLL STATE
-  // ============================================================
-
   const updateScrollButtons = useCallback(() => {
     const element = chipsRef.current;
 
@@ -309,10 +272,6 @@ export function VegetableMultiSelect({
     setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
   }, []);
 
-  // ============================================================
-  // UPDATE CHIP ARROWS AFTER SELECTION CHANGES
-  // ============================================================
-
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       updateScrollButtons();
@@ -322,10 +281,6 @@ export function VegetableMultiSelect({
       cancelAnimationFrame(frame);
     };
   }, [selectedVegetables, updateScrollButtons]);
-
-  // ============================================================
-  // UPDATE CHIP ARROWS ON RESIZE
-  // ============================================================
 
   useEffect(() => {
     const handleResize = () => {
@@ -338,10 +293,6 @@ export function VegetableMultiSelect({
       window.removeEventListener("resize", handleResize);
     };
   }, [updateScrollButtons]);
-
-  // ============================================================
-  // OUTSIDE CLICK
-  // ============================================================
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -374,10 +325,6 @@ export function VegetableMultiSelect({
     };
   }, []);
 
-  // ============================================================
-  // OPEN DROPDOWN
-  // ============================================================
-
   function openDropdown() {
     if (disabled) {
       return;
@@ -385,10 +332,6 @@ export function VegetableMultiSelect({
 
     setIsOpen(true);
   }
-
-  // ============================================================
-  // SELECT VEGETABLE
-  // ============================================================
 
   function handleSelect(vegetableId: string) {
     if (selectedIds.includes(vegetableId)) {
@@ -408,26 +351,14 @@ export function VegetableMultiSelect({
     });
   }
 
-  // ============================================================
-  // REMOVE VEGETABLE
-  // ============================================================
-
   function handleRemove(vegetableId: string) {
     onChange(selectedIds.filter((id) => id !== vegetableId));
   }
-
-  // ============================================================
-  // CLEAR ALL
-  // ============================================================
 
   function handleClear() {
     onChange([]);
     setSearch("");
   }
-
-  // ============================================================
-  // HORIZONTAL CHIP SCROLL
-  // ============================================================
 
   function scrollChips(direction: "left" | "right") {
     const element = chipsRef.current;
@@ -443,26 +374,11 @@ export function VegetableMultiSelect({
     });
   }
 
-  // ============================================================
-  // OPTIONS MAX HEIGHT
-  // ============================================================
-
-  /*
-   * The dropdown's total available height includes
-   * the "Clear all" footer.
-   *
-   * Reserve space for the footer so only the
-   * vegetable list scrolls.
-   */
   const optionsMaxHeight = dropdownPosition
     ? selectedIds.length > 0
       ? Math.max(80, dropdownPosition.maxHeight - DROPDOWN_FOOTER_HEIGHT)
       : dropdownPosition.maxHeight
     : 0;
-
-  // ============================================================
-  // PORTAL DROPDOWN
-  // ============================================================
 
   const dropdown =
     isOpen && !disabled && dropdownPosition && typeof document !== "undefined"
@@ -497,9 +413,6 @@ export function VegetableMultiSelect({
               shadow-xl
             "
           >
-            {/* ======================================
-                VEGETABLE OPTIONS
-            ======================================= */}
 
             <div
               style={{
@@ -572,10 +485,6 @@ export function VegetableMultiSelect({
               )}
             </div>
 
-            {/* ======================================
-                CLEAR ALL
-            ======================================= */}
-
             {selectedIds.length > 0 && (
               <div
                 className="
@@ -606,10 +515,6 @@ export function VegetableMultiSelect({
         )
       : null;
 
-  // ============================================================
-  // UI
-  // ============================================================
-
   return (
     <>
       <div ref={containerRef} className="relative min-w-0">
@@ -632,9 +537,6 @@ export function VegetableMultiSelect({
             ${disabled ? "cursor-not-allowed opacity-60" : ""}
           `}
         >
-          {/* ==========================================
-              SELECTED VEGETABLES
-          =========================================== */}
 
           {selectedVegetables.length > 0 && (
             <div
@@ -648,9 +550,6 @@ export function VegetableMultiSelect({
                 bg-[#fafcf9]
               "
             >
-              {/* ======================================
-                  LEFT ARROW
-              ======================================= */}
 
               <button
                 type="button"
@@ -679,10 +578,6 @@ export function VegetableMultiSelect({
               >
                 <ChevronLeft size={17} />
               </button>
-
-              {/* ======================================
-                  SELECTED CHIPS
-              ======================================= */}
 
               <div
                 ref={chipsRef}
@@ -748,10 +643,6 @@ export function VegetableMultiSelect({
                 ))}
               </div>
 
-              {/* ======================================
-                  RIGHT ARROW
-              ======================================= */}
-
               <button
                 type="button"
                 disabled={!canScrollRight}
@@ -781,10 +672,6 @@ export function VegetableMultiSelect({
               </button>
             </div>
           )}
-
-          {/* ==========================================
-              SEARCH INPUT
-          =========================================== */}
 
           <div
             className="
@@ -840,10 +727,6 @@ export function VegetableMultiSelect({
               "
             />
 
-            {/* ======================================
-                CLEAR
-            ======================================= */}
-
             {selectedIds.length > 0 && (
               <button
                 type="button"
@@ -863,10 +746,6 @@ export function VegetableMultiSelect({
                 Clear
               </button>
             )}
-
-            {/* ======================================
-                DROPDOWN TOGGLE
-            ======================================= */}
 
             <button
               type="button"
@@ -921,13 +800,6 @@ export function VegetableMultiSelect({
           </div>
         </div>
       </div>
-
-      {/* ========================================================
-          PORTAL DROPDOWN
-
-          Rendered under document.body, so the sticky sidebar's
-          overflow does not clip or expand this dropdown.
-      ========================================================= */}
 
       {dropdown}
     </>

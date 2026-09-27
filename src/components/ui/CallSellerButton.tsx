@@ -29,11 +29,7 @@ export default function CallSellerButton({
       guestCallModalOpen();
       return;
     }
-
-    // Next step:
-    // fetch protected seller contact API.
     getCallSellerId(sellerId);
-    console.log("authenticated, fetch seller contact API");
   };
 
   return (

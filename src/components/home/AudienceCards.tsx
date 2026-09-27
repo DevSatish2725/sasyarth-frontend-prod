@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -24,8 +27,26 @@ export default function AudienceCards() {
   ];
 
   return (
-    <section className="px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-2">
+    <section
+      className="
+        bg-background
+        px-4
+        py-7
+        sm:px-6
+        sm:py-8
+        lg:px-8
+      "
+    >
+      <div
+        className="
+          mx-auto
+          grid
+          max-w-7xl
+          gap-4
+          lg:grid-cols-2
+          lg:gap-5
+        "
+      >
         <AudienceCard
           title={t("buyer.title")}
           subtitle={t("buyer.subtitle")}
@@ -41,7 +62,9 @@ export default function AudienceCards() {
           subtitle={t("seller.subtitle")}
           benefits={sellerBenefits}
           button={t("seller.button")}
-          onClick={() => router.push("/become-seller")}
+          onClick={() =>
+            router.push("/become-seller")
+          }
           image="/images/home/seller-illustration.webp"
           variant="seller"
         />
@@ -74,8 +97,16 @@ function AudienceCard({
   return (
     <article
       className={`
-        relative min-h-61.25 overflow-hidden rounded-2xl border
-        sm:min-h-65
+        overflow-hidden
+        rounded-3xl
+        border
+        shadow-[0_4px_18px_rgba(0,0,0,0.04)]
+
+        lg:relative
+        lg:min-h-61.25
+        lg:rounded-2xl
+        lg:shadow-none
+
         ${
           buyer
             ? "border-[#cfe7d5] bg-[#eef8ef]"
@@ -83,81 +114,320 @@ function AudienceCard({
         }
       `}
     >
-      {/* Background image */}
-      <Image
-        src={image}
-        alt=""
-        fill
-        sizes="(max-width: 1024px) 100vw, 50vw"
-        className="object-cover object-left"
-      />
 
-      {/* 
-        Soft overlay behind text.
-        Keeps the illustration visible while making translated text readable.
-      */}
       <div
-        className={`
-          absolute inset-0 z-1
-          ${
-            buyer
-              ? "bg-linear-to-l from-[#eef8ef]/98 via-[#eef8ef]/90 to-transparent"
-              : "bg-linear-to-l from-[#fff6e6]/98 via-[#fff6e6]/90 to-transparent"
-          }
-        `}
-      />
+        className="
+          relative
+          aspect-video
+          w-full
+          overflow-hidden
+          lg:hidden
+        "
+      >
+        <Image
+          src={image}
+          alt=""
+          fill
+          sizes="100vw"
+          className="
+            object-cover
+            object-left
+          "
+        />
 
-      {/* Content */}
-      <div className="relative z-10 min-h-61,25 px-5 py-5 sm:min-h-65 sm:px-6">
-        <div className="ml-auto flex w-[52%] flex-col">
-          <h2 className="text-xl font-extrabold leading-tight text-[#17201a] sm:text-2xl">
-            {title}
-          </h2>
+        <div
+          className={`
+            absolute
+            inset-x-0
+            bottom-0
+            h-20
+            bg-linear-to-t
+            to-transparent
 
-          <p
-            className={`mt-1 text-sm font-semibold ${
-              buyer ? "text-[#159447]" : "text-accent"
-            }`}
-          >
-            {subtitle}
-          </p>
+            ${
+              buyer
+                ? "from-[#eef8ef]"
+                : "from-[#fff3dc]"
+            }
+          `}
+        />
+      </div>
 
-          <div className="mt-4 space-y-2">
-            {benefits.map((benefit) => (
-              <div
-                key={benefit}
-                className="flex items-start gap-2 text-[13px] leading-5 text-[#26332a]"
-              >
-                <CheckCircle2
-                  size={15}
-                  className={`mt-0.5 shrink-0 ${
-                    buyer ? "text-[#159447]" : "text-accent"
-                  }`}
-                />
+      <div
+        className="
+          p-5
 
-                <span>{benefit}</span>
-              </div>
-            ))}
+          sm:p-6
+
+          lg:hidden
+        "
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2
+              className="
+                text-xl
+                font-extrabold
+                leading-tight
+                text-[#17201a]
+              "
+            >
+              {title}
+            </h2>
+
+            <p
+              className={`
+                mt-1
+                text-sm
+                font-semibold
+                leading-5
+
+                ${
+                  buyer
+                    ? "text-[#159447]"
+                    : "text-accent"
+                }
+              `}
+            >
+              {subtitle}
+            </p>
           </div>
+        </div>
+        <div
+          className="
+            mt-4
+            grid
+            gap-2.5
+          "
+        >
+          {benefits.map((benefit) => (
+            <div
+              key={benefit}
+              className="
+                flex
+                items-start
+                gap-2.5
+                text-[13px]
+                leading-5
+                text-[#26332a]
+              "
+            >
+              <CheckCircle2
+                className={`
+                  mt-0.5
+                  h-4
+                  w-4
+                  shrink-0
 
-          <button
-            type="button"
-            onClick={onClick}
-            className={`
-              mt-4 inline-flex min-h-10 w-fit items-center
-              justify-center gap-2 rounded-lg px-5
-              text-sm font-semibold text-white
-              shadow-sm transition
-              ${
-                buyer
-                  ? "bg-[#159447] hover:bg-[#107a3a]"
-                  : "bg-accent hover:bg-[#744b00]"
-              }
-            `}
+                  ${
+                    buyer
+                      ? "text-[#159447]"
+                      : "text-accent"
+                  }
+                `}
+              />
+
+              <span className="min-w-0">
+                {benefit}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={onClick}
+          className={`
+            mt-5
+            inline-flex
+            min-h-12
+            w-full
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            px-5
+            text-sm
+            font-bold
+            text-white
+            shadow-sm
+            transition-all
+            duration-200
+
+            active:scale-[0.99]
+
+            ${
+              buyer
+                ? `
+                    bg-[#159447]
+                    hover:bg-[#107a3a]
+                  `
+                : `
+                    bg-accent
+                    hover:bg-[#744b00]
+                  `
+            }
+          `}
+        >
+          <span>{button}</span>
+
+          <ArrowRight className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div className="hidden lg:block">
+
+        <Image
+          src={image}
+          alt=""
+          fill
+          sizes="50vw"
+          className="object-cover object-left"
+        />
+
+        <div
+          className={`
+            absolute
+            inset-0
+            z-1
+
+            ${
+              buyer
+                ? `
+                    bg-linear-to-l
+                    from-[#eef8ef]/98
+                    via-[#eef8ef]/90
+                    to-transparent
+                  `
+                : `
+                    bg-linear-to-l
+                    from-[#fff6e6]/98
+                    via-[#fff6e6]/90
+                    to-transparent
+                  `
+            }
+          `}
+        />
+
+        <div
+          className="
+            relative
+            z-10
+            min-h-61.25
+            px-6
+            py-5
+          "
+        >
+          <div
+            className="
+              ml-auto
+              flex
+              w-[52%]
+              flex-col
+            "
           >
-            {button}
-            <ArrowRight size={16} />
-          </button>
+            <h2
+              className="
+                text-xl
+                font-extrabold
+                leading-tight
+                text-[#17201a]
+                xl:text-2xl
+              "
+            >
+              {title}
+            </h2>
+
+            <p
+              className={`
+                mt-1
+                text-sm
+                font-semibold
+
+                ${
+                  buyer
+                    ? "text-[#159447]"
+                    : "text-accent"
+                }
+              `}
+            >
+              {subtitle}
+            </p>
+
+            <div
+              className="
+                mt-4
+                space-y-2
+              "
+            >
+              {benefits.map((benefit) => (
+                <div
+                  key={benefit}
+                  className="
+                    flex
+                    items-start
+                    gap-2
+                    text-[13px]
+                    leading-5
+                    text-[#26332a]
+                  "
+                >
+                  <CheckCircle2
+                    size={15}
+                    className={`
+                      mt-0.5
+                      shrink-0
+
+                      ${
+                        buyer
+                          ? "text-[#159447]"
+                          : "text-accent"
+                      }
+                    `}
+                  />
+
+                  <span>{benefit}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={onClick}
+              className={`
+                mt-4
+                inline-flex
+                min-h-10
+                w-fit
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                px-5
+                text-sm
+                font-semibold
+                text-white
+                shadow-sm
+                transition
+
+                ${
+                  buyer
+                    ? `
+                        bg-[#159447]
+                        hover:bg-[#107a3a]
+                      `
+                    : `
+                        bg-accent
+                        hover:bg-[#744b00]
+                      `
+                }
+              `}
+            >
+              {button}
+
+              <ArrowRight size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </article>

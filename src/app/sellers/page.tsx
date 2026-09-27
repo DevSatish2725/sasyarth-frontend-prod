@@ -6,8 +6,8 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
-import { Search, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { MapPin, Search, SlidersHorizontal, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import MarketplaceHeader from "@/components/layout/MarketPlaceHeader";
@@ -38,10 +38,13 @@ import type {
   StateOption,
 } from "@/types/location.types";
 
-import type { SellerCardProps, SellerResponse } from "@/types/seller.types";
+import type { SellerResponse } from "@/types/seller.types";
 
 import type { VegetableResponse } from "@/types/vegetable.types";
-import { useDebounce } from "@/hooks/useDebounce";
+import MobileFilterSheet from "@/components/sellers/MobileFilterSheet";
+import SellerListSkeleton from "@/components/sellers/SellerListSkeleton";
+import EmptySellersState from "@/components/sellers/EmptySellerState";
+import DesktopFilters from "@/components/sellers/DesktopFilters";
 
 interface CurrentLocation {
   latitude: number;
@@ -73,7 +76,6 @@ export default function SellersPage() {
     null,
   );
 
-  const [manualLocationClear, setManualLocationClear] = useState(false);
   const [selectedState, setSelectedState] = useState<StateOption | null>(null);
 
   const [selectedDistrict, setSelectedDistrict] =
@@ -86,9 +88,59 @@ export default function SellersPage() {
   const [districtSearch, setDistrictSearch] = useState("");
   const [villageSearch, setVillageSearch] = useState("");
 
-  const debouncedDistrictSearch = useDebounce(districtSearch, 300);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const debouncedVillageSearch = useDebounce(villageSearch, 300);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  function updateFilters(
+    selectedLocation: {
+      stateId: string;
+      districtId: string;
+      villageId: string;
+    },
+    selectedVegetablesId: string[],
+  ) {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (selectedVegetablesId.length > 0) {
+      params.set("vegetableIds", selectedVegetablesId.join(","));
+    } else {
+      params.delete("vegetableIds");
+    }
+
+    if (selectedLocation) {
+      const { stateId, districtId, villageId } = selectedLocation;
+
+      if (stateId) {
+        params.set("stateId", stateId);
+      } else {
+        params.delete("stateId");
+      }
+
+      if (districtId) {
+        params.set("districtId", districtId);
+      } else {
+        params.delete("districtId");
+      }
+
+      if (villageId) {
+        params.set("villageId", villageId);
+      } else {
+        params.delete("villageId");
+      }
+    } else {
+      params.delete("stateId");
+      params.delete("districtId");
+      params.delete("villageId");
+    }
+
+    const query = params.toString();
+
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+  }
 
   const router = useRouter();
   const t = useTranslations("FindSellers");
@@ -99,13 +151,7 @@ export default function SellersPage() {
 
   const returnTo =
     `/sellers?sellerId=${selectedSeller?.sellerId}` + `&action=call`;
-
-  // ------------------------------------------------
-  // Location
-  // ------------------------------------------------
-
-  console.log("manual location", showManualLocationSelector);
-
+  
   const handleClearManualLocation = () => {
     setSelectedState(null);
     setSelectedDistrict(null);
@@ -115,16 +161,21 @@ export default function SellersPage() {
     setActiveLocation(null);
   };
 
+  const handleRemoveVegetableSearch = (vegetableId: string) => {
+
+    const filteredVegetableIds = selectedVegetableIds.filter(
+      (selectedVegetableId) => selectedVegetableId !== vegetableId,
+    );
+    setSelectedVegetableIds(filteredVegetableIds);
+    handleApplyVegetables(filteredVegetableIds);
+  };
+
   const handleLocationChange = (location: CurrentLocation) => {
     setSearchLocation({
       mode: "CURRENT",
       latitude: location.latitude,
       longitude: location.longitude,
     });
-
-    // Current location and manual selector are
-    // mutually exclusive.
-    // setShowManualLocationSelector(false);
   };
 
   const handleChooseLocation = () => {
@@ -165,6 +216,15 @@ export default function SellersPage() {
     }
 
     handleApplyVegetables(selectedVegetableIds);
+
+    updateFilters(
+      {
+        stateId: selectedState?.id ?? "",
+        districtId: selectedDistrict?.id ?? "",
+        villageId: selectedVillage?.id ?? "",
+      },
+      selectedVegetableIds,
+    );
   };
 
   const handleStateSelect = (state: StateOption) => {
@@ -195,17 +255,9 @@ export default function SellersPage() {
     setVillageSearch(village);
   };
 
-  // ------------------------------------------------
-  // Vegetable filter
-  // ------------------------------------------------
-
   const handleApplyVegetables = (vegetableIds: string[]) => {
     setAppliedVegetableIds(vegetableIds);
   };
-
-  // ------------------------------------------------
-  // Seller contact
-  // ------------------------------------------------
 
   const getCallSellerId = (sellerId: string) => {
     setCallSellerId(sellerId);
@@ -222,10 +274,6 @@ export default function SellersPage() {
     setSelectedSeller(null);
   };
 
-  // ------------------------------------------------
-  // Seller contact query
-  // ------------------------------------------------
-
   const callSellerData = useQuery({
     queryKey: ["callSeller", callSellerId],
 
@@ -240,10 +288,6 @@ export default function SellersPage() {
     enabled: Boolean(callSellerId),
   });
 
-  // ------------------------------------------------
-  // Vegetables
-  // ------------------------------------------------
-
   const { data: vegetables = [], isLoading: isVegetablesLoading } = useQuery<
     VegetableResponse[]
   >({
@@ -251,28 +295,15 @@ export default function SellersPage() {
     queryFn: vegetableService.getVegetables,
   });
 
-  // ------------------------------------------------
-  // Saved sellers
-  // ------------------------------------------------
-
   const savedSellersQuery = useQuery({
     queryKey: ["saved-sellers"],
     queryFn: savedSellerService.getSavedSellers,
-
-    // Don't request authenticated saved sellers
-    // when the visitor is a guest.
     enabled: Boolean(user),
   });
 
   const savedSellerIds = new Set(
     savedSellersQuery.data?.map((seller) => seller.sellerProfileId) ?? [],
   );
-
-  // ------------------------------------------------
-  // Seller discovery
-  // ------------------------------------------------
-
-  console.log("appliedVegetableIds", appliedVegetableIds);
 
   const sellerQuery = useInfiniteQuery<
     SellerResponse,
@@ -302,10 +333,6 @@ export default function SellersPage() {
 
   const sellers = sellerQuery.data?.pages.flatMap((page) => page.data) ?? [];
 
-  // ------------------------------------------------
-  // Save / unsave
-  // ------------------------------------------------
-
   const handleSaveToggle = (sellerId: string) => {
     if (!user) {
       router.push("/login");
@@ -323,461 +350,546 @@ export default function SellersPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background">
+    <main
+      className="
+      min-h-screen
+      bg-background
+      pb-[calc(76px+env(safe-area-inset-bottom))]
+      lg:pb-8
+    "
+    >
       <div
         className="
-        mx-auto w-full
+        mx-auto
+        w-full
         max-w-7xl
-        px-4 py-4
+        px-3
+        py-3
+
         sm:px-6
+        sm:py-4
+
         lg:px-8
       "
       >
-        {/* <section className="mt-3">
-          <h1
-            className="
-            text-2xl font-bold
-            leading-tight
-            text-text-primary
-            sm:text-3xl
-          "
-          >
-            {t("title")}
-          </h1>
-
-          <p className="mt-1 text-sm text-text-secondary">{t("subtitle")}</p>
-        </section> */}
-
-        {/* =====================================================
-          DESKTOP:
-          LEFT FILTERS + RIGHT SELLERS
-
-          MOBILE:
-          FILTERS ABOVE SELLERS
-      ====================================================== */}
 
         <div
           className="
-          mt-5
-          grid grid-cols-1
-          gap-5
-          lg:grid-cols-[340px_minmax(0,1fr)]
-          lg:items-start
+      rounded-2xl
+      border
+      border-border
+      bg-surface
+      p-4
+      shadow-sm
+      lg:hidden
+    "
+        >
+          <div
+            className="
+        flex
+        items-start
+        justify-between
+        gap-3
+      "
+          >
+            <div>
+              <p
+                className="
+            text-xs
+            font-semibold
+            uppercase
+            tracking-wide
+            text-primary
+          "
+              >
+                {t("dailyFresh")}
+              </p>
+
+              <h1
+                className="
+            mt-0.5
+            text-xl
+            font-extrabold
+            text-text-primary
+          "
+              >
+                {t("vegetablesMarket")}
+              </h1>
+            </div>
+
+            {!sellerQuery.isLoading && (
+              <span
+                className="
+            rounded-full
+            bg-primary-light
+            px-3
+            py-1.5
+            text-xs
+            font-bold
+            text-primary
+          "
+              >
+                {t("results.seller", { count: sellers.length })}
+              </span>
+            )}
+          </div>
+
+          {activeLocation && (
+            <div
+              className="
+          mt-3
+          flex
+          items-center
+          gap-2
+          rounded-xl
+          bg-surface-muted
+          px-3
+          py-2.5
+        "
+            >
+              <MapPin className="h-4 w-4 shrink-0 text-primary" />
+
+              <p
+                className="
+            min-w-0
+            flex-1
+            truncate
+            text-sm
+            font-semibold
+            text-text-primary
+          "
+              >
+                {[
+                  activeLocation.villageName,
+                  activeLocation.districtName,
+                  activeLocation.stateName,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+
+              <button
+                type="button"
+                onClick={handleClearManualLocation}
+                aria-label="Clear location"
+                className="
+            flex
+            h-8
+            w-8
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            text-text-muted
+
+            active:bg-white
+          "
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div
+          className="
+          sticky
+          top-16
+          z-30
+          -mx-3
+          mt-3
+          border-y
+          border-border/70
+          bg-background/95
+          px-3
+          py-2.5
+          backdrop-blur
+
+          sm:-mx-6
+          sm:px-6
+
+          lg:hidden
         "
         >
-          {/* =================================================
-            LEFT SIDE — FILTERS
-        ================================================= */}
+          <div className="grid grid-cols-2 gap-2">
+
+            <button
+              type="button"
+              onClick={() => setShowMobileFilters(true)}
+              className="
+              flex
+              min-h-11
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border
+              border-border
+              bg-surface
+              px-3
+              text-sm
+              font-semibold
+              text-text-primary
+              shadow-sm
+              transition
+
+              active:scale-[0.99]
+            "
+            >
+              <MapPin className="h-4 w-4 text-primary" />
+
+              <span className="truncate">
+                {activeLocation?.villageName ||
+                  activeLocation?.districtName ||
+                  activeLocation?.stateName ||
+                  t("location.currentLocation.title")}
+              </span>
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() => setShowMobileFilters(true)}
+              className="
+              relative
+              flex
+              min-h-11
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border
+              border-primary/20
+              bg-primary-light
+              px-3
+              text-sm
+              font-bold
+              text-primary
+              transition
+
+              active:scale-[0.99]
+            "
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+
+              {t("filters")}
+
+              {appliedVegetableIds.length > 0 && (
+                <span
+                  className="
+                  flex
+                  h-5
+                  min-w-5
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-primary
+                  px-1
+                  text-[10px]
+                  font-bold
+                  text-white
+                "
+                >
+                  {appliedVegetableIds.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        <div
+          className="
+          mt-4
+          grid
+          grid-cols-1
+          gap-4
+
+          lg:mt-5
+          lg:grid-cols-[340px_minmax(0,1fr)]
+          lg:items-start
+          lg:gap-5
+        "
+        >
 
           <aside
             className="
-    rounded-2xl
-    border border-border
-    bg-surface
+            hidden
+            rounded-2xl
+            border
+            border-border
+            bg-surface
 
-    lg:sticky
-    lg:top-5
-    lg:max-h-[calc(100vh-2.5rem)]
-  "
+            lg:sticky
+            lg:top-20
+            lg:block
+            lg:max-h-[calc(100vh-2.5rem)]
+          "
           >
-            <div className="p-4">
-              {/* =============================================
-        LOCATION
-    ============================================== */}
-              {!showManualLocationSelector && (
-                <LocationSelector
-                  location=""
-                  onLocationChange={handleLocationChange}
-                  onChooseLocation={handleChooseLocation}
-                  handleManualLocationClose={handleManualLocationClose}
-                  isManualSelected={showManualLocationSelector}
-                />
-              )}
-
-              {/* =============================================
-        MANUAL LOCATION
-
-        When expanded, sidebar can scroll instead
-        of increasing the page height.
-    ============================================== */}
-
-              {showManualLocationSelector && (
-                <div
-                  className="relative lg:h-[calc(100vh-22rem)]
-    lg:overflow-y-auto
-    [&::-webkit-scrollbar]:w-1.
-    [&::-webkit-scrollbar-track]:bg-transparent
-    [&::-webkit-scrollbar-thumb]:rounded-full
-    [&::-webkit-scrollbar-thumb]:bg-border border"
-                >
-                  <span
-                    className="absolute t-0 right-0 border z-20"
-                    onClick={() => {
-                      console.log("close clicked");
-                      setShowManualLocationSelector(false);
-                    }}
-                  >
-                    <X />
-                  </span>
-                  <LocationSearchBar
-                    handleStateSelect={handleStateSelect}
-                    handleDistrictSelect={handleDistrictSelect}
-                    handleVillageSelect={handleVillageSelect}
-                    handleDistrictSearch={handleDistrictSearch}
-                    handleVillageSearch={handleVillageSearch}
-                    selectedState={selectedState}
-                    selectedDistrict={selectedDistrict}
-                    selectedVillage={selectedVillage}
-                    villageSearch={villageSearch}
-                    districtSearch={districtSearch}
-                  />
-                </div>
-              )}
-
-              {/* =============================================
-        VEGETABLE FILTER
-    ============================================== */}
-
-              <div className="mt-4 border-t border-border pt-4">
-                <div className="mb-2">
-                  <h2 className="text-sm font-bold text-text-primary">
-                    {t("vegetables.title")}
-                  </h2>
-
-                  <p className="mt-0.5 text-xs leading-5 text-text-secondary">
-                    {t("vegetables.description")}
-                  </p>
-                </div>
-
-                <VegetableMultiSelect
-                  vegetables={vegetables}
-                  selectedIds={selectedVegetableIds}
-                  placeholder={t("vegetables.placeholder")}
-                  onChange={setSelectedVegetableIds}
-                  disabled={isVegetablesLoading}
-                />
-
-                {/* Apply filter */}
-                <button
-                  type="button"
-                  onClick={handleSellerSearch}
-                  className="
-          mt-3
-          flex h-11 w-full
-          items-center justify-center
-          gap-2
-          rounded-xl
-          bg-primary
-          px-5
-          text-sm
-          font-bold
-          text-white
-          transition
-          hover:bg-primary-hover
-        "
-                >
-                  <Search size={17} />
-
-                  {t("vegetables.searchSellers")}
-                </button>
-              </div>
-            </div>
+            <DesktopFilters
+              showManualLocationSelector={showManualLocationSelector}
+              setShowManualLocationSelector={setShowManualLocationSelector}
+              handleLocationChange={handleLocationChange}
+              handleChooseLocation={handleChooseLocation}
+              handleManualLocationClose={handleManualLocationClose}
+              handleStateSelect={handleStateSelect}
+              handleDistrictSelect={handleDistrictSelect}
+              handleVillageSelect={handleVillageSelect}
+              handleDistrictSearch={handleDistrictSearch}
+              handleVillageSearch={handleVillageSearch}
+              selectedState={selectedState}
+              selectedDistrict={selectedDistrict}
+              selectedVillage={selectedVillage}
+              villageSearch={villageSearch}
+              districtSearch={districtSearch}
+              vegetables={vegetables}
+              selectedVegetableIds={selectedVegetableIds}
+              setSelectedVegetableIds={setSelectedVegetableIds}
+              isVegetablesLoading={isVegetablesLoading}
+              handleSellerSearch={handleSellerSearch}
+            />
           </aside>
 
-          {/* =================================================
-            RIGHT SIDE — SELLER RESULTS
-        ================================================= */}
 
           <section className="min-w-0">
-            {/* ---------------------------------------------
-              RESULT HEADER
-          ---------------------------------------------- */}
-
-            <MarketplaceHeader />
-
-            {/* Active manual location */}
-            {activeLocation && (
-              <div
-                className="
-            mt-3 flex flex-col gap-2
-            border-t border-border
-            pt-3
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
-              >
-                <div
-                  className="
-              flex flex-wrap items-center
-              gap-1.5 text-xs
-              text-text-secondary
-            "
-                >
-                  <span className="font-bold text-primary">●</span>
-
-                  <span>{t("searchingIn")}</span>
-
-                  <span className="font-semibold text-text-primary">
-                    {activeLocation.stateName}
-                  </span>
-
-                  {activeLocation.districtName && (
-                    <>
-                      <span className="text-text-muted">›</span>
-
-                      <span className="font-semibold text-text-primary">
-                        {activeLocation.districtName}
-                      </span>
-                    </>
-                  )}
-
-                  {activeLocation.villageName && (
-                    <>
-                      <span className="text-text-muted">›</span>
-
-                      <span className="font-semibold text-text-primary">
-                        {activeLocation.villageName}
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleClearManualLocation}
-                  className="
-              flex items-center gap-1
-              self-start
-              text-xs font-medium
-              text-text-secondary
-              transition
-              hover:text-error
-              sm:self-auto
-            "
-                >
-                  {t("location.clearLocation")}
-
-                  <X size={14} />
-                </button>
-              </div>
-            )}
 
             <div
               className="
               mb-3
-              flex min-h-8
+              flex
               items-center
               justify-between
               gap-3
+
+              lg:hidden
             "
             >
-              {/* Loading */}
-              {sellerQuery.isLoading && (
-                <p className="text-sm text-text-secondary">
-                  {t("findingNearbySellers")}
-                </p>
-              )}
-
-              {/* Seller count */}
-              {!sellerQuery.isLoading &&
-                !sellerQuery.isError &&
-                sellers.length > 0 && (
-                  <div>
-                    <h2
-                      className="
-                      text-lg font-bold
-                      text-text-primary
-                    "
-                    >
-                      {t("results.sellerCount", {
-                        count: sellers.length,
-                      })}
-                    </h2>
-
-                    <p
-                      className="
-                      mt-0.5
-                      text-xs
-                      text-text-secondary
-                    "
-                    >
-                      {t("results.trustedSellers")}
-                    </p>
-                  </div>
-                )}
-            </div>
-
-            {/* ---------------------------------------------
-              ERROR STATE
-          ---------------------------------------------- */}
-
-            {sellerQuery.isError && (
-              <div
-                className="
-                rounded-xl
-                border border-error/20
-                bg-error/5
-                px-4 py-3
-              "
-              >
+              <div>
                 <p
                   className="
                   text-sm
-                  font-medium
-                  text-error
+                  font-bold
+                  text-text-primary
                 "
                 >
-                  {t("unableToLoadSellers")}
+                  {sellerQuery.isLoading
+                    ? t("findingNearbySellers")
+                    : t("results.sellerCount", { count: sellers.length })}
+                </p>
+
+                <p
+                  className="
+                  mt-0.5
+                  text-xs
+                  text-text-secondary
+                "
+                >
+                  {t("results.trustedSellers")}
                 </p>
               </div>
-            )}
+            </div>
+            <div className="hidden lg:block">
+              <MarketplaceHeader
+                activeLocation={activeLocation}
+                appliedVegetableIds={appliedVegetableIds}
+                vegetables={vegetables}
+                sellerCount={sellers.length}
+                onClearLocation={handleClearManualLocation}
+                onRemoveVegetable={handleRemoveVegetableSearch}
+              />
+            </div>
 
-            {/* ---------------------------------------------
-              EMPTY STATE
-          ---------------------------------------------- */}
 
-            {!sellerQuery.isLoading &&
-              !sellerQuery.isError &&
-              sellers.length === 0 && (
-                <div
-                  className="
-                  flex min-h-[180px]
-                  flex-col
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  border border-border
-                  bg-surface
-                  px-6
-                  text-center
-                "
-                >
-                  <div
-                    className="
-                    flex h-11 w-11
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-primary-light
-                    text-primary
-                  "
-                  >
-                    <Search size={20} />
-                  </div>
+            {sellerQuery.isLoading ? (
+              <SellerListSkeleton />
+            ) : sellers.length === 0 ? (
+              <EmptySellersState
+                onOpenFilters={() => setShowMobileFilters(true)}
+              />
+            ) : (
+              <div
+                className="
+                grid
+                gap-3
 
-                  <h3
-                    className="
-                    mt-3
-                    font-bold
-                    text-text-primary
-                  "
-                  >
-                    {t("results.noSellersNearby")}
-                  </h3>
-
-                  <p
-                    className="
-                    mt-1
-                    max-w-sm
-                    text-sm
-                    text-text-secondary
-                  "
-                  >
-                    {t("results.tryDifferentLocation")}
-                  </p>
-                </div>
-              )}
-
-            {/* ---------------------------------------------
-              SELLER LIST
-          ---------------------------------------------- */}
-
-            {sellers.length > 0 && (
-              <div className="space-y-3">
-                {sellers.map((seller: SellerCardProps) => (
+                sm:gap-4
+              "
+              >
+                {sellers.map((seller) => (
                   <SellerCard
                     key={seller.sellerId}
                     seller={seller}
                     isProcessing={isProcessing}
                     isSaved={savedSellerIds.has(seller.sellerId)}
+                    isLoading={callSellerData.isFetching}
                     getCallSellerId={getCallSellerId}
-                    guestCallModalOpen={guestCallModalOpen}
                     handleSaveToggle={handleSaveToggle}
-                    isLoading={
-                      callSellerId === seller.sellerId &&
-                      callSellerData.isFetching
-                    }
+                    guestCallModalOpen={guestCallModalOpen}
                   />
                 ))}
               </div>
             )}
 
-            {/* ---------------------------------------------
-              LOAD MORE
-          ---------------------------------------------- */}
 
             {sellerQuery.hasNextPage && (
-              <div
+              <button
+                type="button"
+                disabled={sellerQuery.isFetchingNextPage}
+                onClick={() => sellerQuery.fetchNextPage()}
                 className="
-                mt-5
+                mt-4
                 flex
+                min-h-12
+                w-full
+                items-center
                 justify-center
+                rounded-xl
+                border
+                border-primary/20
+                bg-surface
+                text-sm
+                font-bold
+                text-primary
+
+                disabled:opacity-60
               "
               >
-                <button
-                  type="button"
-                  disabled={sellerQuery.isFetchingNextPage}
-                  onClick={() => sellerQuery.fetchNextPage()}
-                  className="
-                  rounded-xl
-                  border border-primary
-                  bg-surface
-                  px-6 py-2.5
-                  text-sm
-                  font-semibold
-                  text-primary
-                  transition
-                  hover:bg-primary-light
-                  disabled:cursor-not-allowed
-                  disabled:opacity-60
-                "
-                >
-                  {sellerQuery.isFetchingNextPage
-                    ? t("loadingMore")
-                    : t("loadMore")}
-                </button>
-              </div>
+                {sellerQuery.isFetchingNextPage
+                  ? t("sellers.loadingMore")
+                  : t("sellers.loadMore")}
+              </button>
             )}
           </section>
         </div>
-
-        {/* =====================================================
-          CALL SELLER MODAL
-      ====================================================== */}
-
-        {callSellerId && (
-          <CallSellerCard
-            sellerName={callSellerData.data?.data.fullName}
-            mobileNumber={callSellerData.data?.data.mobileNumber}
-            onClose={() => setCallSellerId(null)}
-          />
-        )}
-
-        {/* =====================================================
-          GUEST LOGIN MODAL
-      ====================================================== */}
-
-        {selectedSeller && (
-          <GuestCallModal
-            sellerName={selectedSeller.sellerName}
-            onClose={guestCallModalClose}
-            onLogin={() => {
-              router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
-            }}
-          />
-        )}
       </div>
+
+      {showMobileFilters && (
+        <MobileFilterSheet onClose={() => setShowMobileFilters(false)}>
+          {!showManualLocationSelector ? (
+            <LocationSelector
+              location=""
+              onLocationChange={(location) => {
+                handleLocationChange(location);
+              }}
+              onChooseLocation={handleChooseLocation}
+              handleManualLocationClose={handleManualLocationClose}
+              isManualSelected={Boolean(activeLocation)}
+            />
+          ) : (
+            <LocationSearchBar
+              handleStateSelect={handleStateSelect}
+              handleDistrictSelect={handleDistrictSelect}
+              handleVillageSelect={handleVillageSelect}
+              handleDistrictSearch={handleDistrictSearch}
+              handleVillageSearch={handleVillageSearch}
+              selectedState={selectedState}
+              selectedDistrict={selectedDistrict}
+              selectedVillage={selectedVillage}
+              villageSearch={villageSearch}
+              districtSearch={districtSearch}
+            />
+          )}
+
+          <div
+            className="
+            mt-5
+            border-t
+            border-border
+            pt-5
+          "
+          >
+            <h3
+              className="
+              text-sm
+              font-bold
+              text-text-primary
+            "
+            >
+              {t("vegetables.title")}
+            </h3>
+
+            <p
+              className="
+              mt-1
+              text-xs
+              leading-5
+              text-text-secondary
+            "
+            >
+              {t("vegetables.description")}
+            </p>
+
+            <div className="mt-3">
+              <VegetableMultiSelect
+                vegetables={vegetables}
+                selectedIds={selectedVegetableIds}
+                placeholder={t("vegetables.placeholder")}
+                onChange={setSelectedVegetableIds}
+                disabled={isVegetablesLoading}
+              />
+            </div>
+          </div>
+
+          <div
+            className="
+            sticky
+            bottom-0
+            -mx-4
+            mt-6
+            border-t
+            border-border
+            bg-white
+            px-4
+            pb-[calc(12px+env(safe-area-inset-bottom))]
+            pt-3
+          "
+          >
+            <button
+              type="button"
+              onClick={() => {
+                handleSellerSearch();
+                setShowMobileFilters(false);
+              }}
+              className="
+              flex
+              min-h-12
+              w-full
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              bg-primary
+              px-4
+              text-sm
+              font-bold
+              text-white
+            "
+            >
+              <Search className="h-4 w-4" />
+
+              {t("vegetables.searchSellers")}
+            </button>
+          </div>
+        </MobileFilterSheet>
+      )}
+
+      {callSellerData.data && (
+        <CallSellerCard
+          sellerName={callSellerData.data.data.fullName}
+          mobileNumber={callSellerData.data.data.mobileNumber}
+          location={callSellerData.data.data.location}
+          onClose={() => setCallSellerId(null)}
+        />
+      )}
+
+      {selectedSeller && (
+        <GuestCallModal
+          sellerName={selectedSeller.sellerName}
+          onClose={guestCallModalClose}
+          onLogin={() => {
+            router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+          }}
+        />
+      )}
     </main>
   );
 }

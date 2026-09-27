@@ -1,8 +1,5 @@
-// src/components/ui/Dropdown.tsx
-
 "use client";
 
-import { VegetableResponse } from "@/types/vegetable.types";
 import { Check, ChevronDown, Search } from "lucide-react";
 
 import { useEffect, useMemo, useRef, useState } from "react";

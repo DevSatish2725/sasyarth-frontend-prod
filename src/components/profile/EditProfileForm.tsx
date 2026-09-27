@@ -97,8 +97,6 @@ export default function EditProfileForm({
   return (
     <form onSubmit={handleSubmit} className="mt-6">
       <div className="grid gap-6 sm:grid-cols-2">
-        {/* Full Name */}
-
         <div>
           <label
             htmlFor="fullName"
@@ -166,8 +164,6 @@ export default function EditProfileForm({
           )}
         </div>
 
-        {/* Mobile Number */}
-
         <div>
           <label
             htmlFor="mobileNumber"
@@ -221,8 +217,6 @@ export default function EditProfileForm({
           </p>
         </div>
       </div>
-
-      {/* Actions */}
 
       <div className="mt-6 flex justify-end gap-3">
         <button

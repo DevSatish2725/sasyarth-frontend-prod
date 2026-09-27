@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import {
   Bookmark,
   CheckCircle2,
@@ -9,8 +10,11 @@ import {
   MessageCircle,
   Star,
 } from "lucide-react";
+
 import CallSellerButton from "@/components/ui/CallSellerButton";
-import { SellerRatingSummary } from "@/types/seller-rating";
+
+import type { SellerRatingSummary } from "@/types/seller-rating";
+
 import { useTranslations } from "next-intl";
 
 interface SellerShopHeaderProps {
@@ -18,24 +22,28 @@ interface SellerShopHeaderProps {
     name: string;
     bannerImage?: string;
     profileImage?: string;
+
     location: {
       village?: string;
       district?: string;
       state?: string;
       pincode?: string;
     };
+
     isSaved: boolean;
     shopOwner: boolean;
+
     sellerRatingSummary: SellerRatingSummary;
   };
 
   sellerId: string;
   isLoading: boolean;
+
   getCallSellerId: (sellerId: string) => void;
+
   guestCallModalOpen: (sellerId: string, sellerName: string) => void;
 
   onSave: () => void;
-  onWhatsApp: () => void;
 }
 
 export default function SellerShopHeader({
@@ -45,9 +53,10 @@ export default function SellerShopHeader({
   getCallSellerId,
   guestCallModalOpen,
   onSave,
-  onWhatsApp,
 }: SellerShopHeaderProps) {
   const t = useTranslations("SellerShop");
+  const tc = useTranslations("Common")
+
   const locationText = [
     seller?.location?.village,
     seller?.location?.district,
@@ -56,37 +65,49 @@ export default function SellerShopHeader({
     .filter(Boolean)
     .join(", ");
 
+  const { averageRating, ratingCount } = seller.sellerRatingSummary;
+
   return (
     <section
       className="
         overflow-hidden
         rounded-2xl
-        border border-border
+        border
+        border-border
         bg-white
         shadow-sm
       "
     >
-      {/* Banner */}
+
       <div
         className="
           relative
+          h-32
           overflow-hidden
           bg-primary-light
-          h-28 sm:h-32 lg:h-36
+
+          sm:h-36
+
+          lg:h-36
         "
       >
-        {seller?.bannerImage ? (
+        {seller.bannerImage ? (
           <Image
             src={seller.bannerImage}
             alt={`${seller.name} farm`}
             fill
             priority
+            sizes="
+              (max-width: 1023px) 100vw,
+              460px
+            "
             className="object-cover"
           />
         ) : (
           <div
             className="
-              flex h-full
+              flex
+              h-full
               items-center
               justify-center
               bg-linear-to-r
@@ -98,229 +119,298 @@ export default function SellerShopHeader({
             <div className="text-center">
               <Leaf
                 className="
-                  mx-auto h-9 w-9
+                  mx-auto
+                  h-8
+                  w-8
                   text-primary
+
+                  lg:h-9
+                  lg:w-9
                 "
               />
 
               <p
                 className="
-                  mt-2
-                  text-xl font-bold
+                  mt-1.5
+                  text-lg
+                  font-bold
                   text-primary
+
+                  lg:text-xl
                 "
               >
                 Fresh Vegetables
               </p>
 
-              <p className="text-sm text-text-secondary">
+              <p
+                className="
+                  text-xs
+                  text-text-secondary
+
+                  lg:text-sm
+                "
+              >
                 Direct from farm to families
               </p>
             </div>
           </div>
         )}
-      </div>
 
-      {/* Main seller content */}
-      <div className="px-4 pb-5 sm:px-6">
         <div
           className="
-            flex flex-col
-            gap-5
+            absolute
+            inset-x-0
+            bottom-0
+            h-12
+            bg-linear-to-t
+            from-black/10
+            to-transparent
 
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
+            lg:hidden
+          "
+        />
+      </div>
+
+      <div
+        className="
+          px-4
+          pb-4
+
+          sm:px-6
+          sm:pb-5
+        "
+      >
+        <div
+          className="
+            flex
+            items-start
+            gap-3
+
+            lg:gap-4
           "
         >
-          {/* Seller identity */}
           <div
             className="
-              flex items-start
-              gap-4
+              min-w-0
+              flex-1
+              pt-2.5
+
+              lg:pt-3
             "
           >
-            <div
+
+            <span
               className="
-                relative
-                -mt-10
-                h-24 w-24
-                shrink-0
-                overflow-hidden
+                inline-flex
+                items-center
+                gap-1
                 rounded-full
-                border-4
-                border-white
                 bg-primary-light
-                shadow-md
-                sm:h-28
-                sm:w-28
+                px-2
+                py-1
+                text-[10px]
+                font-bold
+                text-primary
+
+                lg:bg-primary
+                lg:px-2.5
+                lg:text-xs
+                lg:font-semibold
+                lg:text-white
               "
             >
-              {seller?.profileImage ? (
-                <Image
-                  src={seller.profileImage}
-                  alt={seller.name}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div
-                  className="
-                    flex h-full
-                    items-center
-                    justify-center
-                    text-4xl
-                  "
-                >
-                  👨‍🌾
-                </div>
-              )}
-            </div>
+              <CheckCircle2 className="h-3.5 w-3.5" />
 
-            <div className="min-w-0 pt-3">
-              <span
-                className="
-                    inline-flex
-                    items-center
-                    gap-1
-                    rounded-full
-                    bg-primary
-                    px-2.5 py-1
-                    text-xs
-                    font-semibold
-                    text-white
-                  "
-              >
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                {t("verified")}
-              </span>
+              {t("verified")}
+            </span>
+
+
+            <h1
+              className="
+                mt-1.5
+                truncate
+                text-lg
+                font-extrabold
+                leading-tight
+                text-text-primary
+
+                lg:text-base
+                lg:font-bold
+              "
+            >
+              {seller.name}
+            </h1>
+
+            {locationText && (
               <div
                 className="
-                  mt-2
-                  gap-y-1
-                "
-              >
-                <h1
-                  className="
-                  text-md
-                    font-bold
-                    text-text-primary
-                  "
-                >
-                  {seller?.name}
-                </h1>
+              mt-3
+              flex
+              items-center
+              gap-2
+              rounded-xl
+              bg-surface-muted
+              px-3
+              py-2.5
 
+              lg:bg-transparent
+              lg:p-0
+            "
+              >
+                <MapPin
+                  className="
+                h-4
+                w-4
+                shrink-0
+                text-primary
+
+                lg:text-text-secondary
+              "
+                />
+
+                <span
+                  className="
+                min-w-0
+                truncate
+                text-xs
+                font-medium
+                text-text-secondary
+
+                lg:text-sm
+                lg:font-normal
+              "
+                >
+                  {locationText}
+                </span>
+              </div>
+            )}
+
+
+            <div className="mt-1.5">
+              {ratingCount > 0 ? (
                 <div
                   className="
-                    flex items-center
-                    gap-1
+                    flex
+                    flex-wrap
+                    items-center
+                    gap-1.5
+                    text-xs
+
+                    lg:text-sm
                   "
                 >
-                  {seller.sellerRatingSummary.ratingCount > 0 ? (
-                    <div className="flex items-center gap-2">
-                      <Star
-                        className="
-                      h-5 w-5
+                  <Star
+                    className="
+                      h-4
+                      w-4
                       fill-warning
                       text-warning
+
+                      lg:h-5
+                      lg:w-5
                     "
-                      />
+                  />
 
-                      <span className="font-bold">
-                        {seller.sellerRatingSummary.averageRating.toFixed(1)}
-                      </span>
-                      <span className="h-1 w-1 bg-warning block rounded-full"></span>
-                      <span className="font-bold">
-                        {seller.sellerRatingSummary.ratingCount > 1
-                          ? `${seller.sellerRatingSummary.ratingCount} ratings`
-                          : "1 rating"}
-                      </span>
-                    </div>
-                  ) : (
-                      <span>{t("noRatingsYet")}</span>
-                  )}
+                  <span className="font-bold">{averageRating.toFixed(1)}</span>
+
+                  <span
+                    className="
+                      h-1
+                      w-1
+                      rounded-full
+                      bg-text-muted
+                    "
+                  />
+
+                  <span
+                    className="
+                      font-medium
+                      text-text-secondary
+
+                      lg:font-bold
+                      lg:text-text-primary
+                    "
+                  >
+                    {ratingCount === 1 ? "1 rating" : `${ratingCount} ratings`}
+                  </span>
                 </div>
-              </div>
-
-              {locationText && (
-                <div
+              ) : (
+                <span
                   className="
-                    mt-2
-                    flex items-center
-                    gap-1.5
-                    text-sm
+                    text-xs
                     text-text-secondary
                   "
                 >
-                  <MapPin className="h-4 w-4" />
-                  <span>{locationText}</span>
-                </div>
+                  {t("noRatingsYet")}
+                </span>
               )}
             </div>
           </div>
         </div>
 
-        {/* Actions */}
         {!seller.shopOwner && (
           <div
             className="
-            mt-5
-            grid grid-cols-[auto_1fr_1fr]
-            gap-2
-          "
+              mt-4
+              flex
+              gap-2
+              lg:mt-5
+            "
           >
             <button
               type="button"
               onClick={onSave}
+              aria-label={
+                seller.isSaved ? "Remove saved seller" : "Save seller"
+              }
               className="
-              flex min-h-12
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              border border-border
-              px-4
-              font-semibold
-              transition
-              hover:bg-surface-muted
-            "
+                flex
+                flex-1/2
+                min-h-12
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                border
+                border-border
+                bg-white
+                px-3
+                font-semibold
+                transition
+
+                active:scale-[0.98]
+
+                hover:bg-surface-muted
+
+                lg:px-4
+              "
             >
               <Bookmark
-                size={20}
-                className={`${seller.isSaved ? "fill-primary text-primary" : "text-text-secondary"} h-5 w-5`}
+                className={`
+                  h-5
+                  w-5
+
+                  ${
+                    seller.isSaved
+                      ? "fill-primary text-primary"
+                      : "text-text-secondary"
+                  }
+                `}
               />
-              <span className="hidden sm:inline">Save</span>
+
+              <span>{tc("save")}</span>
             </button>
 
-            <CallSellerButton
-              sellerId={sellerId}
-              isLoading={isLoading}
-              getCallSellerId={getCallSellerId}
-              guestCallModalOpen={() =>
-                guestCallModalOpen(sellerId, seller.name)
-              }
-            />
-            <button
-              type="button"
-              onClick={onWhatsApp}
-              className="
-              flex min-h-12
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              border border-primary
-              bg-primary-light
-              px-4
-              font-bold
-              text-primary
-              transition
-              hover:bg-primary/10
-            "
-            >
-              <MessageCircle className="h-5 w-5" />
-              WhatsApp
-            </button>
+            <div className="flex-1/2">
+              <CallSellerButton
+                sellerId={sellerId}
+                isLoading={isLoading}
+                getCallSellerId={getCallSellerId}
+                guestCallModalOpen={() =>
+                  guestCallModalOpen(sellerId, seller.name)
+                }
+              />
+            </div>
           </div>
         )}
       </div>

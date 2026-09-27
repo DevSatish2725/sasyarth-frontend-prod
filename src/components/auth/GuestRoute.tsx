@@ -1,4 +1,3 @@
-// src/components/auth/GuestRoute.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -30,8 +29,6 @@ export default function GuestRoute({ children }: GuestRouteProps) {
     );
   }
 
-  // Prevent login/register from flashing
-  // while redirecting authenticated user.
   if (user) {
     return null;
   }

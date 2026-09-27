@@ -85,7 +85,6 @@ export default function RatingModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-lg rounded-3xl bg-white shadow-xl">
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-[#e7d8b9] px-6 py-5">
           <div>
             <h2 className="text-xl font-bold text-[#17201a]">
@@ -108,7 +107,6 @@ export default function RatingModal({
         </div>
 
         <div className="space-y-6 px-6 py-6">
-          {/* Stars */}
           <div>
             <p className="mb-3 text-sm font-semibold text-[#17201a]">
               {t("howWasExperience")}
@@ -119,7 +117,6 @@ export default function RatingModal({
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
           </div>
 
-          {/* Tags */}
           <div>
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-semibold text-[#17201a]">
@@ -154,7 +151,6 @@ export default function RatingModal({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex justify-end gap-3 border-t border-[#e7d8b9] px-6 py-4">
           <button
             type="button"

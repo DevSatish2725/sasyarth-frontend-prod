@@ -1,5 +1,3 @@
-// src/components/ui/PageLoader.tsx
-
 import { LoaderCircle } from "lucide-react";
 
 interface PageLoaderProps {

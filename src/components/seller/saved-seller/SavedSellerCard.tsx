@@ -52,8 +52,6 @@ export default function SavedSellerCard({
         hover:shadow-md
       "
     >
-      {/* Header */}
-
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -74,8 +72,6 @@ export default function SavedSellerCard({
             </div>
           )}
         </div>
-
-        {/* Unsave */}
 
         <button
           type="button"
@@ -108,8 +104,6 @@ export default function SavedSellerCard({
         </button>
       </div>
 
-      {/* Rating */}
-
       <div className="mt-4">
         {seller.ratingCount > 0 ? (
           <div className="flex items-center gap-1.5 text-sm">
@@ -129,8 +123,6 @@ export default function SavedSellerCard({
         )}
       </div>
 
-      {/* Availability */}
-
       <div className="mt-5">
         {isAvailable && <AvailableSellerContent seller={seller} />}
 
@@ -138,8 +130,6 @@ export default function SavedSellerCard({
 
         {isSellerUnavailable && <UnavailableSellerContent />}
       </div>
-
-      {/* Push actions to bottom */}
 
       <div className="mt-auto pt-6">
         {isSellerUnavailable ? (

@@ -42,10 +42,6 @@ export default function SearchableLocationField({
 }: SearchableLocationFieldProps) {
   const [search, setSearch] = useState(value?.name ?? "");
 
-  console.log("search value", value);
-
-  console.log("search options", options);
-
   const [isOpen, setIsOpen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,9 +53,6 @@ export default function SearchableLocationField({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-
-        // User typed something but
-        // didn't actually select it.
         setSearch(value?.name ?? "");
       }
     };

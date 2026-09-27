@@ -10,9 +10,6 @@ import EditProfileForm from "@/components/profile/EditProfileForm";
 import ProfileField from "@/components/profile/ProfileField";
 import EditSellerLocationForm from "@/components/profile/EditSellerLocationForm";
 import { useTranslations } from "next-intl";
-// We'll create this next:
-// import EditSellerLocationForm from "@/components/profile/EditSellerLocationForm";
-
 export default function ProfilePage() {
   const { user } = useAuth();
 
@@ -34,7 +31,7 @@ export default function ProfilePage() {
   const pincode = user.location?.pincode;
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-8">
+    <main className="mx-auto w-full max-w-4xl px-4 pt-8 pb-22 lg:pt-8 lg:pb-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#17201a]">{t("title")}</h1>
 
@@ -42,12 +39,9 @@ export default function ProfilePage() {
       </div>
 
       <div className="space-y-6">
-        {/* =================================
-            PERSONAL INFORMATION
-           ================================= */}
 
         <section className="rounded-3xl border border-[#e7d8b9] bg-white p-6">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold text-[#17201a]">
                 {t("personalInformation.title")}
@@ -111,10 +105,6 @@ export default function ProfilePage() {
           )}
         </section>
 
-        {/* =================================
-            SELLER INFORMATION
-           ================================= */}
-
         {sellerProfile && (
           <>
             <section className="rounded-3xl border border-[#e7d8b9] bg-white p-6">
@@ -144,12 +134,8 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* =============================
-                SELLER LOCATION
-               ============================= */}
-
             <section className="rounded-3xl border border-[#e7d8b9] bg-white p-6">
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
                     <MapPin size={20} className="text-[#159447]" />

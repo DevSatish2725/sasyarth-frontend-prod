@@ -1,8 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowLeft, Check, LocateFixed, MapPin } from "lucide-react";
+
+import {
+  ArrowLeft,
+  Check,
+  LocateFixed,
+  MapPin,
+} from "lucide-react";
+
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import SearchableLocationField from "@/components/location/SearchableLocationField";
 
@@ -18,10 +26,16 @@ interface Option {
 interface Props {
   form: SellerOnboardingForm;
 
-  setForm: React.Dispatch<React.SetStateAction<SellerOnboardingForm>>;
+  setForm: React.Dispatch<
+    React.SetStateAction<SellerOnboardingForm>
+  >;
+
   isSubmitting: boolean;
+
   onBack: () => void;
+
   onSubmit: () => void;
+
   isSellerProfile: boolean;
 }
 
@@ -33,31 +47,49 @@ export default function SellerLocationStep({
   onSubmit,
   isSellerProfile,
 }: Props) {
-  const [stateSearch, setStateSearch] = useState(form.state?.name ?? "");
+  const t = useTranslations("BecomeSeller");
 
-  const [districtSearch, setDistrictSearch] = useState(
-    form.district?.name ?? "",
-  );
+  const [stateSearch, setStateSearch] =
+    useState(form.state?.name ?? "");
 
-  const [villageSearch, setVillageSearch] = useState(form.village?.name ?? "");
+  const [districtSearch, setDistrictSearch] =
+    useState(
+      form.district?.name ?? "",
+    );
 
-  const [geoLoading, setGeoLoading] = useState(false);
+  const [villageSearch, setVillageSearch] =
+    useState(
+      form.village?.name ?? "",
+    );
 
-  const [geoError, setGeoError] = useState("");
+  const [geoLoading, setGeoLoading] =
+    useState(false);
 
-  const { data: states = [], isLoading: statesLoading } = useQuery({
+  const [geoError, setGeoError] =
+    useState("");
+
+  const {
+    data: states = [],
+    isLoading: statesLoading,
+  } = useQuery({
     queryKey: ["locations", "states"],
 
-    queryFn: () => locationService.getStates(),
+    queryFn: () =>
+      locationService.getStates(),
 
     staleTime: 1000 * 60 * 30,
   });
 
-  const debouncedDistrictSearch = districtSearch.trim();
+  const debouncedDistrictSearch =
+    districtSearch.trim();
 
-  const debouncedVillageSearch = villageSearch.trim();
+  const debouncedVillageSearch =
+    villageSearch.trim();
 
-  const { data: districts = [], isLoading: districtsLoading } = useQuery({
+  const {
+    data: districts = [],
+    isLoading: districtsLoading,
+  } = useQuery({
     queryKey: [
       "locations",
       "districts",
@@ -72,14 +104,20 @@ export default function SellerLocationStep({
 
       return locationService.searchDistricts({
         stateId: form.state.id,
-        search: debouncedDistrictSearch,
+        search:
+          debouncedDistrictSearch,
       });
     },
 
-    enabled: Boolean(form.state) && debouncedDistrictSearch.length >= 1,
+    enabled:
+      Boolean(form.state) &&
+      debouncedDistrictSearch.length >= 1,
   });
 
-  const { data: villages = [], isLoading: villagesLoading } = useQuery({
+  const {
+    data: villages = [],
+    isLoading: villagesLoading,
+  } = useQuery({
     queryKey: [
       "locations",
       "villages",
@@ -93,41 +131,60 @@ export default function SellerLocationStep({
       }
 
       return locationService.searchVillages({
-        districtId: form.district.id,
-        search: debouncedVillageSearch,
+        districtId:
+          form.district.id,
+
+        search:
+          debouncedVillageSearch,
       });
     },
 
-    enabled: Boolean(form.district) && debouncedVillageSearch.length >= 2,
+    enabled:
+      Boolean(form.district) &&
+      debouncedVillageSearch.length >= 2,
   });
 
-  const filteredStates = useMemo(() => {
-    const search = stateSearch.trim().toLowerCase();
+  const filteredStates =
+    useMemo(() => {
+      const search = stateSearch
+        .trim()
+        .toLowerCase();
 
-    if (!search) {
-      return states;
-    }
+      if (!search) {
+        return states;
+      }
 
-    return states.filter((state: Option) =>
-      state.name.toLowerCase().includes(search),
-    );
-  }, [states, stateSearch]);
+      return states.filter(
+        (state: Option) =>
+          state.name
+            .toLowerCase()
+            .includes(search),
+      );
+    }, [states, stateSearch]);
 
-  const handleStateSelect = (state: Option) => {
+  const handleStateSelect = (
+    state: Option,
+  ) => {
     setForm((previous) => ({
       ...previous,
+
       state,
+
       district: null,
+
       village: null,
     }));
 
     setStateSearch(state.name);
 
     setDistrictSearch("");
+
     setVillageSearch("");
   };
 
-  const handleDistrictSelect = (district: Option) => {
+  const handleDistrictSelect = (
+    district: Option,
+  ) => {
     setForm((previous) => ({
       ...previous,
 
@@ -136,70 +193,98 @@ export default function SellerLocationStep({
       village: null,
     }));
 
-    setDistrictSearch(district.name);
+    setDistrictSearch(
+      district.name,
+    );
 
     setVillageSearch("");
   };
 
-  const handleVillageSelect = (village: Option) => {
+  const handleVillageSelect = (
+    village: Option,
+  ) => {
     setForm((previous) => ({
       ...previous,
+
       village,
     }));
 
-    setVillageSearch(village.name);
-  };
-
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setGeoError("Location is not supported in this browser.");
-
-      return;
-    }
-
-    setGeoLoading(true);
-    setGeoError("");
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setForm((previous) => ({
-          ...previous,
-
-          geoLocation: {
-            latitude: position.coords.latitude,
-
-            longitude: position.coords.longitude,
-          },
-        }));
-
-        setGeoLoading(false);
-      },
-
-      (error) => {
-        setGeoLoading(false);
-
-        if (error.code === error.PERMISSION_DENIED) {
-          setGeoError("Location permission was denied.");
-
-          return;
-        }
-
-        setGeoError("Unable to get your current location.");
-      },
-
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
-      },
+    setVillageSearch(
+      village.name,
     );
   };
+
+  const handleUseCurrentLocation =
+    () => {
+      if (!navigator.geolocation) {
+        setGeoError(
+          t("locationNotSupported"),
+        );
+
+        return;
+      }
+
+      setGeoLoading(true);
+
+      setGeoError("");
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setForm((previous) => ({
+            ...previous,
+
+            geoLocation: {
+              latitude:
+                position.coords
+                  .latitude,
+
+              longitude:
+                position.coords
+                  .longitude,
+            },
+          }));
+
+          setGeoLoading(false);
+        },
+
+        (error) => {
+          setGeoLoading(false);
+
+          if (
+            error.code ===
+            error.PERMISSION_DENIED
+          ) {
+            setGeoError(
+              t(
+                "locationPermissionDenied",
+              ),
+            );
+
+            return;
+          }
+
+          setGeoError(
+            t("currentLocationError"),
+          );
+        },
+
+        {
+          enableHighAccuracy: true,
+
+          timeout: 10000,
+
+          maximumAge: 60000,
+        },
+      );
+    };
 
   const isValid =
     Boolean(form.state) &&
     Boolean(form.district) &&
     Boolean(form.village) &&
-    /^\d{6}$/.test(form.pincode.trim());
+    /^\d{6}$/.test(
+      form.pincode.trim(),
+    );
 
   return (
     <>
@@ -211,7 +296,7 @@ export default function SellerLocationStep({
             text-[#17201a]
           "
         >
-          Where do you sell from?
+          {t("locationTitle")}
         </h2>
 
         <p
@@ -221,13 +306,16 @@ export default function SellerLocationStep({
             text-[#536157]
           "
         >
-          Add your location so nearby buyers can discover you.
+          {t("locationDescription")}
         </p>
       </div>
 
       <button
         type="button"
-        onClick={handleUseCurrentLocation}
+        onClick={
+          handleUseCurrentLocation
+        }
+        disabled={geoLoading}
         className="
           mt-6
           flex
@@ -244,7 +332,11 @@ export default function SellerLocationStep({
           font-semibold
           text-[#159447]
           transition
+
           hover:bg-[#dff3e5]
+
+          disabled:cursor-not-allowed
+          disabled:opacity-60
         "
       >
         {form.geoLocation ? (
@@ -253,8 +345,29 @@ export default function SellerLocationStep({
           <LocateFixed className="h-5 w-5" />
         )}
 
-        {form.geoLocation ? "Current location added" : "Use Current Location"}
+        {geoLoading
+          ? t("gettingLocation")
+          : form.geoLocation
+            ? t(
+                "currentLocationAdded",
+              )
+            : t(
+                "useCurrentLocation",
+              )}
       </button>
+
+      {geoError && (
+        <p
+          className="
+            mt-2
+            text-sm
+            font-medium
+            text-red-600
+          "
+        >
+          {geoError}
+        </p>
+      )}
 
       <div
         className="
@@ -279,7 +392,7 @@ export default function SellerLocationStep({
             text-[#7a857d]
           "
         >
-          Location details
+          {t("locationDetails")}
         </span>
 
         <div
@@ -290,48 +403,76 @@ export default function SellerLocationStep({
           "
         />
       </div>
+
       <div className="space-y-5">
         <SearchableLocationField
-          label="State *"
-          placeholder="Search state"
+          label={`${t("state")} *`}
+          placeholder={t(
+            "searchState",
+          )}
           value={form.state}
-          // search={stateSearch}
           options={filteredStates}
-          onSearchChange={setStateSearch}
-          onSelect={handleStateSelect}
+          onSearchChange={
+            setStateSearch
+          }
+          onSelect={
+            handleStateSelect
+          }
           isLoading={statesLoading}
           localSearch
         />
 
         <SearchableLocationField
-          label="District *"
-          placeholder={form.state ? "Search district" : "Select state first"}
+          label={`${t("district")} *`}
+          placeholder={
+            form.state
+              ? t("searchDistrict")
+              : t(
+                  "selectStateFirst",
+                )
+          }
           value={form.district}
-          // search={districtSearch}
           options={districts}
-          onSearchChange={setDistrictSearch}
-          onSelect={handleDistrictSelect}
+          onSearchChange={
+            setDistrictSearch
+          }
+          onSelect={
+            handleDistrictSelect
+          }
           disabled={!form.state}
-          isLoading={districtsLoading}
+          isLoading={
+            districtsLoading
+          }
           minimumSearchLength={1}
         />
 
         <SearchableLocationField
-          label="Village *"
+          label={`${t("village")} *`}
           placeholder={
-            form.district ? "Search village" : "Select district first"
+            form.district
+              ? t("searchVillage")
+              : t(
+                  "selectDistrictFirst",
+                )
           }
           value={form.village}
-          // search={villageSearch}
           options={villages}
-          onSearchChange={setVillageSearch}
-          onSelect={handleVillageSelect}
+          onSearchChange={
+            setVillageSearch
+          }
+          onSelect={
+            handleVillageSelect
+          }
           disabled={!form.district}
-          isLoading={villagesLoading}
+          isLoading={
+            villagesLoading
+          }
           minimumSearchLength={2}
         />
+
         <div>
           <label
+            htmlFor="pincode"
             className="
               mb-2
               block
@@ -340,8 +481,9 @@ export default function SellerLocationStep({
               text-[#17201a]
             "
           >
-            Pincode
+            {t("pincode")}
           </label>
+
           <div className="relative">
             <MapPin
               className="
@@ -354,22 +496,34 @@ export default function SellerLocationStep({
                 text-[#7a857d]
               "
             />
+
             <input
               id="pincode"
               inputMode="numeric"
               maxLength={6}
               value={form.pincode}
               onChange={(event) => {
-                const value = event.target.value.replace(/\D/g, "").slice(0, 6);
+                const value =
+                  event.target.value
+                    .replace(
+                      /\D/g,
+                      "",
+                    )
+                    .slice(0, 6);
 
-                setForm((previous) => ({
-                  ...previous,
-                  pincode: value,
-                }));
+                setForm(
+                  (previous) => ({
+                    ...previous,
+
+                    pincode: value,
+                  }),
+                );
               }}
-              placeholder="Enter 6-digit pincode"
+              placeholder={t(
+                "pincodePlaceholder",
+              )}
               className="
-               h-12
+                h-12
                 w-full
                 rounded-xl
                 border
@@ -380,18 +534,22 @@ export default function SellerLocationStep({
                 text-sm
                 outline-none
                 transition
+
                 focus:border-[#159447]
                 focus:ring-2
                 focus:ring-[#159447]/10
-            "
+              "
             />
           </div>
         </div>
       </div>
+
       <div
         className="
           mt-7
           flex
+          flex-col
+          lg:flex-row
           gap-3
         "
       >
@@ -401,7 +559,7 @@ export default function SellerLocationStep({
           disabled={isSubmitting}
           className="
             flex
-            h-12
+            min-h-12
             flex-1
             items-center
             justify-center
@@ -413,11 +571,16 @@ export default function SellerLocationStep({
             font-semibold
             text-[#536157]
             transition
+
             hover:bg-[#f6f8f6]
+
+            disabled:cursor-not-allowed
+            disabled:opacity-60
           "
         >
           <ArrowLeft className="h-5 w-5" />
-          Back
+
+          {t("back")}
         </button>
 
         <button
@@ -426,7 +589,7 @@ export default function SellerLocationStep({
           disabled={isSubmitting}
           className="
             flex
-            h-12
+            min-h-12
             flex-2
             items-center
             justify-center
@@ -436,16 +599,20 @@ export default function SellerLocationStep({
             font-bold
             text-white
             transition
+
             hover:bg-[#107a3a]
+
             disabled:cursor-not-allowed
             disabled:opacity-60
           "
         >
           {isSubmitting
-            ? "Applying..."
+            ? t("applying")
             : isSellerProfile
-              ? "Re-apply for Seller"
-              : "Apply for Seller"}
+              ? t(
+                  "reapplySeller",
+                )
+              : t("applySeller")}
         </button>
       </div>
     </>

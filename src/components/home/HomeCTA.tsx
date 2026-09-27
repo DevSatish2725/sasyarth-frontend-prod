@@ -11,7 +11,6 @@ export default function HomeCTA() {
 
   return (
     <section className="relative w-full overflow-hidden">
-      {/* Background image */}
       <Image
         src="/images/home/farm-landscape.webp"
         alt=""
@@ -20,17 +19,8 @@ export default function HomeCTA() {
         className="object-cover object-center"
       />
 
-      {/* 
-        Base overlay:
-        slightly softens the highly saturated landscape.
-      */}
       <div className="absolute inset-0 bg-[#fff8e9]/30" />
 
-      {/*
-        Center glow:
-        creates a calm readable area behind the heading,
-        description and buttons while preserving the landscape.
-      */}
       <div
         className="
           absolute inset-0
@@ -38,11 +28,6 @@ export default function HomeCTA() {
         "
       />
 
-      {/*
-        Vertical gradient:
-        further reduces the bright sky behind the text
-        while keeping the fields visible at the bottom.
-      */}
       <div
         className="
           absolute inset-0
@@ -53,66 +38,178 @@ export default function HomeCTA() {
         "
       />
 
-      {/* CTA content */}
       <div
         className="
-          relative z-10 mx-auto flex
-          min-h-57.5 max-w-7xl
-          items-center justify-center
-          px-5 py-8
-          sm:px-8
-          lg:min-h-62.5
+          relative z-10
+          mx-auto flex
+          min-h-[250px]
+          max-w-7xl
+          items-center
+          justify-center
+          px-4
+          py-8
+
+          sm:min-h-[260px]
+          sm:px-6
+          sm:py-10
+
+          lg:min-h-[250px]
+          lg:px-8
         "
       >
-        <div className="max-w-2xl text-center">
+        <div
+          className="
+            w-full
+            max-w-2xl
+            text-center
+          "
+        >
           <h2
             className="
-              text-2xl font-extrabold
-              leading-tight text-[#17201a]
+              mx-auto
+              max-w-[320px]
+              text-[26px]
+              font-extrabold
+              leading-[1.12]
+              tracking-tight
+              text-[#17201a]
+
+              sm:max-w-none
               sm:text-3xl
+
               lg:text-[2rem]
             "
           >
             {t("title")}
           </h2>
 
-          <p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-[#455249] sm:text-base">
+          <p
+            className="
+              mx-auto
+              mt-2.5
+              max-w-[340px]
+              text-sm
+              font-medium
+              leading-6
+              text-[#455249]
+
+              sm:max-w-xl
+              sm:text-base
+            "
+          >
             {t("description")}
           </p>
 
-          <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div
+            className="
+              mx-auto
+              mt-5
+              flex
+              w-full
+              max-w-[360px]
+              flex-col
+              gap-2.5
+
+              sm:max-w-none
+              sm:flex-row
+              sm:items-center
+              sm:justify-center
+              sm:gap-3
+            "
+          >
             <button
               type="button"
               onClick={() => router.push("/sellers")}
               className="
-                inline-flex min-h-11 min-w-37.5
-                items-center justify-center gap-2
-                rounded-lg bg-[#159447] px-6
-                text-sm font-semibold text-white
-                shadow-sm transition
+                inline-flex
+                min-h-12
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                bg-[#159447]
+                px-5
+                text-sm
+                font-bold
+                text-white
+                shadow-sm
+                transition
+                duration-200
+
+                active:scale-[0.99]
+
                 hover:bg-[#107a3a]
+
+                focus-visible:outline-none
+                focus-visible:ring-2
+                focus-visible:ring-[#159447]/30
+                focus-visible:ring-offset-2
+
+                sm:min-h-11
+                sm:w-auto
+                sm:min-w-[150px]
+                sm:rounded-lg
+                sm:px-6
+                sm:font-semibold
               "
             >
               {t("findSellers")}
-              <ArrowRight size={17} />
+
+              <ArrowRight
+                size={17}
+                className="shrink-0"
+              />
             </button>
 
             <button
               type="button"
-              onClick={() => router.push("/become-seller")}
+              onClick={() =>
+                router.push("/become-seller")
+              }
               className="
-                inline-flex min-h-11 min-w-41.25
-                items-center justify-center gap-2
-                rounded-lg border border-[#159447]
-                bg-white/90 px-6
-                text-sm font-semibold text-[#159447]
-                shadow-sm backdrop-blur-sm
+                inline-flex
+                min-h-12
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                border
+                border-[#159447]
+                bg-white/90
+                px-5
+                text-sm
+                font-bold
+                text-[#159447]
+                shadow-sm
+                backdrop-blur-sm
                 transition
+                duration-200
+
+                active:scale-[0.99]
+
                 hover:bg-[#eef8ef]
+
+                focus-visible:outline-none
+                focus-visible:ring-2
+                focus-visible:ring-[#159447]/30
+                focus-visible:ring-offset-2
+
+                sm:min-h-11
+                sm:w-auto
+                sm:min-w-[165px]
+                sm:rounded-lg
+                sm:px-6
+                sm:font-semibold
               "
             >
               {t("becomeSeller")}
-              <ArrowRight size={17} />
+
+              <ArrowRight
+                size={17}
+                className="shrink-0"
+              />
             </button>
           </div>
         </div>

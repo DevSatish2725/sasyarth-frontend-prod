@@ -5,9 +5,19 @@
     "sellerDashboard": "विक्रेता डैशबोर्ड",
     "savedSellers": "सहेजे गए विक्रेता",
     "myProfile": "मेरी प्रोफ़ाइल",
+    "sellerAccount": "विक्रेता खाता",
+    "buyerAccount": "खरीदार खाता",
     "logout": "लॉग आउट",
     "login": "लॉगिन",
-    "register": "रजिस्टर करें"
+    "register": "रजिस्टर करें",
+    "freshConnections": "ताज़ा जुड़ाव",
+    "strongerCommunities": "मज़बूत समुदाय",
+    "home": "होम",
+    "sellers": "विक्रेता",
+    "saved": "सहेजे गए",
+    "sell": "बेचें",
+    "profile": "प्रोफ़ाइल",
+    "dashboard": "डैशबोर्ड"
   },
 
   "Home": {
@@ -22,6 +32,9 @@
         "local": {
           "title": "स्थानीय विक्रेता",
           "description": "आपके आस-पास"
+        },
+        "verified": {
+          "title": "सत्यापित विक्रेता"
         },
         "availability": {
           "title": "आज की उपलब्धता",
@@ -69,7 +82,7 @@
     },
 
     "howItWorks": {
-      "title": "GreenBridge कैसे काम करता है",
+      "title": "Sasyarth कैसे काम करता है",
       "subtitle": "खरीदारों और विक्रेताओं को जोड़ने के आसान चरण",
       "buyerTab": "खरीदारों के लिए",
       "sellerTab": "विक्रेताओं के लिए",
@@ -122,7 +135,7 @@
     },
 
     "why": {
-      "title": "GreenBridge क्यों?",
+      "title": "Sasyarth क्यों?",
       "subtitle": "स्थानीय खरीदारों और विक्रेताओं को जोड़ने का आसान तरीका।",
       "local": {
         "title": "स्थानीय खोज",
@@ -157,43 +170,64 @@
       "becomeSeller": "विक्रेता बनें"
     }
   },
-
   "Login": {
-    "title": "मोबाइल नंबर से लॉग इन करें",
-    "subtitle": "अपने मोबाइल नंबर से लॉग इन करें",
-    "sendOtpError": "OTP भेजने में समस्या हुई।",
-    "somethingWentWrong": "कुछ समस्या हुई।",
-    "invalidMobileNumber": "कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें।",
+    "welcomeBack": "वापसी पर स्वागत है",
+    "title": "Sasyarth में लॉगिन करें",
+    "subtitle": "अपने मोबाइल नंबर से लॉगिन करें",
+    "description": "विश्वसनीय किसानों से जुड़ें और ताज़ी उपज सीधे प्राप्त करें।",
+
     "mobileNumber": "मोबाइल नंबर",
     "mobilePlaceholder": "अपना मोबाइल नंबर दर्ज करें",
-    "login": "लॉगिन",
-    "otpHint": "हम इस नंबर पर OTP भेजेंगे।",
+    "invalidMobileNumber": "कृपया 6, 7, 8 या 9 से शुरू होने वाला वैध 10 अंकों का मोबाइल नंबर दर्ज करें।",
+
+    "otpHint": "हम इस नंबर पर 6 अंकों का OTP भेजेंगे।",
     "sendOtp": "OTP भेजें",
     "sendingOtp": "OTP भेजा जा रहा है...",
-    "noAccount": "क्या आपका खाता नहीं है?",
-    "register": "रजिस्टर करें",
+    "sendOtpError": "OTP भेजा नहीं जा सका। कृपया पुनः प्रयास करें।",
+    "somethingWentWrong": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+
+    "login": "लॉगिन",
+    "noAccount": "अभी तक खाता नहीं है?",
+    "register": "पंजीकरण करें",
+    "or": "या",
+
     "verifyLoginOtp": "लॉगिन OTP सत्यापित करें",
     "invalidOtp": "OTP सही नहीं है।",
     "enterSixDigitOtp": "कृपया 6 अंकों का OTP दर्ज करें।",
     "otpSent": "OTP भेज दिया गया है",
     "sixDigitOtp": "6 अंकों का OTP",
-    "verifying": "जाँच की जा रही है...",
+    "verifying": "सत्यापन किया जा रहा है...",
     "verify": "सत्यापित करें",
-    "resendOtp": "OTP दोबारा भेजें"
+    "resendOtp": "OTP दोबारा भेजें",
+    "resendOtpFailed": "OTP दोबारा भेजा नहीं जा सका।",
+    "otpExpired": "OTP की समय सीमा समाप्त हो गई है। कृपया नया OTP प्राप्त करें।",
+    "otpValidity": "OTP की वैधता",
+
+    "secureLoginMessage": "आपकी जानकारी हमारे साथ सुरक्षित है।"
   },
 
   "Register": {
-    "title": "अपना GreenBridge खाता बनाएँ",
+    "welcome": "Sasyarth में आपका स्वागत है",
+    "description": "विश्वसनीय किसानों और खरीदारों से जुड़ने के लिए अपना खाता बनाएं।",
+    "or": "या",
+    "title": "अपना खाता बनाएँ",
     "mobileNumber": "मोबाइल नंबर",
     "mobilePlaceholder": "अपना मोबाइल नंबर दर्ज करें",
     "otpHint": "हम आपके मोबाइल नंबर को सत्यापित करने के लिए OTP भेजेंगे।",
     "sendOtp": "OTP भेजें",
     "sendingOtp": "OTP भेजा जा रहा है...",
     "alreadyHaveAccount": "पहले से खाता है?",
+    "mobileVerificationInfo": "आपके मोबाइल नंबर का उपयोग केवल आपके अकाउंट की पुष्टि और सुरक्षित लॉगिन के लिए किया जाता है।",
     "login": "लॉगिन करें",
     "invalidMobileNumber": "कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें।",
     "sendOtpError": "OTP भेजने में समस्या हुई।",
     "somethingWentWrong": "कुछ समस्या हुई।",
+
+    "completeProfile": "अपना प्रोफ़ाइल पूरा करें",
+    "verifyMobileNumber": "मोबाइल नंबर सत्यापित करें",
+    "enterOtpDescription": "आपके मोबाइल पर भेजा गया 6 अंकों का OTP दर्ज करें।",
+    "otpSent": "OTP भेज दिया गया है",
+    "resendOtp": "OTP दोबारा भेजें",
 
     "createAccountError": "खाता बनाने में समस्या हुई।",
     "fullNameRequired": "कृपया अपना पूरा नाम दर्ज करें।",
@@ -202,7 +236,12 @@
     "fullNamePlaceholder": "अपना पूरा नाम दर्ज करें",
     "continue": "आगे बढ़ें",
     "creatingAccount": "आपका खाता बनाया जा रहा है...",
-    "preferredLanguage": "पसंदीदा भाषा"
+    "preferredLanguage": "पसंदीदा भाषा",
+
+    "almostDone": "बस एक कदम और",
+    "completeProfileDescription": "अपना खाता पूरा करने के लिए अपना नाम और पसंदीदा भाषा चुनें।",
+    "languageHint": "आप इसे बाद में अपनी प्रोफ़ाइल सेटिंग से बदल सकते हैं।",
+    "profileInfoMessage": "आप अपनी प्रोफ़ाइल की जानकारी कभी भी बदल सकते हैं।"
   },
 
   "SellerDashboard": {
@@ -276,6 +315,7 @@
     "vegetables": "सब्ज़ियाँ",
     "saveChanges": "बदलाव सेव करें",
     "updateLiveInventory": "लाइव उपलब्धता अपडेट करें",
+    "publishedInventoryHint": "आपकी इन्वेंटरी लाइव है और खरीदारों को दिखाई दे रही है।",
 
     "empty": {
       "title": "आज की उपलब्धता अभी नहीं जोड़ी गई है",
@@ -290,6 +330,9 @@
   "FindSellers": {
     "title": "सब्ज़ी बेचने वालों को खोजें",
     "subtitle": "अपने आस-पास सब्ज़ी बेचने वालों को खोजें",
+    "filters": "खोज फ़िल्टर",
+    "dailyFresh": "रोज़ ताज़ा",
+    "vegetablesMarket": "सब्ज़ी बाज़ार",
 
     "location": {
       "title": "अपने आस-पास विक्रेता खोजें",
@@ -327,6 +370,12 @@
 
     "searchingIn": "यहाँ खोज रहे हैं:",
 
+    "findingSellers": "विक्रेताओं को खोजा जा रहा है",
+    "foundIn": "यहाँ मिले",
+    "allLocations": "सभी स्थान",
+    "allSellers": "सभी विक्रेता",
+    "showingAllAvailableVegetables": "सभी उपलब्ध सब्ज़ियाँ दिखाई जा रही हैं",
+
     "vegetables": {
       "title": "आपको क्या चाहिए?",
       "description": "विक्रेता खोजने के लिए एक या अधिक सब्ज़ियाँ चुनें।",
@@ -346,7 +395,14 @@
       "distanceAway": "{distance} किमी दूर",
       "noRatingsYet": "रेटिंग नहीं है",
       "more": "{count} और",
-      "gettingCallDetails": "कॉल की जानकारी प्राप्त की जा रही है..."
+      "gettingCallDetails": "कॉल की जानकारी प्राप्त की जा रही है...",
+      "empty": {
+        "title": "कोई विक्रेता नहीं मिला",
+        "description": "आपके चुने हुए स्थान और सब्ज़ी फ़िल्टर के अनुसार कोई विक्रेता नहीं मिला।",
+        "tipTitle": "यह कोशिश करें",
+        "tip": "अपना स्थान बदलें, कुछ सब्ज़ी फ़िल्टर हटाएँ या नज़दीकी क्षेत्र में खोजें।",
+        "adjustFilters": "खोज बदलें"
+      }
     },
 
     "results": {
@@ -354,7 +410,11 @@
       "noSellers": "कोई विक्रेता नहीं मिला।",
       "tryDifferentLocation": "कोई दूसरा स्थान चुनें या सब्ज़ियों के फ़िल्टर बदलकर देखें।",
       "sellerCount": "{count} विक्रेता मिले",
-      "trustedSellers": "विश्वसनीय विक्रेता"
+      "sellerCounts": "{count} विक्रेता मिले",
+      "trustedSellers": "विश्वसनीय विक्रेता",
+      "seller": "{count} विक्रेता",
+      "sellers": "{count} विक्रेता",
+      "trustedLocalSellers": "विश्वसनीय स्थानीय विक्रेता"
     }
   },
 
@@ -373,6 +433,72 @@
     "contactAvailableAfterLogin": "संपर्क जानकारी केवल लॉग इन करने के बाद उपलब्ध होगी।",
     "loginToCall": "कॉल करने के लिए लॉग इन करें",
     "notNow": "अभी नहीं"
+  },
+
+  "BecomeSeller": {
+    "completeRequiredFields": "कृपया सभी आवश्यक फ़ील्ड भरें।",
+    "profileCreatedRefreshFailed": "विक्रेता प्रोफ़ाइल बन गई है, लेकिन खाता रीफ़्रेश नहीं हो सका।",
+    "somethingWentWrong": "कुछ गलत हो गया।",
+    "selectBusinessTypeError": "कृपया अपना व्यवसाय प्रकार चुनें।",
+    "selectCompleteLocationError": "कृपया अपना पूरा स्थान चुनें।",
+    "invalidPincodeError": "कृपया वैध 6 अंकों का पिनकोड दर्ज करें।",
+
+    "title": "विक्रेता बनें",
+    "subtitle": "अपने आस-पास के खरीदारों को अपनी ताज़ी उपज बेचना शुरू करें।",
+
+    "sellerDetails": "विक्रेता विवरण",
+    "location": "स्थान",
+
+    "continue": "आगे बढ़ें",
+
+    "whySellTitle": "Sasyarth पर क्यों बेचें?",
+    "reachMoreBuyers": "अधिक खरीदारों तक पहुँचें",
+    "getBetterPrice": "बेहतर कीमत पाएँ",
+    "connectDirectly": "सीधे जुड़ें",
+    "growYourBusiness": "अपना व्यवसाय बढ़ाएँ",
+    "supportLocalCommunities": "स्थानीय समुदायों का समर्थन करें",
+    "communityMessage": "मजबूत किसान समुदाय के लिए साथ मिलकर आगे बढ़ें",
+
+    "aboutTitle": "हमें अपने बारे में बताएं",
+    "aboutDescription": "वह विकल्प चुनें जो आपके व्यवसाय का सबसे सही वर्णन करता है।",
+
+    "businessTypes": {
+      "farmer": "मैं अपनी उपज खुद उगाता और बेचता हूँ",
+      "fpo": "किसान उत्पादक संगठन",
+      "trader": "मैं उपज खरीदता और बेचता हूँ",
+      "wholesaler": "मैं उपज थोक में बेचता हूँ"
+    },
+
+    "locationNotSupported": "यह ब्राउज़र स्थान सुविधा का समर्थन नहीं करता।",
+    "locationPermissionDenied": "स्थान की अनुमति नहीं दी गई।",
+    "currentLocationError": "आपका वर्तमान स्थान प्राप्त नहीं किया जा सका।",
+
+    "locationTitle": "आप कहाँ से बेचते हैं?",
+    "locationDescription": "अपना स्थान जोड़ें ताकि आस-पास के खरीदार आपको खोज सकें।",
+
+    "currentLocationAdded": "वर्तमान स्थान जोड़ दिया गया है",
+    "useCurrentLocation": "वर्तमान स्थान का उपयोग करें",
+
+    "locationDetails": "स्थान विवरण",
+
+    "state": "राज्य",
+    "searchState": "राज्य खोजें",
+
+    "district": "जिला",
+    "searchDistrict": "जिला खोजें",
+    "selectStateFirst": "पहले राज्य चुनें",
+
+    "village": "गाँव",
+    "searchVillage": "गाँव खोजें",
+    "selectDistrictFirst": "पहले जिला चुनें",
+
+    "pincode": "पिनकोड",
+    "pincodePlaceholder": "6 अंकों का पिनकोड दर्ज करें",
+
+    "back": "वापस",
+    "applying": "आवेदन किया जा रहा है...",
+    "reapplySeller": "विक्रेता के लिए दोबारा आवेदन करें",
+    "applySeller": "विक्रेता के लिए आवेदन करें"
   },
 
   "SellerApplication": {

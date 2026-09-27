@@ -108,7 +108,7 @@ export default function CreateInventoryForm({
         </p>
       </div>
 
-      <div className="mt-6 space-y-5">
+      <div className="mt-6 flex flex-wrap gap-6">
         {items.map((item, index) => (
           <InventoryItemRow
             key={item.id}

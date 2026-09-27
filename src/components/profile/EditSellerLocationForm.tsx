@@ -391,8 +391,6 @@ export default function EditSellerLocationForm({
 
   return (
     <form onSubmit={handleSubmit} className="mt-6">
-      {/* Current Location */}
-
       {user.location && (
         <div
           className="
@@ -442,11 +440,7 @@ export default function EditSellerLocationForm({
         </div>
       )}
 
-      {/* New location */}
-
       <div className="space-y-5">
-        {/* State */}
-
         <SearchableLocationField
           key={`state-${selectedState?.id ?? "empty"}`}
           label={t("sellerLocation.state")}
@@ -458,8 +452,6 @@ export default function EditSellerLocationForm({
           isLoading={statesQuery.isLoading}
           localSearch
         />
-
-        {/* District */}
 
         <SearchableLocationField
           key={`district-${selectedState?.id ?? "empty"}-${selectedDistrict?.id ?? "empty"}`}
@@ -478,8 +470,6 @@ export default function EditSellerLocationForm({
           minimumSearchLength={2}
         />
 
-        {/* Village */}
-
         <SearchableLocationField
           key={`village-${selectedDistrict?.id ?? "empty"}-${selectedVillage?.id ?? "empty"}`}
           label={t("sellerLocation.village")}
@@ -496,8 +486,6 @@ export default function EditSellerLocationForm({
           isLoading={villagesQuery.isFetching}
           minimumSearchLength={2}
         />
-
-        {/* Pincode */}
 
         <div>
           <label
@@ -544,8 +532,6 @@ export default function EditSellerLocationForm({
             "
           />
         </div>
-
-        {/* Precise coordinates */}
 
         <div
           className="
@@ -660,8 +646,6 @@ export default function EditSellerLocationForm({
           )}
         </div>
 
-        {/* Validation error */}
-
         {locationError && (
           <p
             className="
@@ -675,12 +659,12 @@ export default function EditSellerLocationForm({
         )}
       </div>
 
-      {/* Actions */}
-
       <div
         className="
           mt-6
           flex
+          flex-col
+          lg:flex-row
           justify-end
           gap-3
         "

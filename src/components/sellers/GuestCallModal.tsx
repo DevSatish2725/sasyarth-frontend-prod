@@ -19,7 +19,8 @@ export default function GuestCallModal({
     <div
       className="
         fixed inset-0 z-50
-        flex items-center justify-center
+        flex items-end justify-center
+sm:items-center
         bg-black/40
         px-4
         backdrop-blur-[2px]
@@ -32,17 +33,22 @@ export default function GuestCallModal({
         aria-labelledby="guest-call-title"
         onClick={(event) => event.stopPropagation()}
         className="
-          relative
-          w-full max-w-sm
-          rounded-2xl
-          border border-border
-          bg-surface
-          p-5
-          shadow-xl
-        "
-      >
-        {/* Close */}
+    relative
+    w-full
+    rounded-t-[28px]
+    border
+    border-border
+    bg-surface
+    px-5
+    pb-[calc(20px+env(safe-area-inset-bottom))]
+    pt-3
+    shadow-2xl
 
+    sm:max-w-sm
+    sm:rounded-2xl
+    sm:p-5
+  "
+      >
         <button
           type="button"
           onClick={onClose}
@@ -61,7 +67,24 @@ export default function GuestCallModal({
           <X className="h-5 w-5" />
         </button>
 
-        {/* Icon */}
+        <div
+          className="
+    mb-3
+    flex
+    justify-center
+
+    sm:hidden
+  "
+        >
+          <span
+            className="
+      h-1
+      w-10
+      rounded-full
+      bg-border
+    "
+          />
+        </div>
 
         <div
           className="
@@ -75,8 +98,6 @@ export default function GuestCallModal({
         >
           <Phone className="h-6 w-6" />
         </div>
-
-        {/* Content */}
 
         <div className="mt-4 text-center">
           <h2
@@ -108,8 +129,6 @@ export default function GuestCallModal({
             .
           </p>
         </div>
-
-        {/* Trust message */}
 
         <div
           className="
@@ -149,8 +168,6 @@ export default function GuestCallModal({
           </div>
         </div>
 
-        {/* Primary action */}
-
         <button
           type="button"
           onClick={onLogin}
@@ -171,8 +188,6 @@ export default function GuestCallModal({
           <LogIn className="h-5 w-5" />
           {t("loginToCall")}
         </button>
-
-        {/* Secondary action */}
 
         <button
           type="button"

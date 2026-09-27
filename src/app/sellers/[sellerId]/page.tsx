@@ -149,41 +149,60 @@ export default function SellerShopPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background pb-10">
+    <main
+      className="
+      min-h-screen
+      bg-background
+      pb-[calc(80px+env(safe-area-inset-bottom))]
+
+      lg:pb-10
+    "
+    >
       <div
         className="
-      mx-auto
-      w-full
-      max-w-7xl
-      px-3
-      py-4
-      sm:px-5
-      lg:px-6
-    "
+        mx-auto
+        w-full
+        max-w-7xl
+        px-3
+        py-3
+
+        sm:px-5
+        sm:py-4
+
+        lg:px-6
+      "
       >
         <div
           className="
-        grid
-        grid-cols-1
-        gap-5
+          grid
+          grid-cols-1
+          gap-4
 
-        lg:grid-cols-[420px_minmax(0,1fr)]
-        xl:grid-cols-[460px_minmax(0,1fr)]
-      "
+          lg:grid-cols-[420px_minmax(0,1fr)]
+          lg:gap-5
+
+          xl:grid-cols-[460px_minmax(0,1fr)]
+        "
         >
-          {/* LEFT COLUMN */}
-          <div className="space-y-5">
+
+          <div className="space-y-4 lg:space-y-5">
             <SellerShopHeader
               seller={{
                 name: seller.seller.name ?? "",
+
                 location: {
                   ...seller.seller.location,
                 },
+
                 isSaved: savedSellerIds.has(sellerId),
+
                 shopOwner: seller.seller.shopOwner,
+
                 sellerRatingSummary: {
                   averageRating: ratingSummaryQuery.data!.averageRating,
+
                   ratingCount: ratingSummaryQuery.data!.ratingCount,
+
                   tagCounts: ratingSummaryQuery.data!.tagCounts,
                 },
               }}
@@ -191,90 +210,109 @@ export default function SellerShopPage() {
               isLoading={callSellerData.isFetching}
               getCallSellerId={getCallSellerId}
               guestCallModalOpen={guestCallModalOpen}
-              onSave={() => {
-                handleSaveToggle();
-              }}
-              onWhatsApp={() => {
-                console.log("whatsapp");
-              }}
+              onSave={handleSaveToggle}
             />
 
-            {/* Reviews desktop only */}
             <div className="hidden lg:block">
               <SellerRatingSection
                 sellerId={sellerId}
                 isLoggedIn={Boolean(user)}
+                shopOwner={seller.seller.shopOwner}
                 sellerRatingSummary={{
                   averageRating: ratingSummaryQuery.data!.averageRating,
+
                   ratingCount: ratingSummaryQuery.data!.ratingCount,
+
                   tagCounts: ratingSummaryQuery.data!.tagCounts,
+
                   isLoading: ratingSummaryQuery.isLoading,
+
                   isError: ratingSummaryQuery.isError,
                 }}
               />
             </div>
           </div>
 
-          {/* RIGHT COLUMN */}
           <section id="vegetables">
             <div
               className="
-            rounded-2xl
-            border border-border
-            bg-white
-            p-4
-            shadow-sm
-            sm:p-5
-          "
+              overflow-hidden
+              rounded-2xl
+              border
+              border-border
+              bg-white
+              shadow-sm
+
+              lg:p-5
+            "
             >
+
               <div
                 className="
-              flex
-              flex-col
-              gap-3
+                flex
+                lg:justify-between
+                lg:items-start
+                lg:flex-row
+                flex-col
+                px-4
+                pb-3
+                pt-4
 
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-            "
+                lg:p-0
+              "
               >
-                <div className="flex items-center gap-3">
+                <div
+                  className="
+                  flex
+                  items-center
+                  gap-3
+                "
+                >
                   <div
                     className="
-                  flex h-10 w-10
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-primary-light
-                "
-                  >
-                    <Leaf
-                      className="
-                    h-5 w-5
+                    flex
+                    h-10
+                    w-10
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-primary-light
                     text-primary
+
+                    lg:rounded-full
                   "
-                    />
+                  >
+                    <Leaf className="h-5 w-5" />
                   </div>
 
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h2
                       className="
-                    text-xl
-                    font-bold
-                    text-text-primary
-                  "
+                      text-lg
+                      font-extrabold
+                      text-text-primary
+
+                      lg:text-xl
+                      lg:font-bold
+                    "
                     >
                       {t("availableToday")}
                     </h2>
 
                     <p
                       className="
-                    text-sm
-                    text-text-secondary
-                  "
+                      mt-0.5
+                      text-xs
+                      text-text-secondary
+
+                      lg:text-sm
+                    "
                     >
                       {seller.inventory.items.length === 1
-                        ? t("vegetableAvailableToday", { count: 1 })
+                        ? t("vegetableAvailableToday", {
+                            count: 1,
+                          })
                         : t("vegetablesAvailableToday", {
                             count: seller.inventory.items.length,
                           })}
@@ -282,22 +320,24 @@ export default function SellerShopPage() {
                   </div>
                 </div>
 
+
                 <div
                   className="
-                relative
-                w-full
-                sm:max-w-xs
-              "
+                  relative                  w-full
+
+                  lg:max-w-xs
+                "
                 >
                   <Search
                     className="
-                  absolute
-                  left-3
-                  top-1/2
-                  h-4 w-4
-                  -translate-y-1/2
-                  text-text-muted
-                "
+                    absolute
+                    left-3
+                    top-1/2
+                    h-4
+                    w-4
+                    -translate-y-1/2
+                    text-text-muted
+                  "
                   />
 
                   <input
@@ -306,34 +346,51 @@ export default function SellerShopPage() {
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder={t("searchInShop")}
                     className="
-                  h-11
-                  w-full
-                  rounded-xl
-                  border border-border
-                  bg-white
-                  pl-10
-                  pr-3
-                  text-sm
-                  outline-none
+                    h-12
+                    w-full
+                    rounded-xl
+                    border
+                    border-border
+                    bg-surface-muted/40
+                    pl-10
+                    pr-3
+                    text-sm
+                    outline-none
+                    transition
 
-                  focus:border-primary
-                  focus:ring-2
-                  focus:ring-primary/10
-                "
+                    focus:border-primary
+                    focus:bg-white
+                    focus:ring-2
+                    focus:ring-primary/10
+
+                    lg:h-11
+                    lg:bg-white
+                  "
                   />
                 </div>
               </div>
 
+
               <div
                 className="
-              mt-4
-              grid
-              grid-cols-1
-              gap-3
+                grid
+                grid-cols-1
+                gap-2.5
+                border-t
+                border-border/70
+                bg-surface-muted/30
+                p-3
 
-              sm:grid-cols-2
-              xl:grid-cols-3
-            "
+                sm:grid-cols-2
+
+                lg:mt-4
+                lg:gap-3
+                lg:border-0
+                lg:bg-transparent
+                lg:p-0
+
+                xl:grid-cols-3
+              "
               >
                 {filteredVegetables?.map((vegetable) => (
                   <VegetableCard key={vegetable.itemId} vegetable={vegetable} />
@@ -343,23 +400,49 @@ export default function SellerShopPage() {
               {filteredVegetables?.length === 0 && (
                 <div
                   className="
-                mt-5
-                rounded-xl
-                bg-surface-muted
-                p-8
-                text-center
-              "
+                  m-4
+                  rounded-2xl
+                  bg-surface-muted
+                  px-5
+                  py-8
+                  text-center
+
+                  lg:m-0
+                  lg:mt-5
+                "
                 >
-                  <p className="font-bold text-text-primary">
+                  <div
+                    className="
+                    mx-auto
+                    flex
+                    h-12
+                    w-12
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-primary-light
+                    text-primary
+                  "
+                  >
+                    <Search className="h-5 w-5" />
+                  </div>
+
+                  <p
+                    className="
+                    mt-3
+                    font-bold
+                    text-text-primary
+                  "
+                  >
                     No vegetables found
                   </p>
 
                   <p
                     className="
-                  mt-1
-                  text-sm
-                  text-text-secondary
-                "
+                    mt-1
+                    text-sm
+                    text-text-secondary
+                  "
                   >
                     Try searching another vegetable.
                   </p>
@@ -369,14 +452,26 @@ export default function SellerShopPage() {
           </section>
         </div>
 
-        {/* Reviews mobile/tablet */}
-        <div className="mt-5 lg:hidden">
-          {/* <SellerReviews
-            reviews={seller.reviews}
-            totalReviews={seller.reputation.totalReviews}
-          /> */}
+        <div className="mt-4 lg:hidden">
+          <SellerRatingSection
+            sellerId={sellerId}
+            isLoggedIn={Boolean(user)}
+            shopOwner={seller.seller.shopOwner}
+            sellerRatingSummary={{
+              averageRating: ratingSummaryQuery.data!.averageRating,
+
+              ratingCount: ratingSummaryQuery.data!.ratingCount,
+
+              tagCounts: ratingSummaryQuery.data!.tagCounts,
+
+              isLoading: ratingSummaryQuery.isLoading,
+
+              isError: ratingSummaryQuery.isError,
+            }}
+          />
         </div>
       </div>
+
       {callSellerId ? (
         <CallSellerCard
           sellerName={callSellerData?.data?.data.fullName}
@@ -384,13 +479,16 @@ export default function SellerShopPage() {
           onClose={() => setCallSellerId(null)}
         />
       ) : null}
+
       {selectedSeller ? (
         <GuestCallModal
           sellerName={selectedSeller.sellerName}
           onClose={guestCallModalClose}
           onLogin={() => {
             router.push(
-              `/login?returnTo=${encodeURIComponent(`/sellers/${sellerId}/shop`)}`,
+              `/login?returnTo=${encodeURIComponent(
+                `/sellers/${sellerId}/shop`,
+              )}`,
             );
           }}
         />

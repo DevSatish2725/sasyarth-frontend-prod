@@ -1,7 +1,3 @@
-// types/vegetable.ts
-
-import type { UnitType } from "./inventory.types";
-
 export interface VegetableDisplayNames {
   en: string;
   hi: string;

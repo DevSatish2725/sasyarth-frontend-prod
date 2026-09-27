@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import SellerDetailsStep from "./SellerDetailsStep";
 import SellerLocationStep from "./SellerLocationStep";
@@ -10,6 +11,7 @@ import SellerLocationStep from "./SellerLocationStep";
 import { sellerService } from "@/services/seller.service";
 import { useAuth } from "@/providers/AuthProvider";
 import { API_ERROR } from "@/lib/axios";
+
 import { toast } from "sonner";
 
 export type BusinessType =
@@ -25,6 +27,7 @@ export interface LocationOption {
 
 export interface SellerOnboardingForm {
   businessType: BusinessType | "";
+
   state: LocationOption | null;
   district: LocationOption | null;
   village: LocationOption | null;
@@ -54,6 +57,8 @@ export default function BecomeSellerForm() {
 
   const { user, getUserProfile } = useAuth();
 
+  const t = useTranslations("BecomeSeller");
+
   const [step, setStep] = useState<1 | 2>(1);
 
   const [form, setForm] = useState<SellerOnboardingForm>(initialForm);
@@ -69,25 +74,26 @@ export default function BecomeSellerForm() {
         !form.village ||
         !form.pincode
       ) {
-        throw new Error("Please complete all required fields.");
+        throw new Error(t("completeRequiredFields"));
       }
 
       const payload = {
         businessType: form.businessType,
-
-        // Temporary until document upload/S3
-        // is implemented.
         documents: [
           {
             type: "PAN",
+
             url: "https://pan-card.jpg",
           },
         ],
 
         location: {
           stateId: form.state.id,
+
           districtId: form.district.id,
+
           villageId: form.village.id,
+
           pincode: form.pincode,
         },
 
@@ -114,14 +120,14 @@ export default function BecomeSellerForm() {
     onSuccess: async () => {
       /*
        * SellerProfile has now been created
-       * in backend, but AuthProvider still
-       * contains the previous user with
-       * sellerProfile: null.
+       * in backend, but AuthProvider can still
+       * contain the previous user state.
        */
+
       const currentUser = await getUserProfile();
 
       if (!currentUser?.sellerProfile) {
-        setError("Seller profile created but account could not be refreshed.");
+        setError(t("profileCreatedRefreshFailed"));
 
         return;
       }
@@ -130,7 +136,7 @@ export default function BecomeSellerForm() {
     },
 
     onError: (error: API_ERROR) => {
-      toast.error(error.response?.data.message ?? "Something went wrong.");
+      toast.error(error.response?.data?.message ?? t("somethingWentWrong"));
     },
   });
 
@@ -138,7 +144,7 @@ export default function BecomeSellerForm() {
     setError("");
 
     if (!form.businessType) {
-      setError("Please select your business type.");
+      setError(t("selectBusinessTypeError"));
 
       return;
     }
@@ -150,13 +156,13 @@ export default function BecomeSellerForm() {
     setError("");
 
     if (!form.state || !form.district || !form.village) {
-      setError("Please select your complete location.");
+      setError(t("selectCompleteLocationError"));
 
       return;
     }
 
     if (!/^\d{6}$/.test(form.pincode)) {
-      setError("Please enter a valid 6 digit pincode.");
+      setError(t("invalidPincodeError"));
 
       return;
     }
@@ -170,8 +176,10 @@ export default function BecomeSellerForm() {
         min-h-[calc(100vh-72px)]
         bg-[#fffaf0]
         px-4
-        py-8
+        pt-8 pb-22 lg:pt-8 lg:pb-8
+
         sm:px-6
+
         lg:px-8
       "
     >
@@ -181,7 +189,6 @@ export default function BecomeSellerForm() {
           max-w-6xl
         "
       >
-        {/* Heading */}
         <div className="text-center">
           <h1
             className="
@@ -189,10 +196,11 @@ export default function BecomeSellerForm() {
               font-extrabold
               tracking-tight
               text-[#17201a]
+
               sm:text-4xl
             "
           >
-            Become a Seller
+            {t("title")}
           </h1>
 
           <p
@@ -200,14 +208,14 @@ export default function BecomeSellerForm() {
               mt-2
               text-sm
               text-[#536157]
+
               sm:text-base
             "
           >
-            Start selling your fresh produce to buyers near you
+            {t("subtitle")}
           </p>
         </div>
 
-        {/* Stepper */}
         <SellerStepper step={step} />
 
         <div
@@ -215,10 +223,10 @@ export default function BecomeSellerForm() {
             mt-8
             grid
             gap-8
+
             lg:grid-cols-[minmax(0,1fr)_300px]
           "
         >
-          {/* Form */}
           <section
             className="
               rounded-2xl
@@ -227,9 +235,28 @@ export default function BecomeSellerForm() {
               bg-white
               p-5
               shadow-sm
+
               sm:p-7
             "
           >
+            {error && (
+              <div
+                className="
+                  mb-4
+                  rounded-xl
+                  border
+                  border-red-200
+                  bg-red-50
+                  px-4
+                  py-3
+                  text-sm
+                  text-red-700
+                "
+              >
+                {error}
+              </div>
+            )}
+
             {step === 1 ? (
               <SellerDetailsStep
                 form={form}
@@ -241,14 +268,13 @@ export default function BecomeSellerForm() {
                 form={form}
                 setForm={setForm}
                 onBack={() => setStep(1)}
-                  onSubmit={handleSubmit}
-                  isSellerProfile={Boolean(user?.sellerProfile)}
+                onSubmit={handleSubmit}
+                isSellerProfile={Boolean(user?.sellerProfile)}
                 isSubmitting={applyForSellerMutation.isPending}
               />
             )}
           </section>
 
-          {/* Benefits */}
           <SellerBenefits />
         </div>
       </div>
@@ -257,6 +283,8 @@ export default function BecomeSellerForm() {
 }
 
 function SellerStepper({ step }: { step: 1 | 2 }) {
+  const t = useTranslations("BecomeSeller");
+
   return (
     <div
       className="
@@ -268,7 +296,14 @@ function SellerStepper({ step }: { step: 1 | 2 }) {
         justify-center
       "
     >
-      <div className="flex flex-col items-center">
+      <div
+        className="
+          flex
+          flex-col
+          items-center
+          w-20
+        "
+      >
         <div
           className="
             flex
@@ -293,22 +328,30 @@ function SellerStepper({ step }: { step: 1 | 2 }) {
             text-[#159447]
           "
         >
-          Seller Details
+          {t("sellerDetails")}
         </span>
       </div>
 
       <div
         className={`
           mt-5
-          h-[2px]
+          h-0.5
           w-20
+
           sm:w-28
 
           ${step === 2 ? "bg-[#159447]" : "bg-[#d9dedb]"}
         `}
       />
 
-      <div className="flex flex-col items-center">
+      <div
+        className="
+          flex
+          flex-col
+          items-center
+          w-20
+        "
+      >
         <div
           className={`
             flex
@@ -338,7 +381,7 @@ function SellerStepper({ step }: { step: 1 | 2 }) {
             ${step === 2 ? "text-[#159447]" : "text-[#536157]"}
           `}
         >
-          Location
+          {t("location")}
         </span>
       </div>
     </div>
@@ -346,6 +389,8 @@ function SellerStepper({ step }: { step: 1 | 2 }) {
 }
 
 function SellerBenefits() {
+  const t = useTranslations("BecomeSeller");
+
   return (
     <aside
       className="
@@ -355,6 +400,7 @@ function SellerBenefits() {
         border-[#e7d8b9]
         bg-white
         p-6
+
         lg:sticky
         lg:top-24
       "
@@ -381,7 +427,7 @@ function SellerBenefits() {
           text-[#17201a]
         "
       >
-        Why sell on GreenBridge?
+        {t("whySellTitle")}
       </h2>
 
       <div
@@ -390,15 +436,15 @@ function SellerBenefits() {
           space-y-4
         "
       >
-        <Benefit>🌱 Reach more buyers</Benefit>
+        <Benefit>🌱 {t("reachMoreBuyers")}</Benefit>
 
-        <Benefit>₹ Get better price</Benefit>
+        <Benefit><span className="border p-0.5 rounded-2xl">₹</span> {t("getBetterPrice")}</Benefit>
 
-        <Benefit>🤝 Connect directly</Benefit>
+        <Benefit>🤝 {t("connectDirectly")}</Benefit>
 
-        <Benefit>📈 Grow your business</Benefit>
+        <Benefit>📈 {t("growYourBusiness")}</Benefit>
 
-        <Benefit>❤️ Support local communities</Benefit>
+        <Benefit>❤️ {t("supportLocalCommunities")}</Benefit>
       </div>
 
       <div
@@ -413,7 +459,7 @@ function SellerBenefits() {
           text-[#107a3a]
         "
       >
-        🌿 Together for a stronger farming community
+        {t("communityMessage")}
       </div>
     </aside>
   );

@@ -5,9 +5,19 @@
     "sellerDashboard": "Seller Dashboard",
     "savedSellers": "Saved Sellers",
     "myProfile": "My Profile",
+    "sellerAccount": "Seller account",
+    "buyerAccount": "Buyer account",
     "logout": "Logout",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "freshConnections": "Fresh Connections",
+    "strongerCommunities": "Stronger Communities",
+    "home": "Home",
+    "sellers": "Sellers",
+    "saved": "Saved",
+    "sell": "Sell",
+    "profile": "Profile",
+    "dashboard": "Dashboard"
   },
   "Home": {
     "hero": {
@@ -18,6 +28,9 @@
       "becomeSeller": "Become a Seller",
       "verifiedMessage": "Discover verified local sellers near you.",
       "benefits": {
+        "verified": {
+          "title": "Verified Sellers"
+        },
         "local": {
           "title": "Local Sellers",
           "description": "Near your area"
@@ -68,7 +81,7 @@
     },
 
     "howItWorks": {
-      "title": "How GreenBridge Works",
+      "title": "How Sasyarth Works",
       "subtitle": "Simple steps to connect buyers and sellers",
       "buyerTab": "For Buyers",
       "sellerTab": "For Sellers",
@@ -121,7 +134,7 @@
     },
 
     "why": {
-      "title": "Why GreenBridge?",
+      "title": "Why Sasyarth?",
       "subtitle": "A simpler way for local buyers and sellers to connect.",
       "local": {
         "title": "Local Discovery",
@@ -156,21 +169,27 @@
       "becomeSeller": "Become a Seller"
     }
   },
-
   "Login": {
-    "title": "Login with Mobile Number",
+    "welcomeBack": "Welcome back",
+    "title": "Login to Sasyarth",
     "subtitle": "Login with your mobile number",
-    "sendOtpError": "Something went wrong while sending the OTP.",
-    "somethingWentWrong": "Something went wrong.",
-    "invalidMobileNumber": "Please enter a valid 10-digit mobile number.",
+    "description": "Connect with trusted farmers and get fresh produce directly.",
+
     "mobileNumber": "Mobile Number",
     "mobilePlaceholder": "Enter your mobile number",
-    "login": "Login",
-    "otpHint": "We'll send an OTP to this number.",
+    "invalidMobileNumber": "Please enter a valid 10-digit mobile number starting with 6, 7, 8 or 9.",
+
+    "otpHint": "We'll send a 6-digit OTP to this number.",
     "sendOtp": "Send OTP",
     "sendingOtp": "Sending OTP...",
+    "sendOtpError": "Unable to send OTP. Please try again.",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+
+    "login": "Login",
     "noAccount": "Don't have an account?",
     "register": "Register",
+    "or": "OR",
+
     "verifyLoginOtp": "Verify Login OTP",
     "invalidOtp": "The OTP is incorrect.",
     "enterSixDigitOtp": "Please enter the 6-digit OTP.",
@@ -178,21 +197,37 @@
     "sixDigitOtp": "6-digit OTP",
     "verifying": "Verifying...",
     "verify": "Verify",
-    "resendOtp": "Resend OTP"
+    "resendOtp": "Resend OTP",
+    "resendOtpFailed": "OTP could not be resent.",
+    "otpExpired": "The OTP has expired. Please request a new OTP.",
+    "otpValidity": "OTP validity",
+
+    "secureLoginMessage": "Your information is secure and safe with us."
   },
 
   "Register": {
-    "title": "Create your GreenBridge account",
+    "welcome": "Welcome to Sasyarth",
+    "description": "Create your account to connect with trusted farmers and buyers.",
+    "or": "OR",
+    "title": "Create your account",
     "mobileNumber": "Mobile Number",
     "mobilePlaceholder": "Enter your mobile number",
     "otpHint": "We'll send an OTP to verify your mobile number.",
     "sendOtp": "Send OTP",
     "sendingOtp": "Sending OTP...",
     "alreadyHaveAccount": "Already have an account?",
+    "mobileVerificationInfo": "Your mobile number is used only for account verification and secure access.",
     "login": "Login",
     "invalidMobileNumber": "Please enter a valid 10-digit mobile number.",
     "sendOtpError": "Something went wrong while sending the OTP.",
     "somethingWentWrong": "Something went wrong.",
+
+    "completeProfile": "Complete your profile",
+    "verifyMobileNumber": "Verify your mobile number",
+    "enterOtpDescription": "Enter the 6-digit OTP sent to your mobile number.",
+    "otpSent": "OTP has been sent",
+    "resendOtp": "Resend OTP",
+    "enterSixDigitOtp": "Please enter the 6-digit OTP.",
 
     "createAccountError": "Something went wrong while creating your account.",
     "fullNameRequired": "Please enter your full name.",
@@ -201,7 +236,12 @@
     "fullNamePlaceholder": "Enter your full name",
     "continue": "Continue",
     "creatingAccount": "Creating your account...",
-    "preferredLanguage": "Preferred Language"
+    "preferredLanguage": "Preferred Language",
+
+    "almostDone": "Almost done",
+    "completeProfileDescription": "Tell us your name and preferred language to finish setting up your account.",
+    "languageHint": "You can change this later from your profile settings.",
+    "profileInfoMessage": "You can update your profile details anytime."
   },
 
   "SellerDashboard": {
@@ -273,6 +313,7 @@
     "inventory": "Inventory",
     "saveChanges": "Save Changes",
     "updateLiveInventory": "Update Live Inventory",
+    "publishedInventoryHint": "Your inventory is live and visible to buyers.",
 
     "empty": {
       "title": "No inventory for today",
@@ -287,7 +328,9 @@
   "FindSellers": {
     "title": "Find Vegetable Sellers",
     "subtitle": "Find vegetable sellers near you",
-
+     "filters": "Search Filters",
+      "dailyFresh": "Daily Fresh",
+  "vegetablesMarket": "Vegetables Market",
     "location": {
       "title": "Find sellers near you",
       "description": "Choose how you want to search",
@@ -323,6 +366,11 @@
     },
 
     "searchingIn": "Searching in:",
+    "findingSellers": "Finding sellers",
+  "foundIn": "Found in",
+  "allLocations": "All locations",
+  "allSellers": "All sellers",
+  "showingAllAvailableVegetables": "Showing all available vegetables",
 
     "vegetables": {
       "title": "What do you need?",
@@ -343,15 +391,27 @@
       "distanceAway": "{distance} km away",
       "noRatingsYet": "No ratings",
       "more": "{count} more",
-      "gettingCallDetails": "Getting call details..."
+      "gettingCallDetails": "Getting call details...",
+
+      "empty": {
+        "title": "No sellers found",
+        "description": "We couldn't find any sellers matching your current location and vegetable filters.",
+        "tipTitle": "Try this",
+        "tip": "Change your location, remove some vegetable filters, or search a nearby area.",
+        "adjustFilters": "Adjust Search"
+      }
     },
 
     "results": {
       "noSellersNearby": "No sellers found near your location.",
       "noSellers": "No sellers found.",
       "tryDifferentLocation": "Try a different location or adjust your vegetable filters.",
-      "sellerCount": "{count} sellers found.",
-      "trustedSellers": "Trusted sellers"
+      "sellerCount": "{count} seller found.",
+      "sellersCount": "{count} sellers found.",
+      "trustedSellers": "Trusted sellers",
+      "seller": "{count} Seller",
+      "sellers": "{count} Sellers",
+      "trustedLocalSellers": "Trusted local sellers"
     }
   },
 
@@ -370,6 +430,72 @@
     "contactAvailableAfterLogin": "Contact details are available only after login.",
     "loginToCall": "Login to Call",
     "notNow": "Not Now"
+  },
+
+  "BecomeSeller": {
+     "completeRequiredFields": "Please complete all required fields.",
+    "profileCreatedRefreshFailed": "Seller profile created but account could not be refreshed.",
+    "somethingWentWrong": "Something went wrong.",
+    "selectBusinessTypeError": "Please select your business type.",
+    "selectCompleteLocationError": "Please select your complete location.",
+    "invalidPincodeError": "Please enter a valid 6 digit pincode.",
+
+    "title": "Become a Seller",
+    "subtitle": "Start selling your fresh produce to buyers near you",
+
+    "sellerDetails": "Seller Details",
+    "location": "Location",
+
+    "continue": "Continue",
+
+    "whySellTitle": "Why sell on Sasyarth?",
+    "reachMoreBuyers": "Reach more buyers",
+    "getBetterPrice": "Get better price",
+    "connectDirectly": "Connect directly",
+    "growYourBusiness": "Grow your business",
+    "supportLocalCommunities": "Support local communities",
+    "communityMessage": "Together for a stronger farming community",
+
+    "aboutTitle": "Tell us about yourself",
+    "aboutDescription": "Choose the option that best describes your business.",
+
+    "businessTypes": {
+      "farmer": "I grow and sell my own produce",
+      "fpo": "Farmer Producer Organisation",
+      "trader": "I buy and sell produce",
+      "wholesaler": "I sell produce in bulk"
+    },
+
+    "locationNotSupported": "Location is not supported in this browser.",
+    "locationPermissionDenied": "Location permission was denied.",
+    "currentLocationError": "Unable to get your current location.",
+
+    "locationTitle": "Where do you sell from?",
+    "locationDescription": "Add your location so nearby buyers can discover you.",
+
+    "currentLocationAdded": "Current location added",
+    "useCurrentLocation": "Use Current Location",
+
+    "locationDetails": "Location details",
+
+    "state": "State",
+    "searchState": "Search state",
+
+    "district": "District",
+    "searchDistrict": "Search district",
+    "selectStateFirst": "Select state first",
+
+    "village": "Village",
+    "searchVillage": "Search village",
+    "selectDistrictFirst": "Select district first",
+
+    "pincode": "Pincode",
+    "pincodePlaceholder": "Enter 6-digit pincode",
+
+    "back": "Back",
+    "applying": "Applying...",
+    "reapplySeller": "Re-apply for Seller",
+    "applySeller": "Apply for Seller"
   },
 
   "SellerApplication": {

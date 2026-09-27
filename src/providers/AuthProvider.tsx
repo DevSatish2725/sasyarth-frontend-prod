@@ -24,7 +24,6 @@ import {
 } from "@/utils/language.utils";
 import { isSupportedLocale } from "@/i18n/config";
 import type { Locale } from "@/i18n/config";
-import { API_ERROR } from "@/lib/axios";
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -87,7 +86,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const getUserProfile = useCallback(async (): Promise<AuthUser | null> => {
     try {
       const response = await authService.getMe();
-
       applyAuthenticatedUser(response.data);
       return response.data;
     } catch (error) {
@@ -130,12 +128,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           return;
         }
 
-        // Expected: user has no valid authenticated session
         if (error.response?.status === 401) {
           return;
         }
 
-        // Backend is down / network unavailable / request couldn't reach server
         if (!error.response) {
           if (process.env.NODE_ENV === "development") {
             console.warn("GreenBridge API is unavailable.");
@@ -143,7 +139,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           return;
         }
 
-        // Unexpected API response
         console.error(
           `Failed to restore auth session (${error.response.status})`,
           error,

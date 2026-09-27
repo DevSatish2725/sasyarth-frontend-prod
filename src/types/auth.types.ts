@@ -127,3 +127,31 @@ export interface VerifyRegistrationOtpResponse {
     registrationToken: string;
   };
 }
+
+export interface Msg91SendOtpResponse {
+  reqId?: string;
+  message?: string;
+  type?: string;
+  hasError?: boolean;
+  status?: string;
+}
+export interface Msg91VerifySuccessResponse {
+  message: string;
+  type?: string;
+}
+
+export interface Msg91VerifyErrorResponse {
+  message?: string;
+  type?: string;
+}
+
+export interface Msg91RetrySuccessResponse {
+  message?: string;
+  type?: string;
+  reqId?: string;
+}
+
+export interface Msg91RetryErrorResponse {
+  message?: string;
+  type?: string;
+}

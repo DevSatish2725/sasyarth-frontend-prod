@@ -97,9 +97,6 @@ export interface UpdateDraftInventoryPayload {
   }[];
 }
 
-
-// src/types/inventory.ts
-
 export const INVENTORY_STATUS = {
   DRAFT: "DRAFT",
   PUBLISHED: "PUBLISHED",
@@ -117,12 +114,12 @@ export const UNIT = {
   DOZEN: "DOZEN",
 } as const;
 
-export type UnitType =
-  (typeof UNIT)[keyof typeof UNIT];
+export type UnitType = (typeof UNIT)[keyof typeof UNIT];
 
-  export interface InventoryVegetable {
+export interface InventoryVegetable {
   _id: string;
   name: string;
+  imageUrl?: string;
 }
 
 export interface InventoryItem {
@@ -150,13 +147,9 @@ export interface EditInventoryFormProps {
   vegetables: VegetableResponse[];
   isSubmitting: boolean;
 
-  onSubmitDraft: (
-    payload: UpdateInventoryPayload,
-  ) => void;
+  onSubmitDraft: (payload: UpdateInventoryPayload) => void;
 
-  onSubmitPublished: (
-    payload: UpdatePublishedInventoryPayload,
-  ) => void;
+  onSubmitPublished: (payload: UpdatePublishedInventoryPayload) => void;
 
   onCancel: () => void;
 }

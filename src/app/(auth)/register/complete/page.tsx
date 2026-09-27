@@ -1,37 +1,128 @@
+import { CheckCircle2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+
 import RegisterCompleteForm from "@/components/auth/RegisterCompleteForm";
 
 export default function RegisterCompletePage() {
+  const t = useTranslations("Register");
+
   return (
-    <main className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto w-full max-w-md">
-        <div className="text-center">
+    <main
+      className="
+        min-h-[calc(100dvh-64px)]
+        bg-background
+        pb-[calc(80px+env(safe-area-inset-bottom))]
+        lg:min-h-[calc(100dvh-72px)]
+        lg:pb-6
+      "
+    >
+      <div
+        className="
+          mx-auto
+          flex
+          min-h-[calc(100dvh-144px)]
+          w-full
+          max-w-md
+          flex-col
+          px-4
+          pt-6
+          sm:px-6
+          sm:pt-8
+          lg:min-h-[calc(100dvh-104px)]
+          lg:justify-center
+          lg:px-0
+          lg:py-8
+        "
+      >
+
+        <div className="mb-6">
           <div
             className="
-              mx-auto flex h-12 w-12 items-center
-              justify-center rounded-xl
-              bg-primary text-2xl
+              mb-4
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-primary-light
+              text-primary
             "
-            aria-hidden="true"
           >
-            🌿
+            <CheckCircle2
+              aria-hidden="true"
+              className="h-5 w-5"
+            />
           </div>
 
-          <p className="mt-3 text-sm font-bold text-primary">
-            GreenBridge Marketplace
+          <p
+            className="
+              text-sm
+              font-bold
+              text-primary
+            "
+          >
+            {t("almostDone")}
           </p>
 
-          <h1 className="mt-7 text-2xl font-bold text-text-primary">
-            अपना नाम दर्ज करें
+          <h1
+            className="
+              mt-1
+              text-[28px]
+              font-bold
+              leading-tight
+              tracking-tight
+              text-text-primary
+              sm:text-3xl
+            "
+          >
+            {t("completeProfile")}
           </h1>
 
-          <p className="mt-2 text-sm text-text-secondary">
-            Complete your registration
+          <p
+            className="
+              mt-2
+              max-w-sm
+              text-sm
+              leading-6
+              text-text-secondary
+            "
+          >
+            {t("completeProfileDescription")}
           </p>
         </div>
 
-        <div className="mt-7">
+        {/* ====================================== */}
+        {/* FORM CARD */}
+        {/* ====================================== */}
+
+        <section
+          className="
+            rounded-3xl
+            border
+            border-border/80
+            bg-surface
+            p-5
+            shadow-[0_8px_30px_rgba(0,0,0,0.04)]
+            sm:p-6
+            lg:rounded-2xl
+          "
+        >
           <RegisterCompleteForm />
-        </div>
+        </section>
+
+        <p
+          className="
+            mt-5
+            px-4
+            text-center
+            text-xs
+            leading-5
+            text-text-muted
+          "
+        >
+          {t("profileInfoMessage")}
+        </p>
       </div>
     </main>
   );

@@ -88,121 +88,212 @@ export default function LocationSelector({
     );
   };
 
-  return (
-    <section>
-      {/* Heading */}
-      <div className="mb-3 flex items-center gap-2.5">
+return (
+  <section>
+    <div className="mb-4">
+      <div className="flex items-center gap-2">
         <div
           className="
-            flex h-9 w-9 shrink-0
-            items-center justify-center
-            rounded-lg bg-accent-light
+            flex
+            h-9
+            w-9
+            shrink-0
+            items-center
+            justify-center
+            rounded-xl
+            bg-accent-light
             text-accent
           "
         >
-          <MapPin size={18} />
+          <MapPin className="h-4.5 w-4.5" />
         </div>
 
-        <div className="min-w-0">
-          <h2 className="text-sm font-bold text-text-primary">
+        <div>
+          <h2
+            className="
+              text-sm
+              font-bold
+              text-text-primary
+            "
+          >
             {t("subtitle")}
           </h2>
 
-          <p className="text-xs text-text-secondary">
+          <p
+            className="
+              mt-0.5
+              text-xs
+              leading-4
+              text-text-secondary
+            "
+          >
             {t("location.description")}
           </p>
         </div>
       </div>
+    </div>
 
-      {/* Location options */}
-      <div className="grid grid-cols-1 gap-2">
-        {/* Current location */}
-        <button
-          type="button"
-          disabled={isLocating}
-          onClick={() => {
-            handleUseCurrentLocation();
-            handleManualLocationClose();
-          }}
+    <div className="space-y-2.5">
+      <button
+        type="button"
+        disabled={isLocating}
+        onClick={() => {
+          handleUseCurrentLocation();
+          handleManualLocationClose();
+        }}
+        className="
+          flex
+          min-h-[66px]
+          w-full
+          items-center
+          gap-3
+          rounded-2xl
+          bg-primary
+          px-4
+          py-3
+          text-left
+          text-white
+          shadow-sm
+          transition
+
+          active:scale-[0.99]
+
+          disabled:opacity-60
+        "
+      >
+        <div
           className="
-            flex min-h-14 items-center gap-3
-            rounded-xl
-            bg-primary
-            px-4 py-2.5
-            text-left text-white
-            transition-colors
-            hover:bg-primary-hover
-            disabled:cursor-not-allowed
-            disabled:opacity-60
+            flex
+            h-10
+            w-10
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            bg-white/15
           "
         >
-          <LocateFixed size={21} className="shrink-0" />
+          <LocateFixed className="h-5 w-5" />
+        </div>
 
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold leading-5">
-              {isLocating
-                ? t("location.currentLocation.gettingLocation")
-                : t("location.currentLocation.title")}
-            </p>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold">
+            {isLocating
+              ? t(
+                  "location.currentLocation.gettingLocation",
+                )
+              : t(
+                  "location.currentLocation.title",
+                )}
+          </p>
 
-            <p className="text-xs leading-4 text-white/80">
-              {t("location.currentLocation.description")}
-            </p>
-          </div>
+          <p
+            className="
+              mt-0.5
+              text-xs
+              leading-4
+              text-white/80
+            "
+          >
+            {t(
+              "location.currentLocation.description",
+            )}
+          </p>
+        </div>
 
-          {isCurrentLocation && (
-            <CheckCircle2 size={19} className="shrink-0" />
-          )}
-        </button>
+        {isCurrentLocation && (
+          <CheckCircle2 className="h-5 w-5" />
+        )}
+      </button>
 
-        {/* Manual location */}
-        <button
-          type="button"
-          onClick={() => {
-            onChooseLocation();
-            setIsCurrentLocation(false);
-          }}
+      <button
+        type="button"
+        onClick={() => {
+          onChooseLocation();
+          setIsCurrentLocation(false);
+        }}
+        className="
+          flex
+          min-h-[66px]
+          w-full
+          items-center
+          gap-3
+          rounded-2xl
+          border
+          border-accent/40
+          bg-accent-light/40
+          px-4
+          py-3
+          text-left
+          transition
+
+          active:scale-[0.99]
+        "
+      >
+        <div
           className="
-            flex min-h-14 items-center gap-3
-            rounded-xl
-            border border-accent
-            bg-surface
-            px-4 py-2.5
-            text-left
-            transition-colors
-            hover:bg-accent-light
+            flex
+            h-10
+            w-10
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            bg-white
+            text-accent
           "
         >
-          <Search size={21} className="shrink-0 text-accent" />
+          <Search className="h-5 w-5" />
+        </div>
 
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold leading-5 text-accent">
-              {t("location.manual.title")}
-            </p>
+        <div className="min-w-0 flex-1">
+          <p
+            className="
+              text-sm
+              font-bold
+              text-accent
+            "
+          >
+            {t("location.manual.title")}
+          </p>
 
-            <p className="text-xs leading-4 text-text-secondary">
-              {t("location.manual.description")}
-            </p>
-          </div>
+          <p
+            className="
+              mt-0.5
+              text-xs
+              leading-4
+              text-text-secondary
+            "
+          >
+            {t(
+              "location.manual.description",
+            )}
+          </p>
+        </div>
 
-          {isManualSelected && (
-            <CheckCircle2
-              size={19}
-              className="shrink-0 text-accent"
-            />
-          )}
-        </button>
+        {isManualSelected && (
+          <CheckCircle2 className="h-5 w-5 text-accent" />
+        )}
+      </button>
+    </div>
+
+    {error && (
+      <div
+        role="alert"
+        className="
+          mt-3
+          rounded-xl
+          bg-red-50
+          px-3
+          py-2.5
+          text-xs
+          leading-5
+          text-error
+        "
+      >
+        {error}
       </div>
-
-      {/* Geolocation error */}
-      {error && (
-        <p
-          role="alert"
-          className="mt-2 text-xs text-error"
-        >
-          {error}
-        </p>
-      )}
-    </section>
-  );
+    )}
+  </section>
+);
 }
