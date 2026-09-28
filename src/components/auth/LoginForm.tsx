@@ -31,10 +31,15 @@ export default function LoginForm() {
       mobileNumber: string;
       returnTo: string;
     }) => {
+      console.log("Production API:", process.env.NEXT_PUBLIC_API_URL);
+
+      console.log("1. Checking login mobile");
       await authService.sendLoginOtp({
         mobileNumber,
       });
+      console.log("2. Backend check successful");
       const msg91Response = await authService.sendMsg91Otp(mobileNumber);
+      console.log("3. MSG91 OTP sent", msg91Response);
       return {
         msg91Response,
         mobileNumber,
@@ -52,6 +57,25 @@ export default function LoginForm() {
     },
 
     onError: (mutationError) => {
+      console.error("OTP ERROR", {
+        status: axios.isAxiosError(mutationError)
+          ? mutationError.response?.status
+          : undefined,
+
+        data: axios.isAxiosError(mutationError)
+          ? mutationError.response?.data
+          : undefined,
+
+        url: axios.isAxiosError(mutationError)
+          ? mutationError.config?.url
+          : undefined,
+
+        baseURL: axios.isAxiosError(mutationError)
+          ? mutationError.config?.baseURL
+          : undefined,
+
+        error: mutationError,
+      });
       if (axios.isAxiosError(mutationError)) {
         setError(mutationError.response?.data?.message ?? t("sendOtpError"));
 
