@@ -12,7 +12,7 @@ export interface VerifyOtpPayload {
 
 export interface RegisterPayload {
   fullName: string;
-  preferredLanguage: SupportedLanguage
+  preferredLanguage: SupportedLanguage;
   registrationToken: string;
 }
 
@@ -20,14 +20,26 @@ export interface UserLocation {
   state: {
     id: string;
     name: string;
+    displayNames: {
+      en: string;
+      hi: string;
+    };
   };
   district: {
     id: string;
     name: string;
+    displayNames: {
+      en: string;
+      hi: string;
+    };
   };
   village: {
     id: string;
     name: string;
+    displayNames: {
+      en: string;
+      hi: string;
+    };
   };
   pincode: string;
 }

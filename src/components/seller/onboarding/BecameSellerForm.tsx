@@ -23,6 +23,10 @@ export type BusinessType =
 export interface LocationOption {
   id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
 }
 
 export interface SellerOnboardingForm {
@@ -438,7 +442,10 @@ function SellerBenefits() {
       >
         <Benefit>🌱 {t("reachMoreBuyers")}</Benefit>
 
-        <Benefit><span className="border p-0.5 rounded-2xl">₹</span> {t("getBetterPrice")}</Benefit>
+        <Benefit>
+          <span className="border p-0.5 rounded-2xl">₹</span>{" "}
+          {t("getBetterPrice")}
+        </Benefit>
 
         <Benefit>🤝 {t("connectDirectly")}</Benefit>
 

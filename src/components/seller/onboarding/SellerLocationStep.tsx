@@ -2,12 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import {
-  ArrowLeft,
-  Check,
-  LocateFixed,
-  MapPin,
-} from "lucide-react";
+import { ArrowLeft, Check, LocateFixed, MapPin } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -21,14 +16,16 @@ import type { SellerOnboardingForm } from "./BecameSellerForm";
 interface Option {
   id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
 }
 
 interface Props {
   form: SellerOnboardingForm;
 
-  setForm: React.Dispatch<
-    React.SetStateAction<SellerOnboardingForm>
-  >;
+  setForm: React.Dispatch<React.SetStateAction<SellerOnboardingForm>>;
 
   isSubmitting: boolean;
 
@@ -49,47 +46,31 @@ export default function SellerLocationStep({
 }: Props) {
   const t = useTranslations("BecomeSeller");
 
-  const [stateSearch, setStateSearch] =
-    useState(form.state?.name ?? "");
+  const [stateSearch, setStateSearch] = useState(form.state?.name ?? "");
 
-  const [districtSearch, setDistrictSearch] =
-    useState(
-      form.district?.name ?? "",
-    );
+  const [districtSearch, setDistrictSearch] = useState(
+    form.district?.name ?? "",
+  );
 
-  const [villageSearch, setVillageSearch] =
-    useState(
-      form.village?.name ?? "",
-    );
+  const [villageSearch, setVillageSearch] = useState(form.village?.name ?? "");
 
-  const [geoLoading, setGeoLoading] =
-    useState(false);
+  const [geoLoading, setGeoLoading] = useState(false);
 
-  const [geoError, setGeoError] =
-    useState("");
+  const [geoError, setGeoError] = useState("");
 
-  const {
-    data: states = [],
-    isLoading: statesLoading,
-  } = useQuery({
+  const { data: states = [], isLoading: statesLoading } = useQuery({
     queryKey: ["locations", "states"],
 
-    queryFn: () =>
-      locationService.getStates(),
+    queryFn: () => locationService.getStates(),
 
     staleTime: 1000 * 60 * 30,
   });
 
-  const debouncedDistrictSearch =
-    districtSearch.trim();
+  const debouncedDistrictSearch = districtSearch.trim();
 
-  const debouncedVillageSearch =
-    villageSearch.trim();
+  const debouncedVillageSearch = villageSearch.trim();
 
-  const {
-    data: districts = [],
-    isLoading: districtsLoading,
-  } = useQuery({
+  const { data: districts = [], isLoading: districtsLoading } = useQuery({
     queryKey: [
       "locations",
       "districts",
@@ -104,20 +85,14 @@ export default function SellerLocationStep({
 
       return locationService.searchDistricts({
         stateId: form.state.id,
-        search:
-          debouncedDistrictSearch,
+        search: debouncedDistrictSearch,
       });
     },
 
-    enabled:
-      Boolean(form.state) &&
-      debouncedDistrictSearch.length >= 1,
+    enabled: Boolean(form.state) && debouncedDistrictSearch.length >= 1,
   });
 
-  const {
-    data: villages = [],
-    isLoading: villagesLoading,
-  } = useQuery({
+  const { data: villages = [], isLoading: villagesLoading } = useQuery({
     queryKey: [
       "locations",
       "villages",
@@ -131,40 +106,28 @@ export default function SellerLocationStep({
       }
 
       return locationService.searchVillages({
-        districtId:
-          form.district.id,
+        districtId: form.district.id,
 
-        search:
-          debouncedVillageSearch,
+        search: debouncedVillageSearch,
       });
     },
 
-    enabled:
-      Boolean(form.district) &&
-      debouncedVillageSearch.length >= 2,
+    enabled: Boolean(form.district) && debouncedVillageSearch.length >= 2,
   });
 
-  const filteredStates =
-    useMemo(() => {
-      const search = stateSearch
-        .trim()
-        .toLowerCase();
+  const filteredStates = useMemo(() => {
+    const search = stateSearch.trim().toLowerCase();
 
-      if (!search) {
-        return states;
-      }
+    if (!search) {
+      return states;
+    }
 
-      return states.filter(
-        (state: Option) =>
-          state.name
-            .toLowerCase()
-            .includes(search),
-      );
-    }, [states, stateSearch]);
+    return states.filter((state: Option) =>
+      state.name.toLowerCase().includes(search),
+    );
+  }, [states, stateSearch]);
 
-  const handleStateSelect = (
-    state: Option,
-  ) => {
+  const handleStateSelect = (state: Option) => {
     setForm((previous) => ({
       ...previous,
 
@@ -182,9 +145,7 @@ export default function SellerLocationStep({
     setVillageSearch("");
   };
 
-  const handleDistrictSelect = (
-    district: Option,
-  ) => {
+  const handleDistrictSelect = (district: Option) => {
     setForm((previous) => ({
       ...previous,
 
@@ -193,98 +154,68 @@ export default function SellerLocationStep({
       village: null,
     }));
 
-    setDistrictSearch(
-      district.name,
-    );
+    setDistrictSearch(district.name);
 
     setVillageSearch("");
   };
 
-  const handleVillageSelect = (
-    village: Option,
-  ) => {
+  const handleVillageSelect = (village: Option) => {
     setForm((previous) => ({
       ...previous,
 
       village,
     }));
 
-    setVillageSearch(
-      village.name,
-    );
+    setVillageSearch(village.name);
   };
 
-  const handleUseCurrentLocation =
-    () => {
-      if (!navigator.geolocation) {
-        setGeoError(
-          t("locationNotSupported"),
-        );
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setGeoError(t("locationNotSupported"));
 
-        return;
-      }
+      return;
+    }
 
-      setGeoLoading(true);
+    setGeoLoading(true);
 
-      setGeoError("");
+    setGeoError("");
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setForm((previous) => ({
-            ...previous,
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setForm((previous) => ({
+          ...previous,
 
-            geoLocation: {
-              latitude:
-                position.coords
-                  .latitude,
+          geoLocation: {
+            latitude: position.coords.latitude,
 
-              longitude:
-                position.coords
-                  .longitude,
-            },
-          }));
+            longitude: position.coords.longitude,
+          },
+        }));
 
-          setGeoLoading(false);
-        },
+        setGeoLoading(false);
+      },
 
-        (error) => {
-          setGeoLoading(false);
+      (error) => {
+        setGeoLoading(false);
 
-          if (
-            error.code ===
-            error.PERMISSION_DENIED
-          ) {
-            setGeoError(
-              t(
-                "locationPermissionDenied",
-              ),
-            );
+        if (error.code === error.PERMISSION_DENIED) {
+          setGeoError(t("locationPermissionDenied"));
 
-            return;
-          }
+          return;
+        }
 
-          setGeoError(
-            t("currentLocationError"),
-          );
-        },
+        setGeoError(t("currentLocationError"));
+      },
 
-        {
-          enableHighAccuracy: true,
+      {
+        enableHighAccuracy: true,
 
-          timeout: 10000,
+        timeout: 10000,
 
-          maximumAge: 60000,
-        },
-      );
-    };
-
-  const isValid =
-    Boolean(form.state) &&
-    Boolean(form.district) &&
-    Boolean(form.village) &&
-    /^\d{6}$/.test(
-      form.pincode.trim(),
+        maximumAge: 60000,
+      },
     );
+  };
 
   return (
     <>
@@ -312,9 +243,7 @@ export default function SellerLocationStep({
 
       <button
         type="button"
-        onClick={
-          handleUseCurrentLocation
-        }
+        onClick={handleUseCurrentLocation}
         disabled={geoLoading}
         className="
           mt-6
@@ -348,12 +277,8 @@ export default function SellerLocationStep({
         {geoLoading
           ? t("gettingLocation")
           : form.geoLocation
-            ? t(
-                "currentLocationAdded",
-              )
-            : t(
-                "useCurrentLocation",
-              )}
+            ? t("currentLocationAdded")
+            : t("useCurrentLocation")}
       </button>
 
       {geoError && (
@@ -407,66 +332,38 @@ export default function SellerLocationStep({
       <div className="space-y-5">
         <SearchableLocationField
           label={`${t("state")} *`}
-          placeholder={t(
-            "searchState",
-          )}
+          placeholder={t("searchState")}
           value={form.state}
           options={filteredStates}
-          onSearchChange={
-            setStateSearch
-          }
-          onSelect={
-            handleStateSelect
-          }
+          onSearchChange={setStateSearch}
+          onSelect={handleStateSelect}
           isLoading={statesLoading}
           localSearch
         />
 
         <SearchableLocationField
           label={`${t("district")} *`}
-          placeholder={
-            form.state
-              ? t("searchDistrict")
-              : t(
-                  "selectStateFirst",
-                )
-          }
+          placeholder={form.state ? t("searchDistrict") : t("selectStateFirst")}
           value={form.district}
           options={districts}
-          onSearchChange={
-            setDistrictSearch
-          }
-          onSelect={
-            handleDistrictSelect
-          }
+          onSearchChange={setDistrictSearch}
+          onSelect={handleDistrictSelect}
           disabled={!form.state}
-          isLoading={
-            districtsLoading
-          }
+          isLoading={districtsLoading}
           minimumSearchLength={1}
         />
 
         <SearchableLocationField
           label={`${t("village")} *`}
           placeholder={
-            form.district
-              ? t("searchVillage")
-              : t(
-                  "selectDistrictFirst",
-                )
+            form.district ? t("searchVillage") : t("selectDistrictFirst")
           }
           value={form.village}
           options={villages}
-          onSearchChange={
-            setVillageSearch
-          }
-          onSelect={
-            handleVillageSelect
-          }
+          onSearchChange={setVillageSearch}
+          onSelect={handleVillageSelect}
           disabled={!form.district}
-          isLoading={
-            villagesLoading
-          }
+          isLoading={villagesLoading}
           minimumSearchLength={2}
         />
 
@@ -503,25 +400,15 @@ export default function SellerLocationStep({
               maxLength={6}
               value={form.pincode}
               onChange={(event) => {
-                const value =
-                  event.target.value
-                    .replace(
-                      /\D/g,
-                      "",
-                    )
-                    .slice(0, 6);
+                const value = event.target.value.replace(/\D/g, "").slice(0, 6);
 
-                setForm(
-                  (previous) => ({
-                    ...previous,
+                setForm((previous) => ({
+                  ...previous,
 
-                    pincode: value,
-                  }),
-                );
+                  pincode: value,
+                }));
               }}
-              placeholder={t(
-                "pincodePlaceholder",
-              )}
+              placeholder={t("pincodePlaceholder")}
               className="
                 h-12
                 w-full
@@ -609,9 +496,7 @@ export default function SellerLocationStep({
           {isSubmitting
             ? t("applying")
             : isSellerProfile
-              ? t(
-                  "reapplySeller",
-                )
+              ? t("reapplySeller")
               : t("applySeller")}
         </button>
       </div>
