@@ -85,7 +85,6 @@ export const authService = {
   },
 
   async verifyMsg91Otp(otp: string): Promise<string> {
-      console.log("register otp verify")
     return new Promise((resolve, reject) => {
       if (typeof window === "undefined" || !window.verifyOtp) {
         reject(new Error("MSG91 verifyOtp is not ready."));

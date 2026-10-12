@@ -5,6 +5,9 @@ import CallSellerButton from "../ui/CallSellerButton";
 import { Bookmark, Package } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { useLocale } from "next-intl";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+
 export default function SellerCard({
   seller,
   isProcessing,
@@ -12,7 +15,7 @@ export default function SellerCard({
   getCallSellerId,
   isLoading,
   handleSaveToggle,
-  guestCallModalOpen
+  guestCallModalOpen,
 }: {
   seller: SellerCardProps;
   isProcessing: boolean;
@@ -22,15 +25,17 @@ export default function SellerCard({
   guestCallModalOpen: (sellerName: string, sellerId: string) => void;
   handleSaveToggle: (sellerId: string) => void;
 }) {
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
   const t = useTranslations("FindSellers");
   const visibleVegetables = seller.vegetables.slice(0, 3);
 
   const remainingCount = seller.vegetables.length - visibleVegetables.length;
 
   const locationText = [
-    seller.location?.village,
-    seller.location?.district,
-    seller.location?.state,
+    seller.location?.villageDisplayNames[currentLocale],
+    seller.location?.districtDisplayNames[currentLocale],
+    seller.location?.stateDisplayNames[currentLocale],
   ]
     .filter(Boolean)
     .join(", ");
@@ -249,7 +254,9 @@ export default function SellerCard({
                 {vegetable.imageUrl ? (
                   <Image
                     src={vegetable.imageUrl}
-                    alt={vegetable.name}
+                    alt={
+                      vegetable.displayNames[currentLocale] ?? vegetable.name
+                    }
                     fill
                     sizes="56px"
                     className="
@@ -273,7 +280,9 @@ export default function SellerCard({
 
               <div className="min-w-0 flex-1">
                 <p
-                  title={vegetable.name}
+                  title={
+                    vegetable.displayNames[currentLocale] ?? vegetable.name
+                  }
                   className="
               truncate
               text-xs
@@ -283,7 +292,7 @@ export default function SellerCard({
               sm:text-sm
             "
                 >
-                  {vegetable.name}
+                  {vegetable.displayNames[currentLocale] ?? vegetable.name}
                 </p>
 
                 <div className="mt-1 flex items-baseline">

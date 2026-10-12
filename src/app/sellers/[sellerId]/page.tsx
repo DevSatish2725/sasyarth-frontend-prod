@@ -31,6 +31,7 @@ export default function SellerShopPage() {
   const params = useParams<{
     sellerId: string;
   }>();
+
   const sellerId = params.sellerId;
 
   const router = useRouter();
@@ -184,7 +185,6 @@ export default function SellerShopPage() {
           xl:grid-cols-[460px_minmax(0,1fr)]
         "
         >
-
           <div className="space-y-4 lg:space-y-5">
             <SellerShopHeader
               seller={{
@@ -246,7 +246,6 @@ export default function SellerShopPage() {
               lg:p-5
             "
             >
-
               <div
                 className="
                 flex
@@ -320,7 +319,6 @@ export default function SellerShopPage() {
                   </div>
                 </div>
 
-
                 <div
                   className="
                   relative                  w-full
@@ -369,7 +367,6 @@ export default function SellerShopPage() {
                   />
                 </div>
               </div>
-
 
               <div
                 className="

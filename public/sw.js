@@ -96,6 +96,74 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
+self.addEventListener("push", (event) => {
+  if (!event.data) {
+    return;
+  }
+
+  let data;
+
+  try {
+    data = event.data.json();
+  } catch {
+    data = {
+      title: "Sasyarth",
+      body: event.data.text(),
+    };
+  }
+
+  const title = data.title || "Sasyarth";
+
+  const options = {
+    body: data.body || "",
+
+    icon: data.icon || "/icons/icon-192x192.png",
+
+    badge: data.badge || "/icons/icon-192x192.png",
+
+    tag: data.tag || undefined,
+
+    data: {
+      url: data.url || "/",
+
+      ...(data.data || {}),
+    },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const targetUrl = event.notification.data?.url || "/";
+
+  event.waitUntil(
+    clients
+      .matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      })
+      .then(async (clientList) => {
+        for (const client of clientList) {
+          if ("focus" in client) {
+            await client.focus();
+
+            if ("navigate" in client) {
+              await client.navigate(targetUrl);
+            }
+
+            return;
+          }
+        }
+
+        if (clients.openWindow) {
+          return clients.openWindow(targetUrl);
+        }
+      }),
+  );
+});
+
 async function networkFirstPage(request) {
   try {
     const response = await fetch(request);

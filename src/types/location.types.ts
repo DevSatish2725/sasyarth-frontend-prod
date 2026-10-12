@@ -1,27 +1,42 @@
 export interface ManualLocation {
   stateId: string;
-  stateName: string;
+  stateNameEn: string;
+  stateNameHi: string;
 
   districtId?: string;
-  districtName?: string;
+  districtNameEn?: string;
+  districtNameHi?: string;
 
   villageId?: string;
-  villageName?: string;
+  villageNameEn?: string;
+  villageNameHi?: string;
 }
 
 export interface StateOption {
   id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
 }
 
 export interface DistrictOption {
   id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
 }
 
 export interface VillageOption {
   id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
 }
 
 export type SearchLocation =

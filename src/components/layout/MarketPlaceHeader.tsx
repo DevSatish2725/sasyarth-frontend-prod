@@ -4,6 +4,9 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { ManualLocation } from "@/types/location.types";
 import type { VegetableResponse } from "@/types/vegetable.types";
 import { useTranslations } from "next-intl";
+
+import { useLocale } from "next-intl";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 interface MarketplaceHeaderProps {
   activeLocation: ManualLocation | null;
   appliedVegetableIds: string[];
@@ -11,6 +14,7 @@ interface MarketplaceHeaderProps {
   sellerCount: number;
   onClearLocation?: () => void;
   onRemoveVegetable?: (vegetableId: string) => void;
+  locationMode: "MANUAL" | "CURRENT" | null;
 }
 export default function MarketplaceHeader({
   activeLocation,
@@ -19,10 +23,14 @@ export default function MarketplaceHeader({
   sellerCount,
   onClearLocation,
   onRemoveVegetable,
+  locationMode,
 }: MarketplaceHeaderProps) {
   const vegetableScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
 
   const t = useTranslations("FindSellers");
 
@@ -134,17 +142,7 @@ export default function MarketplaceHeader({
         >
           <div className="flex items-center gap-3">
             <div className="w-full">
-              <div className="flex justify-between items-center">
-                <p
-                  className="
-              text-xs font-semibold
-              uppercase tracking-wide
-              text-text-secondary
-            "
-                >
-                  {t("foundIn")}
-                </p>
-              </div>
+              <div className="flex justify-between items-center"></div>
               {activeLocation ? (
                 <div
                   className="
@@ -157,19 +155,32 @@ export default function MarketplaceHeader({
                 text-text-primary
               "
                 >
-                  <span>{activeLocation.stateName}</span>
-                  {activeLocation.districtName && (
+                  {activeLocation.villageNameEn && (
+                    <span>
+                      {currentLocale === "en"
+                        ? activeLocation.villageNameEn
+                        : activeLocation.villageNameHi}
+                    </span>
+                  )}
+
+                  {activeLocation.districtNameEn && (
                     <>
                       <span className="text-text-muted">›</span>
-                      <span>{activeLocation.districtName}</span>
+                      <span>
+                        {currentLocale === "en"
+                          ? activeLocation.districtNameEn
+                          : activeLocation.districtNameHi}
+                      </span>
                     </>
                   )}
-                  {activeLocation.villageName && (
-                    <>
-                      <span className="text-text-muted">›</span>
-                      <span>{activeLocation.villageName}</span>
-                    </>
-                  )}
+
+                  <span className="text-text-muted">›</span>
+                  <span>
+                    {currentLocale === "en"
+                      ? activeLocation.stateNameEn
+                      : activeLocation.stateNameHi}
+                  </span>
+
                   <button
                     type="button"
                     onClick={onClearLocation}
@@ -202,7 +213,9 @@ export default function MarketplaceHeader({
                 text-text-primary
               "
                 >
-                  {t("allLocations")}
+                  {locationMode === "CURRENT"
+                    ? t("nearbySellers")
+                    : t("allLocationSellers")}
                 </p>
               )}
             </div>
@@ -310,7 +323,8 @@ export default function MarketplaceHeader({
                   truncate
                 "
                       >
-                        {vegetable.name}
+                        {vegetable.displayNames[currentLocale] ??
+                          vegetable.name}
                       </span>
                       <button
                         type="button"

@@ -14,6 +14,9 @@ import type {
 import { useTranslations } from "next-intl";
 import { VegetableResponse } from "@/types/vegetable.types";
 
+import { useLocale } from "next-intl";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+
 function createEmptyItem(): InventoryFormItem {
   return {
     id: crypto.randomUUID(),
@@ -46,6 +49,9 @@ export default function EditDraftInventoryForm({
       isNegotiable: item.isNegotiable,
     })),
   );
+
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
 
   const t = useTranslations("SellerInventory");
   const tc = useTranslations("Common");
@@ -153,7 +159,7 @@ export default function EditDraftInventoryForm({
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="rounded-2xl border border-[#e7d8b9] bg-[#fffdf8] p-4 sm:p-5"
+            className="rounded-2xl border border-[#e7d8b9] bg-[#fffdf8] p-4 sm:p-5 flex-1"
           >
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-[#17201a]">
@@ -187,7 +193,7 @@ export default function EditDraftInventoryForm({
                     onChange={(value) =>
                       handleItemChange(item.id, "vegetableId", value)
                     }
-                    getOptionLabel={(vegetable) => vegetable.name}
+                    getOptionLabel={(vegetable) => vegetable.displayNames[currentLocale]}
                     getOptionValue={(vegetable) => vegetable._id}
                     getDisplayName={(vegetable) =>
                       vegetable.displayNames.hi ?? ""

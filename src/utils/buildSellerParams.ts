@@ -12,7 +12,7 @@ export function buildSellerParams({
   const commonParams = {
     vegetableIds,
     cursor,
-    limit: 10,
+    limit: 1,
   };
 
   if (!searchLocation) {

@@ -6,6 +6,9 @@ import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 
+import { useLocale } from "next-intl";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+
 export default function InventoryItemRow({
   index,
   item,
@@ -14,6 +17,8 @@ export default function InventoryItemRow({
   onChange,
   onRemove,
 }: InventoryItemRowProps) {
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
   const t = useTranslations("SellerInventory");
 
   const matchesVegetableSearch = useCallback(
@@ -39,7 +44,7 @@ export default function InventoryItemRow({
   );
 
   return (
-    <div className="rounded-2xl border border-[#e7d8b9] bg-[#fffdf8] p-4 sm:p-5">
+    <div className="rounded-2xl border border-[#e7d8b9] bg-[#fffdf8] p-4 sm:p-5 flex-1">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-bold text-[#17201a]">
           {t("vegetable")} {index + 1}
@@ -66,7 +71,7 @@ export default function InventoryItemRow({
             options={vegetables}
             value={item.vegetableId}
             onChange={(value) => onChange(item.id, "vegetableId", value)}
-            getOptionLabel={(vegetable) => vegetable.name}
+            getOptionLabel={(vegetable) => vegetable.displayNames[currentLocale]}
             getOptionValue={(vegetable) => vegetable._id}
             getDisplayName={(vegetable) => vegetable.displayNames.hi ?? ""}
             placeholder="Select vegetable"

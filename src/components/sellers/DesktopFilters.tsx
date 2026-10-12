@@ -165,8 +165,8 @@ export default function DesktopFilters({
               top-0
               z-20
               flex
-              h-8
-              w-8
+              h-6
+              w-6
               items-center
               justify-center
               rounded-full

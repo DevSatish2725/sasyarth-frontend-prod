@@ -93,104 +93,80 @@ export default function LocationSearchBar({
     staleTime: 1000 * 60 * 10,
   });
 
-return (
-  <section>
-    {!selectedState && (
-      <p
-        className="
+
+  return (
+    <section>
+      {!selectedState && (
+        <p
+          className="
           mb-4
           text-sm
           leading-5
           text-text-secondary
         "
-      >
-        {t("location.selectStateHint")}
-      </p>
-    )}
+        >
+          {t("location.selectStateHint")}
+        </p>
+      )}
 
-    <div className="space-y-4">
-      <SearchableLocationField
-        key={
-          selectedState?.id ??
-          "no-state"
-        }
-        label={t("location.state")}
-        placeholder={t(
-          "location.searchState",
-        )}
-        options={
-          statesQuery.data ?? []
-        }
-        value={selectedState}
-        isLoading={
-          statesQuery.isLoading
-        }
-        localSearch
-        onSelect={handleStateSelect}
-      />
+      <div className="space-y-4">
+        <SearchableLocationField
+          key={selectedState?.id ?? "no-state"}
+          label={t("location.state")}
+          placeholder={t("location.searchState")}
+          options={statesQuery.data ?? []}
+          value={selectedState}
+          isLoading={statesQuery.isLoading}
+          localSearch
+          onSelect={handleStateSelect}
+        />
 
-      <SearchableLocationField
-        key={
-          selectedDistrict?.id ??
-          "no-district"
-        }
-        label={t("location.district")}
-        placeholder={
-          selectedState
-            ? t(
-                "location.searchDistrict",
-              )
-            : t(
-                "location.selectStateFirst",
-              )
-        }
-        value={selectedDistrict}
-        options={
-          districtsQuery.data ?? []
-        }
-        disabled={!selectedState}
-        isLoading={
-          districtsQuery.isFetching
-        }
-        minimumSearchLength={2}
-        onSearchChange={
-          handleDistrictSearch
-        }
-        onSelect={
-          handleDistrictSelect
-        }
-      />
+        <SearchableLocationField
+          key={selectedDistrict?.id ?? "no-district"}
+          label={t("location.district")}
+          placeholder={
+            selectedState
+              ? t("location.searchDistrict")
+              : t("location.selectStateFirst")
+          }
+          value={selectedDistrict}
+          options={
+            districtsQuery.data
+              ? districtsQuery.data
+              : selectedDistrict
+                ? [selectedDistrict]
+                : []
+          }
+          disabled={!selectedState}
+          isLoading={districtsQuery.isFetching}
+          minimumSearchLength={2}
+          onSearchChange={handleDistrictSearch}
+          onSelect={handleDistrictSelect}
+        />
 
-      <SearchableLocationField
-        key={
-          selectedVillage?.id ??
-          "no-village"
-        }
-        label={t("location.village")}
-        placeholder={
-          selectedDistrict
-            ? t(
-                "location.searchVillageOrArea",
-              )
-            : t(
-                "location.selectDistrictFirst",
-              )
-        }
-        value={selectedVillage}
-        options={
-          villagesQuery.data ?? []
-        }
-        disabled={!selectedDistrict}
-        isLoading={
-          villagesQuery.isFetching
-        }
-        minimumSearchLength={2}
-        onSearchChange={
-          handleVillageSearch
-        }
-        onSelect={handleVillageSelect}
-      />
-    </div>
-  </section>
-);
+        <SearchableLocationField
+          key={selectedVillage?.id ?? "no-village"}
+          label={t("location.village")}
+          placeholder={
+            selectedDistrict
+              ? t("location.searchVillageOrArea")
+              : t("location.selectDistrictFirst")
+          }
+          value={selectedVillage}
+          options={
+            villagesQuery.data
+              ? villagesQuery.data
+              : selectedVillage
+                ? [selectedVillage]
+                : []
+          }
+          disabled={!selectedDistrict}
+          isLoading={villagesQuery.isFetching}
+          minimumSearchLength={2}
+          onSearchChange={handleVillageSearch}
+          onSelect={handleVillageSelect}
+        />
+      </div>
+    </section>
+  );
 }

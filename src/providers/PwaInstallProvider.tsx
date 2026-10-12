@@ -7,6 +7,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -82,6 +83,8 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
 
   const [isInstalled, setIsInstalled] = useState(false);
 
+  const installTimerRef = useRef<number | null>(null);
+
   const isIOS = useMemo(() => detectIOS(), []);
 
   const openInstallSheet = useCallback(() => {
@@ -89,6 +92,14 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const closeInstallSheet = useCallback(() => {
+    localStorage.setItem(INSTALL_DISMISSED_KEY, Date.now().toString());
+
+    if (installTimerRef.current) {
+      window.clearTimeout(installTimerRef.current);
+
+      installTimerRef.current = null;
+    }
+
     setShowInstallSheet(false);
   }, []);
 
@@ -98,22 +109,32 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    installTimerRef.current = null;
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
 
-      setDeferredPrompt(event as BeforeInstallPromptEvent);
+      const installEvent = event as BeforeInstallPromptEvent;
+
+      setDeferredPrompt(installEvent);
 
       const dismissedAt = localStorage.getItem(INSTALL_DISMISSED_KEY);
 
-      const dismissedRecently =
-        dismissedAt &&
-        Date.now() - Number(dismissedAt) < 7 * 24 * 60 * 60 * 1000;
+      const dismissedTimestamp = dismissedAt ? Number(dismissedAt) : 0;
 
-      if (!dismissedRecently) {
-        window.setTimeout(() => {
-          setShowInstallSheet(true);
-        }, 5000);
+      const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+      const dismissedRecently =
+        Number.isFinite(dismissedTimestamp) &&
+        dismissedTimestamp > 0 &&
+        Date.now() - dismissedTimestamp < sevenDays;
+
+      if (dismissedRecently) {
+        return;
       }
+
+      installTimerRef.current = window.setTimeout(() => {
+        setShowInstallSheet(true);
+      }, 5000);
     };
 
     const handleAppInstalled = () => {
@@ -135,6 +156,10 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
       );
 
       window.removeEventListener("appinstalled", handleAppInstalled);
+
+      if (installTimerRef.current !== null) {
+        window.clearTimeout(installTimerRef.current);
+      }
     };
   }, []);
 

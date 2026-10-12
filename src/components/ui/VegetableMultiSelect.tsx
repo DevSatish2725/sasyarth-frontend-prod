@@ -19,6 +19,10 @@ import { createPortal } from "react-dom";
 
 import type { VegetableResponse } from "@/types/vegetable.types";
 
+import { useLocale } from "next-intl";
+
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+
 interface VegetableMultiSelectProps {
   vegetables: VegetableResponse[];
   selectedIds: string[];
@@ -82,6 +86,12 @@ export function VegetableMultiSelect({
   const [dropdownPosition, setDropdownPosition] =
     useState<DropdownPosition | null>(null);
 
+  const locale = useLocale();
+
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
+
+  
+
   /*
    * Normal component wrapper.
    *
@@ -108,7 +118,6 @@ export function VegetableMultiSelect({
   const chipsRef = useRef<HTMLDivElement>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
-
 
   const selectedVegetables = useMemo(() => {
     return vegetables.filter((vegetable) =>
@@ -413,7 +422,6 @@ export function VegetableMultiSelect({
               shadow-xl
             "
           >
-
             <div
               style={{
                 maxHeight: optionsMaxHeight,
@@ -458,10 +466,11 @@ export function VegetableMultiSelect({
                             text-[#17201a]
                           "
                       >
-                        {vegetable.name}
+                        {vegetable.displayNames[currentLocale] ??
+                          vegetable.name}
                       </p>
 
-                      {vegetable.displayNames?.hi && (
+                      {vegetable.displayNames?.hi && currentLocale === "en" && (
                         <p
                           className="
                               mt-0.5
@@ -537,7 +546,6 @@ export function VegetableMultiSelect({
             ${disabled ? "cursor-not-allowed opacity-60" : ""}
           `}
         >
-
           {selectedVegetables.length > 0 && (
             <div
               className="
@@ -550,7 +558,6 @@ export function VegetableMultiSelect({
                 bg-[#fafcf9]
               "
             >
-
               <button
                 type="button"
                 disabled={!canScrollLeft}
@@ -615,7 +622,7 @@ export function VegetableMultiSelect({
                         text-[#107a3a]
                       "
                   >
-                    {vegetable.name}
+                    {vegetable.displayNames[currentLocale] ?? vegetable.name}
 
                     <button
                       type="button"

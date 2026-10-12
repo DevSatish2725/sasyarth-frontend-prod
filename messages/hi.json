@@ -375,6 +375,8 @@
     "foundIn": "यहाँ मिले",
     "allLocations": "सभी स्थान",
     "allSellers": "सभी विक्रेता",
+    "allLocationSellers": "सभी स्थानों के विक्रेता",
+    "nearbySellers": "आस-पास के विक्रेता",
     "showingAllAvailableVegetables": "सभी उपलब्ध सब्ज़ियाँ दिखाई जा रही हैं",
 
     "vegetables": {
@@ -545,7 +547,17 @@
     "optional": "वैकल्पिक",
     "selectUpToFive": "अधिकतम 5 विकल्प चुनें।",
     "updateRating": "रेटिंग अपडेट करें",
-    "submitRating": "रेटिंग भेजें"
+    "submitRating": "रेटिंग भेजें",
+    "tags": {
+      "FRESH_PRODUCE": "ताज़ी उपज",
+      "FAIR_PRICE": "उचित कीमत",
+      "GOOD_BEHAVIOUR": "अच्छा व्यवहार",
+      "GOOD_COMMUNICATION": "अच्छा संवाद",
+      "QUANTITY_AVAILABLE": "पर्याप्त मात्रा उपलब्ध",
+      "PRICE_DIFFERENT": "कीमत अलग थी",
+      "STOCK_UNAVAILABLE": "स्टॉक उपलब्ध नहीं था",
+      "QUALITY_ISSUE": "गुणवत्ता संबंधी समस्या"
+    }
   },
 
   "SavedSellers": {
@@ -629,6 +641,25 @@
       "pending": "सत्यापन लंबित",
       "rejected": "अस्वीकृत"
     }
+  },
+
+  "Notifications": {
+    "exploreSellersReminder": "Sasyarth पर विक्रेताओं से ताज़ी उपज देखने के लिए रिमाइंडर प्राप्त करें।",
+    "publishInventoryReminder": "उपलब्धता प्रकाशित करने के लिए रोज़ाना रिमाइंडर प्राप्त करें।",
+    "publishReminderTitle": "रोज़ाना उपलब्धता रिमाइंडर",
+    "enabled": "चालू",
+    "enable": "चालू करें",
+    "disable": "बंद करें",
+    "disabled": "बंद",
+    "enabling": "चालू किया जा रहा है...",
+    "disabling": "बंद किया जा रहा है..."
+  },
+
+  "Vegetables": {
+    "noVegetablesFound": "कोई सब्ज़ी नहीं मिली।",
+    "clear": "हटाएँ",
+    "clearAll": "सभी हटाएँ",
+    "searchPlaceholder": "सब्ज़ियाँ खोजें..."
   },
 
   "Common": {

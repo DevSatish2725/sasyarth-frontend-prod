@@ -4,16 +4,14 @@ import { useEffect } from "react";
 
 export default function ServiceWorkerRegistration() {
   useEffect(() => {
-    if (
-      process.env.NODE_ENV !==
-      "production"
-    ) {
-      return;
-    }
+    // if (
+    //   process.env.NODE_ENV !==
+    //   "production"
+    // ) {
+    //   return;
+    // }
 
-    if (
-      !("serviceWorker" in navigator)
-    ) {
+    if (!("serviceWorker" in navigator)) {
       return;
     }
 
@@ -21,10 +19,8 @@ export default function ServiceWorkerRegistration() {
       .register("/sw.js", {
         scope: "/",
       })
-      .then((_registration) => {
-      })
-      .catch((_error) => {
-      });
+      .then((_registration) => {})
+      .catch((_error) => {});
   }, []);
 
   return null;

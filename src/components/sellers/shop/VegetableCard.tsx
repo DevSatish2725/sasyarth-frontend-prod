@@ -1,14 +1,18 @@
 import Image from "next/image";
 
-import {
-  BarChart3,
-  Package,
-} from "lucide-react";
+import { BarChart3, Package } from "lucide-react";
+
+import { useLocale, useTranslations } from "next-intl";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 
 interface VegetableCardProps {
   vegetable: {
     itemId: string;
     vegetableName: string;
+    displayNames: {
+      en: string;
+      hi: string;
+    };
     image?: string;
     imageUrl?: string;
     sellerPrice: number;
@@ -18,11 +22,11 @@ interface VegetableCardProps {
   };
 }
 
-export default function VegetableCard({
-  vegetable,
-}: VegetableCardProps) {
-  const unit =
-    vegetable.unit.toLowerCase();
+export default function VegetableCard({ vegetable }: VegetableCardProps) {
+  const t = useTranslations("FindSellers");
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
+  const unit = vegetable.unit.toLowerCase();
 
   return (
     <article
@@ -45,12 +49,11 @@ export default function VegetableCard({
       "
     >
       <div className="flex h-full sm:block">
-
         <div
           className="
             relative
-            h-[118px]
-            w-[112px]
+            h-29.5
+            w-28
             shrink-0
             overflow-hidden
             bg-[#f8faf7]
@@ -63,12 +66,8 @@ export default function VegetableCard({
         >
           {vegetable.imageUrl ? (
             <Image
-              src={
-                vegetable.imageUrl
-              }
-              alt={
-                vegetable.vegetableName
-              }
+              src={vegetable.imageUrl}
+              alt={vegetable.vegetableName}
               fill
               sizes="
                 (max-width: 639px) 112px,
@@ -114,10 +113,9 @@ export default function VegetableCard({
             sm:p-4
           "
         >
-
           <h3
             title={
-              vegetable.vegetableName
+              vegetable.displayNames[currentLocale] ?? vegetable.vegetableName
             }
             className="
               truncate
@@ -130,7 +128,7 @@ export default function VegetableCard({
               sm:font-bold
             "
           >
-            {vegetable.vegetableName}
+            {vegetable.displayNames[currentLocale] ?? vegetable.vegetableName}
           </h3>
 
           <div
@@ -221,15 +219,13 @@ export default function VegetableCard({
                   text-text-primary
                 "
               >
-                {vegetable.availableQty}{" "}
-                {unit}
+                {vegetable.availableQty} {unit}
               </span>{" "}
-              available
+              {t("sellers.available")}
             </span>
           </div>
 
-          {vegetable.marketPrice !==
-            undefined && (
+          {vegetable.marketPrice !== undefined && (
             <div
               className="
                 mt-1.5
@@ -257,9 +253,7 @@ export default function VegetableCard({
               />
 
               <span className="truncate">
-                Market ₹
-                {vegetable.marketPrice}/
-                {unit}
+                Market ₹{vegetable.marketPrice}/{unit}
               </span>
             </div>
           )}

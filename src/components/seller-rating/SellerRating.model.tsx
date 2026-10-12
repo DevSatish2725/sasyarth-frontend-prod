@@ -70,7 +70,6 @@ export default function RatingModal({
   const handleSubmit = () => {
     if (rating === 0) {
       setError("Please select a rating.");
-
       return;
     }
 
@@ -141,7 +140,7 @@ export default function RatingModal({
                         : "border-[#e7d8b9] bg-white text-[#536157] hover:border-[#159447]"
                     }`}
                   >
-                    {RATING_TAG_LABELS[tag]}
+                    {t(`tags.${tag}`)}
                   </button>
                 );
               })}

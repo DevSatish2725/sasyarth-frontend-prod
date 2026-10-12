@@ -31,15 +31,10 @@ export default function LoginForm() {
       mobileNumber: string;
       returnTo: string;
     }) => {
-      console.log("Production API:", process.env.NEXT_PUBLIC_API_URL);
-
-      console.log("1. Checking login mobile");
       await authService.sendLoginOtp({
         mobileNumber,
       });
-      console.log("2. Backend check successful");
       const msg91Response = await authService.sendMsg91Otp(mobileNumber);
-      console.log("3. MSG91 OTP sent", msg91Response);
       return {
         msg91Response,
         mobileNumber,
@@ -88,7 +83,7 @@ export default function LoginForm() {
         return;
       }
 
-      setError(t("somethingWentWrong"));
+      setError(t("somethingWentWrong"));  
     },
   });
 

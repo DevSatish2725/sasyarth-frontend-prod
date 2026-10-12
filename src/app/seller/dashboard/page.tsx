@@ -9,6 +9,8 @@ import { useTodayInventory } from "@/hooks/useTodayInventory";
 import SellerApplicationStatus from "@/components/seller/SellerApplicationStatus";
 import SellerApplicationStatusBadge from "@/components/seller/SellerApllicationStatusBadge";
 import { useTranslations } from "next-intl";
+import NotificationPermissionButton from "@/components/notifications/NotificationPermissionButton";
+import { useState } from "react";
 
 export default function SellerDashboardPage() {
   return (
@@ -19,6 +21,7 @@ export default function SellerDashboardPage() {
 }
 
 function SellerDashboard() {
+  const [notificationStatus, setNotificationStatus] = useState(false);
   const { user } = useAuth();
 
   const hasSellerProfile = Boolean(user?.sellerProfile);
@@ -32,6 +35,7 @@ function SellerDashboard() {
   const isSellerRejected = verificationStatus === "REJECTED";
   const todayInventory = useTodayInventory(isVerifiedSeller);
   const t = useTranslations("SellerDashboard");
+  const tn = useTranslations("Notifications");
 
   return (
     <main className="min-h-screen bg-[#fff8e9] px-4 pt-8 pb-22 lg:pt-8 lg:pb-8 sm:px-6 lg:px-8">
@@ -60,6 +64,35 @@ function SellerDashboard() {
           )}
           <p className="mt-4 text-[#536157]">{t("subtitle")}</p>
         </section>
+        <div className="rounded-2xl border border-green-200 bg-green-50/60 p-4 sm:p-5 mb-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                🔔
+              </div>
+
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-sm font-semibold text-text-primary sm:text-base">
+                    {tn("publishReminderTitle")}
+                  </h3>
+
+                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                    {notificationStatus ? tn("enabled") : tn("disabled")}
+                  </span>
+                </div>
+
+                <p className="mt-1 max-w-xl text-sm leading-5 text-text-secondary">
+                  {tn("publishInventoryReminder")}
+                </p>
+              </div>
+            </div>
+
+            <NotificationPermissionButton
+              onStatusChange={setNotificationStatus}
+            />
+          </div>
+        </div>
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <DashboardCard
             icon={<Package className="h-6 w-6" />}

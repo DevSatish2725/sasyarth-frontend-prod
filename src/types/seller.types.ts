@@ -1,6 +1,12 @@
+import { SearchLocation } from "./location.types";
+
 export interface Vegetable {
   id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
   sellerPrice: number;
   unit: string;
   availableQty: number;
@@ -17,6 +23,18 @@ export interface SellerCardProps {
     village?: string;
     district?: string;
     state?: string;
+    villageDisplayNames: {
+      en: string;
+      hi: string;
+    };
+    districtDisplayNames: {
+      en: string;
+      hi: string;
+    };
+    stateDisplayNames: {
+      en: string;
+      hi: string;
+    };
   };
 
   reputation?: {
@@ -31,7 +49,10 @@ export interface SellerCardProps {
 
 export interface SellerResponse {
   data: SellerCardProps[];
-  nextCursor: string;
+  meta: {
+    matchingMode: string;
+    nextCursor: string | null;
+  };
 }
 
 export type getCallSellerId = (sellerId: string) => void;
@@ -68,4 +89,20 @@ export interface SellerApply {
     type: "Point";
     coordinates: number[];
   };
+}
+
+export interface AppliedSearchParams {
+  searchLocationDetails: {
+    stateId: string;
+    stateName: string;
+
+    districtId: string;
+    districtName: string;
+
+    villageId: string;
+    villageName: string;
+  };
+
+  locationSearch: SearchLocation | null;
+  searchVegetableIds: string[];
 }

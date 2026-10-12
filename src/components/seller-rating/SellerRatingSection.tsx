@@ -41,6 +41,7 @@ export default function SellerRatingSection({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const t = useTranslations("SellerShop");
+  const tsr = useTranslations("SellerRating");
 
   const ratingStatusQuery = useQuery({
     queryKey: ["seller-rating-me", sellerId],
@@ -270,7 +271,7 @@ export default function SellerRatingSection({
           text-[#107a3a]
         "
                   >
-                    {RATING_TAG_LABELS[tag as SellerRatingTag]}
+                    {tsr(`tags.${tag}`)}
 
                     {" · "}
 

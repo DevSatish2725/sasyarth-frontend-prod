@@ -1,8 +1,9 @@
 "use client";
 
 import { Check, ChevronDown, Search } from "lucide-react";
-
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 
 interface DropdownProps<T> {
   options: T[];
@@ -55,6 +56,11 @@ export default function Dropdown<T>({
   const [search, setSearch] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
+
+  const t = useTranslations("Common");
 
   const selectedOption = useMemo(
     () => options.find((option) => getOptionValue(option) === value),
@@ -141,7 +147,7 @@ export default function Dropdown<T>({
           <div className="max-h-64 overflow-y-auto p-1">
             {loading ? (
               <div className="px-3 py-4 text-center text-sm text-[#536157]">
-                Loading...
+                {t("loading")}
               </div>
             ) : filteredOptions.length === 0 ? (
               <div className="px-3 py-4 text-center text-sm text-[#536157]">
@@ -162,7 +168,7 @@ export default function Dropdown<T>({
                   >
                     <div>
                       <p>{getOptionLabel(option)}</p>
-                      {getDisplayName && (
+                      {getDisplayName && currentLocale !== "hi" && (
                         <p
                           className="
                               mt-0.5

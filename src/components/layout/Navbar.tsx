@@ -2,8 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEventHandler,
+  type ReactNode,
+} from "react";
 import {
   ChevronDown,
   Heart,
@@ -23,6 +29,17 @@ import { useAuth } from "@/providers/AuthProvider";
 
 import LanguageSwitcher from "../common/LanguageSwitcher";
 import { NavLink } from "./NavLink";
+
+/**
+ * Responsive application navbar.
+ *
+ * Design rules:
+ * - Desktop (`lg` and above) keeps the existing horizontal navigation pattern.
+ * - Mobile uses a compact top bar for brand/account/menu actions.
+ * - Mobile primary destinations live in a fixed bottom navigation bar.
+ * - Mobile drawer contains secondary/account actions instead of duplicating every
+ *   primary destination.
+ */
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -33,6 +50,7 @@ export default function Navbar() {
   const mobileMenuCloseRef = useRef<HTMLButtonElement>(null);
 
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("Navbar");
   const { user, isLoading, logout } = useAuth();
 
@@ -40,6 +58,9 @@ export default function Navbar() {
   const isSeller = Boolean(user?.sellerProfile);
   const userName = user?.fullName ?? "";
 
+  /**
+   * Build a compact avatar label from the user's first two name parts.
+   */
   const initials = userName
     ? userName
         .trim()
@@ -51,6 +72,9 @@ export default function Navbar() {
         .toUpperCase()
     : "U";
 
+  /**
+   * Guests are sent through login before the seller onboarding flow.
+   */
   const becomeSellerHref = isAuthenticated
     ? "/become-seller"
     : `/login?returnTo=${encodeURIComponent("/become-seller")}`;
@@ -58,6 +82,50 @@ export default function Navbar() {
   const isRegisterActive =
     pathname === "/register" || pathname.startsWith("/register/");
 
+  /**
+   * Return the last filtered sellers listing URL stored by SellersPage.
+   * Falls back to the plain listing when no valid saved URL exists.
+   */
+  const getLastSellersUrl = () => {
+    const fallbackUrl = "/sellers";
+
+    if (typeof window === "undefined") {
+      return fallbackUrl;
+    }
+
+    const storedUrl = sessionStorage.getItem("lastSellersUrl");
+
+    if (
+      !storedUrl ||
+      !(storedUrl === "/sellers" || storedUrl.startsWith("/sellers?"))
+    ) {
+      return fallbackUrl;
+    }
+
+    return storedUrl;
+  };
+
+  /**
+   * Restore the user's last seller filters when Sellers is opened.
+   */
+  const navigateToLastSellers = () => {
+    router.push(getLastSellersUrl());
+  };
+
+  /**
+   * Anchor-specific handler used by the mobile bottom navigation.
+   */
+  const handleSellersAnchorClick: MouseEventHandler<HTMLAnchorElement> = (
+    event,
+  ) => {
+    event.preventDefault();
+    navigateToLastSellers();
+  };
+
+  /**
+   * Close the desktop profile menu when the user clicks outside it.
+   * The listener only exists while the menu is open.
+   */
   useEffect(() => {
     if (!isProfileOpen) {
       return;
@@ -79,6 +147,9 @@ export default function Navbar() {
     };
   }, [isProfileOpen]);
 
+  /**
+   * Prevent the page behind the mobile drawer from scrolling.
+   */
   useEffect(() => {
     if (!isMenuOpen) {
       return;
@@ -92,6 +163,9 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
+  /**
+   * Move keyboard focus into the drawer when it opens.
+   */
   useEffect(() => {
     if (!isMenuOpen) {
       return;
@@ -106,6 +180,9 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
+  /**
+   * Escape closes either open navigation surface.
+   */
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") {
@@ -131,6 +208,9 @@ export default function Navbar() {
     };
   }, [isMenuOpen, isProfileOpen]);
 
+  /**
+   * Close the mobile drawer and optionally return keyboard focus to its trigger.
+   */
   const closeMobileMenu = (restoreFocus = false) => {
     setIsMenuOpen(false);
 
@@ -141,6 +221,9 @@ export default function Navbar() {
     }
   };
 
+  /**
+   * Prevent duplicate logout requests and close open navigation after success.
+   */
   const handleLogout = async () => {
     if (isLoggingOut) {
       return;
@@ -156,6 +239,9 @@ export default function Navbar() {
     }
   };
 
+  /**
+   * Keep navbar height stable while auth state is being restored.
+   */
   if (isLoading) {
     return (
       <header className="sticky top-0 z-40 border-b border-border/70 bg-white/90 backdrop-blur-xl">
@@ -176,26 +262,42 @@ export default function Navbar() {
 
   return (
     <>
+      {/* ====================================================== */}
+      {/* Top navigation                                         */}
+      {/* ====================================================== */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-white/95 shadow-[0_1px_2px_rgba(0,0,0,0.02)] backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-3 sm:px-4 lg:h-[72px] lg:px-8">
+          {/* Mobile brand */}
           <div className="lg:hidden">
             <NavbarLogo compact />
           </div>
 
+          {/* Desktop brand */}
           <div className="hidden lg:block">
             <NavbarLogo />
           </div>
+
+          {/* ================================================== */}
+          {/* Desktop navigation                                  */}
+          {/* ================================================== */}
           <div className="ml-auto hidden items-center gap-2 lg:flex">
             <nav
               aria-label="Primary navigation"
               className="ml-8 flex items-center gap-1"
             >
-              <NavLink
-                href="/sellers"
-                icon={<Store className="h-4.5 w-4.5" />}
+              <div
+                onClickCapture={(event) => {
+                  event.preventDefault();
+                  navigateToLastSellers();
+                }}
               >
-                {t("findSellers")}
-              </NavLink>
+                <NavLink
+                  href="/sellers"
+                  icon={<Store className="h-4.5 w-4.5" />}
+                >
+                  {t("findSellers")}
+                </NavLink>
+              </div>
 
               {isSeller ? (
                 <NavLink
@@ -337,6 +439,10 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
+          {/* ================================================== */}
+          {/* Mobile top-bar actions                              */}
+          {/* ================================================== */}
           <div className="ml-auto flex items-center gap-1 lg:hidden">
             {isAuthenticated && (
               <Link
@@ -363,12 +469,20 @@ export default function Navbar() {
         </div>
       </header>
 
+      {/* ====================================================== */}
+      {/* Mobile bottom navigation                               */}
+      {/* ====================================================== */}
       <MobileBottomNavigation
         pathname={pathname}
         isAuthenticated={isAuthenticated}
         isSeller={isSeller}
         becomeSellerHref={becomeSellerHref}
+        onSellersClick={handleSellersAnchorClick}
       />
+
+      {/* ====================================================== */}
+      {/* Mobile navigation drawer                               */}
+      {/* ====================================================== */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
@@ -385,6 +499,7 @@ export default function Navbar() {
             aria-label="Mobile navigation"
             className="absolute right-0 top-0 flex h-[100dvh] w-[86%] max-w-[340px] flex-col overflow-y-auto overscroll-contain bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl"
           >
+            {/* Drawer header */}
             <div className="flex min-h-16 items-center justify-between border-b border-border/70 px-4">
               <NavbarLogo compact onClick={() => closeMobileMenu(false)} />
 
@@ -400,6 +515,7 @@ export default function Navbar() {
             </div>
 
             <div className="flex flex-1 flex-col px-4 pb-5">
+              {/* Account summary */}
               {isAuthenticated && (
                 <div className="mt-4 flex items-center gap-3 rounded-2xl border border-primary/10 bg-primary-light/70 p-3.5">
                   <UserAvatar initials={initials} size="large" />
@@ -415,6 +531,7 @@ export default function Navbar() {
                 </div>
               )}
 
+              {/* Secondary/account navigation */}
               <nav className="mt-4 flex flex-col gap-1" aria-label="Account navigation">
                 {isAuthenticated ? (
                   <>
@@ -515,6 +632,7 @@ export default function Navbar() {
                 )}
               </nav>
 
+              {/* Brand message stays at the bottom of the drawer. */}
               <div className="mt-auto pt-8">
                 <div className="flex items-center justify-center rounded-2xl border border-primary/10 bg-primary-light/60 p-4 text-center text-sm">
                   <p className="border-r border-gray-300 pr-2 font-bold text-primary">
@@ -542,6 +660,10 @@ interface NavbarLogoProps {
   compact?: boolean;
 }
 
+/**
+ * Shared Sasyarth brand component.
+ * Compact mode is used on mobile to keep the app bar at 64px.
+ */
 function NavbarLogo({ onClick, compact = false }: NavbarLogoProps) {
   return (
     <Link
@@ -594,6 +716,9 @@ interface UserAvatarProps {
   size?: "small" | "medium" | "large";
 }
 
+/**
+ * Consistent account avatar for desktop and mobile navigation.
+ */
 function UserAvatar({ initials, size = "small" }: UserAvatarProps) {
   const sizeClasses = {
     small: "h-9 w-9 text-sm",
@@ -622,6 +747,9 @@ interface ProfileMenuLinkProps {
   onClick?: () => void;
 }
 
+/**
+ * Shared link style for the desktop account dropdown.
+ */
 function ProfileMenuLink({
   href,
   children,
@@ -642,6 +770,14 @@ function ProfileMenuLink({
     </Link>
   );
 }
+
+/* ========================================================= */
+/* Menu divider                                              */
+/* ========================================================= */
+
+/**
+ * Visual separator shared by account menus.
+ */
 function MenuDivider() {
   return <div aria-hidden="true" className="my-2 h-px bg-border" />;
 }
@@ -659,6 +795,9 @@ interface MobileNavLinkProps {
   onClick: () => void;
 }
 
+/**
+ * Route-aware mobile drawer item with an accessible active state.
+ */
 function MobileNavLink({
   href,
   children,
@@ -705,13 +844,22 @@ interface MobileBottomNavigationProps {
   isAuthenticated: boolean;
   isSeller: boolean;
   becomeSellerHref: string;
+  onSellersClick: MouseEventHandler<HTMLAnchorElement>;
 }
 
+/**
+ * App-style primary navigation shown only below the `lg` breakpoint.
+ *
+ * Guest:  Home / Sellers / Sell / Login
+ * Buyer:  Home / Sellers / Saved / Profile
+ * Seller: Home / Sellers / Saved / Dashboard
+ */
 function MobileBottomNavigation({
   pathname,
   isAuthenticated,
   isSeller,
   becomeSellerHref,
+  onSellersClick,
 }: MobileBottomNavigationProps) {
   const t = useTranslations("Navbar");
 
@@ -732,6 +880,7 @@ function MobileBottomNavigation({
         <BottomNavItem
           href="/sellers"
           pathname={pathname}
+          onClick={onSellersClick}
           icon={<Store className="h-[21px] w-[21px]" />}
           label={t("sellers")}
         />
@@ -787,7 +936,12 @@ interface BottomNavItemProps {
   label: string;
   activePath?: string;
   exact?: boolean;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
 }
+
+/**
+ * Individual mobile bottom-navigation destination.
+ */
 function BottomNavItem({
   href,
   pathname,
@@ -795,6 +949,7 @@ function BottomNavItem({
   label,
   activePath,
   exact = false,
+  onClick,
 }: BottomNavItemProps) {
   const targetPath = activePath ?? href.split("?")[0];
   const isActive = exact
@@ -804,6 +959,7 @@ function BottomNavItem({
   return (
     <Link
       href={href}
+      onClick={onClick}
       aria-current={isActive ? "page" : undefined}
       className={`relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[11px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 ${
         isActive ? "text-primary" : "text-text-secondary"

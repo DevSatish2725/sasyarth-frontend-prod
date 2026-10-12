@@ -276,6 +276,17 @@
       "edit": "Edit Profile"
     },
 
+    "notifications": {
+      "publishReminderTitle": "Daily inventory reminder",
+      "publishInventoryReminder": "Get a daily reminder to publish inventory.",
+      "enabled": "Enabled",
+      "enable": "Enable",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "enabling": "Enabling...",
+      "disabling": "Disabling..."
+    },
+
     "inventoryReminder": {
       "title": "Keep your availability updated",
       "description": "Update your availability regularly so buyers can see accurate vegetables, quantities, and prices."
@@ -328,9 +339,9 @@
   "FindSellers": {
     "title": "Find Vegetable Sellers",
     "subtitle": "Find vegetable sellers near you",
-     "filters": "Search Filters",
-      "dailyFresh": "Daily Fresh",
-  "vegetablesMarket": "Vegetables Market",
+    "filters": "Search Filters",
+    "dailyFresh": "Daily Fresh",
+    "vegetablesMarket": "Vegetables Market",
     "location": {
       "title": "Find sellers near you",
       "description": "Choose how you want to search",
@@ -367,10 +378,12 @@
 
     "searchingIn": "Searching in:",
     "findingSellers": "Finding sellers",
-  "foundIn": "Found in",
-  "allLocations": "All locations",
-  "allSellers": "All sellers",
-  "showingAllAvailableVegetables": "Showing all available vegetables",
+    "foundIn": "Found in",
+    "allLocations": "All locations",
+    "allSellers": "All sellers",
+    "allLocationSellers": "Sellers from all locations",
+    "nearbySellers": "Nearby sellers",
+    "showingAllAvailableVegetables": "Showing all available vegetables",
 
     "vegetables": {
       "title": "What do you need?",
@@ -433,7 +446,7 @@
   },
 
   "BecomeSeller": {
-     "completeRequiredFields": "Please complete all required fields.",
+    "completeRequiredFields": "Please complete all required fields.",
     "profileCreatedRefreshFailed": "Seller profile created but account could not be refreshed.",
     "somethingWentWrong": "Something went wrong.",
     "selectBusinessTypeError": "Please select your business type.",
@@ -541,7 +554,17 @@
     "optional": "Optional",
     "selectUpToFive": "Select up to 5 options.",
     "updateRating": "Update Rating",
-    "submitRating": "Submit Rating"
+    "submitRating": "Submit Rating",
+    "tags": {
+      "FRESH_PRODUCE": "Fresh Produce",
+      "FAIR_PRICE": "Fair Price",
+      "GOOD_BEHAVIOUR": "Good Behaviour",
+      "GOOD_COMMUNICATION": "Good Communication",
+      "QUANTITY_AVAILABLE": "Quantity Available",
+      "PRICE_DIFFERENT": "Price Different",
+      "STOCK_UNAVAILABLE": "Stock Unavailable",
+      "QUALITY_ISSUE": "Quality Issue"
+    }
   },
 
   "SavedSellers": {
@@ -625,6 +648,25 @@
       "pending": "Pending",
       "rejected": "Rejected"
     }
+  },
+
+  "Notifications": {
+    "exploreSellersReminder": "Get reminders to check fresh produce from sellers on Sasyarth.",
+    "publishInventoryReminder": "Get a daily reminder to publish inventory.",
+    "publishReminderTitle": "Daily inventory reminder",
+    "enabled": "Enabled",
+    "enable": "Enable",
+    "disable": "Disable",
+    "disabled": "Disabled",
+    "enabling": "Enabling...",
+    "disabling": "Disabling..."
+  },
+
+  "Vegetables": {
+    "noVegetablesFound": "No vegetables found.",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "searchPlaceholder": "Search vegetables..."
   },
 
   "Common": {

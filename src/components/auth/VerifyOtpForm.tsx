@@ -92,7 +92,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
         };
       }
 
-      console.log("register otp")
       const msgAccessToken = await authService.verifyMsg91Otp(otp);
 
       const response = await authService.verifyRegistrationOtp(msgAccessToken);
@@ -184,12 +183,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
     event.preventDefault();
 
     if (verifyMutation.isPending || resendMutation.isPending) {
-      return;
-    }
-
-    if (isExpired) {
-      setError(t("otpExpired"));
-
       return;
     }
 
@@ -324,7 +317,7 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
         type="submit"
         fullWidth
         disabled={
-          verifyMutation.isPending || resendMutation.isPending || isExpired
+          verifyMutation.isPending || resendMutation.isPending
         }
         className="
           mt-6

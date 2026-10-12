@@ -14,8 +14,8 @@ export interface SellerShopItem {
   name: string;
 
   displayNames: {
-    en?: string;
-    hi?: string;
+    en: string;
+    hi: string;
   };
 
   searchAliases?: string[];

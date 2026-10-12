@@ -1,11 +1,17 @@
 "use client";
 
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 import { Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useLocale } from "use-intl";
 
 interface Option {
   id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
 }
 
 interface SearchableLocationFieldProps {
@@ -40,7 +46,11 @@ export default function SearchableLocationField({
   localSearch = false,
   minimumSearchLength = 0,
 }: SearchableLocationFieldProps) {
-  const [search, setSearch] = useState(value?.name ?? "");
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
+  const [search, setSearch] = useState(
+    value?.displayNames[currentLocale] ?? "",
+  );
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,7 +63,7 @@ export default function SearchableLocationField({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setSearch(value?.name ?? "");
+        setSearch(value?.displayNames[currentLocale] ?? "");
       }
     };
 
@@ -71,6 +81,7 @@ export default function SearchableLocationField({
     : options;
 
   const handleInputChange = (inputValue: string) => {
+    console.log("handleInputChange", inputValue);
     setSearch(inputValue);
     setIsOpen(true);
 
@@ -80,7 +91,7 @@ export default function SearchableLocationField({
   };
 
   const handleSelect = (option: Option) => {
-    setSearch(option.name);
+    setSearch(option.displayNames[currentLocale]);
 
     setIsOpen(false);
 
@@ -243,7 +254,7 @@ export default function SearchableLocationField({
                       hover:bg-primary-light
                     "
               >
-                {option.name}
+                {option.displayNames[currentLocale]}
               </button>
             ))
           )}
