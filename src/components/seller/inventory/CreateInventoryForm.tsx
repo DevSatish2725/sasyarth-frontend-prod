@@ -20,6 +20,11 @@ function createEmptyItem(): InventoryFormItem {
 
     vegetableName: "",
 
+    displayNames: {
+      en: "",
+      hi: "",
+    },
+
     unit: "KG",
 
     availableQty: "",
