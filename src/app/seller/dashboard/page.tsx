@@ -103,7 +103,7 @@ function SellerDashboard() {
                 : isSellerRejected
                   ? t("inventory.inventoryUnavailableRejected")
                   : todayInventory?.data
-                    ? `${todayInventory?.data?.items.length} vegetables listed today . ${todayInventory?.data?.status}`
+                    ? `${todayInventory?.data?.items.length > 1 ? t("inventory.vegetablesListedToday", { count: todayInventory?.data?.items.length }) : t("inventory.vegetableListedToday", { count: 1 })} . ${todayInventory?.data?.status}`
                     : t("inventory.empty")
             }
             href={isVerifiedSeller ? "/seller/inventory" : "/seller/dashboard"}

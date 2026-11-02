@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {  useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,6 +13,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { API_ERROR } from "@/lib/axios";
 
 import { toast } from "sonner";
+import {LocationOption } from "@/types/location.types";
 
 export type BusinessType =
   | "INDIVIDUAL_FARMER"
@@ -20,21 +21,10 @@ export type BusinessType =
   | "TRADER"
   | "WHOLESALER";
 
-export interface LocationOption {
-  id: string;
-  name: string;
-  displayNames: {
-    en: string;
-    hi: string;
-  };
-}
-
 export interface SellerOnboardingForm {
   businessType: BusinessType | "";
 
-  state: LocationOption | null;
-  district: LocationOption | null;
-  village: LocationOption | null;
+  location: LocationOption | null;
 
   pincode: string;
 
@@ -47,9 +37,7 @@ export interface SellerOnboardingForm {
 const initialForm: SellerOnboardingForm = {
   businessType: "",
 
-  state: null,
-  district: null,
-  village: null,
+  location: null,
 
   pincode: "",
 
@@ -71,13 +59,7 @@ export default function BecomeSellerForm() {
 
   const applyForSellerMutation = useMutation({
     mutationFn: async () => {
-      if (
-        !form.businessType ||
-        !form.state ||
-        !form.district ||
-        !form.village ||
-        !form.pincode
-      ) {
+      if (!form.businessType || !form.location || !form.pincode) {
         throw new Error(t("completeRequiredFields"));
       }
 
@@ -92,12 +74,7 @@ export default function BecomeSellerForm() {
         ],
 
         location: {
-          stateId: form.state.id,
-
-          districtId: form.district.id,
-
-          villageId: form.village.id,
-
+          ...form.location.ids,
           pincode: form.pincode,
         },
 
@@ -159,7 +136,7 @@ export default function BecomeSellerForm() {
   const handleSubmit = () => {
     setError("");
 
-    if (!form.state || !form.district || !form.village) {
+    if (!form.location) {
       setError(t("selectCompleteLocationError"));
 
       return;

@@ -30,28 +30,14 @@ export function buildSellerParams({
     };
   }
 
-  if (searchLocation.village) {
-    return {
-      ...commonParams,
-      scope: "village" as const,
-      state: searchLocation.state,
-      district: searchLocation.district,
-      village: searchLocation.village,
-    };
-  }
-
-  if (searchLocation.district) {
-    return {
-      ...commonParams,
-      scope: "district" as const,
-      state: searchLocation.state,
-      district: searchLocation.district,
-    };
-  }
-
   return {
     ...commonParams,
-    scope: "state" as const,
-    state: searchLocation.state,
+    // scope: "state" as const,
+    stateId: searchLocation.stateId,
+    districtId: searchLocation.districtId,
+    blockId: searchLocation.blockId,
+    villageId: searchLocation.villageId,
+    maujaId: searchLocation.maujaId,
+    habitationId: searchLocation.habitationId,
   };
 }

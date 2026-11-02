@@ -60,4 +60,21 @@ export const locationService = {
 
     return response.data.data;
   },
+
+  async searchLocations({
+    searchQuery,
+    limit,
+  }: {
+    searchQuery: string;
+    limit?: number;
+  }) {
+    const response = await axiosInstance.get("/locations/search", {
+      params: {
+        q: searchQuery,
+        limit,
+      },
+    });
+
+    return response.data;
+  },
 };

@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  ReactNode,
-  useEffect,
-} from "react";
+import { ReactNode, useEffect } from "react";
 
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface MobileFilterSheetProps {
   children: ReactNode;
@@ -16,16 +14,14 @@ export default function MobileFilterSheet({
   children,
   onClose,
 }: MobileFilterSheetProps) {
+  const t = useTranslations("FindSellers");
   useEffect(() => {
-    const previousOverflow =
-      document.body.style.overflow;
+    const previousOverflow = document.body.style.overflow;
 
-    document.body.style.overflow =
-      "hidden";
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow =
-        previousOverflow;
+      document.body.style.overflow = previousOverflow;
     };
   }, []);
 
@@ -104,7 +100,7 @@ export default function MobileFilterSheet({
                 text-text-primary
               "
             >
-              Search & filters
+              {t("location.searchAndFilters")}
             </h2>
 
             <p
@@ -113,7 +109,7 @@ export default function MobileFilterSheet({
                 text-text-secondary
               "
             >
-              Find sellers near you
+              {t("location.title")}
             </p>
           </div>
 

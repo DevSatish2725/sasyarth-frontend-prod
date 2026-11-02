@@ -1,4 +1,5 @@
 import { SupportedLanguage } from "./common.types";
+import { Location } from "./location.types";
 import { SellerVerificationStatus } from "./seller.types";
 
 export interface SendOtpPayload {
@@ -57,7 +58,39 @@ export interface AuthUser {
   mobileNumber: string;
   isPhoneVerified: boolean;
   preferredLanguage: SupportedLanguage;
-  location: UserLocation;
+  location: {
+    habitationId: string;
+  habitation: {
+    en: string;
+    hi: string;
+  };
+  maujaId: string;
+  mauja: {
+    en: string;
+    hi: string;
+  };
+  villageId: string;
+  village: {
+    en: string;
+    hi: string;
+  };
+  blockId: string;
+  block: {
+    en: string;
+    hi: string;
+  };
+  districtId: string;
+  district: {
+    en: string;
+    hi: string;
+  };
+  stateId: string;
+  state: {
+    en: string;
+    hi: string;
+    };
+    pincode: string;
+  };
   geoLocation: {
     type: "Point";
     coordinates: [number, number];

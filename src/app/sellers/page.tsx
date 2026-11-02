@@ -23,8 +23,6 @@ import MarketplaceHeader from "@/components/layout/MarketPlaceHeader";
 
 import LocationSelector from "@/components/location/LocationSelector";
 
-import LocationSearchBar from "@/components/location/LocationSearchBar";
-
 import SellerCard from "@/components/sellers/SellerCard";
 
 import CallSellerCard from "@/components/sellers/CallSellerCard";
@@ -51,9 +49,7 @@ import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 import type {
   SearchLocation,
   ManualLocation,
-  VillageOption,
-  DistrictOption,
-  StateOption,
+  LocationOption,
 } from "@/types/location.types";
 
 import type { SellerResponse } from "@/types/seller.types";
@@ -78,9 +74,7 @@ interface AppliedFilters {
   vegetableIds: string[];
   searchLocation: SearchLocation | null;
   activeLocation: ManualLocation | null;
-  selectedState: StateOption | null;
-  selectedDistrict: DistrictOption | null;
-  selectedVillage: VillageOption | null;
+  selectedLocation: ManualLocation | null;
 }
 
 function getAppliedFilters(
@@ -114,80 +108,48 @@ function getAppliedFilters(
           }
         : null,
       activeLocation: null,
-      selectedState: null,
-      selectedDistrict: null,
-      selectedVillage: null,
+      selectedLocation: null,
     };
   }
 
   const stateId = searchParams.get("stateId");
-  const stateNameEn = searchParams.get("stateNameEn");
-  const stateNameHi = searchParams.get("stateNameHi");
   const districtId = searchParams.get("districtId");
-  const districtNameEn = searchParams.get("districtNameEn");
-  const districtNameHi = searchParams.get("districtNameHi");
+  const blockId = searchParams.get("blockId");
   const villageId = searchParams.get("villageId");
-  const villageNameEn = searchParams.get("villageNameEn");
-  const villageNameHi = searchParams.get("villageNameHi");
+  const maujaId = searchParams.get("maujaId");
+  const habitationId = searchParams.get("habitationId");
+  const displayNameEn = searchParams.get("en");
+  const displayNameHi = searchParams.get("hi");
 
-  if (stateId && (stateNameEn || stateNameHi)) {
+  if (stateId) {
     const activeLocation: ManualLocation = {
-      stateId,
-      stateNameEn: stateNameEn || "",
-      stateNameHi: stateNameHi || "",
-      ...(districtId && { districtId }),
-      ...(districtNameEn && { districtNameEn }),
-      ...(districtNameHi && { districtNameHi }),
-      ...(villageId && { villageId }),
-      ...(villageNameEn && { villageNameEn }),
-      ...(villageNameHi && { villageNameHi }),
+      stateId: stateId ?? "",
+      districtId: districtId ?? "",
+      blockId: blockId ?? "",
+      villageId: villageId ?? "",
+      maujaId: maujaId ?? "",
+      habitationId: habitationId ?? "",
+      displayNames: {
+        en: displayNameEn ?? "",
+        hi: displayNameHi ?? "",
+      },
     };
 
     const searchLocation: SearchLocation = {
       mode: "MANUAL",
-      state: stateNameEn ?? "",
-      ...((districtNameEn || districtNameHi) && {
-        district: districtNameEn ?? "",
-      }),
-      ...((villageNameEn || villageNameHi) && {
-        village: villageNameEn ?? "",
-      }),
+      stateId: stateId ?? "",
+      districtId: districtId ?? "",
+      blockId: blockId ?? "",
+      villageId: villageId ?? "",
+      maujaId: maujaId ?? "",
+      habitationId: habitationId ?? "",
     };
 
     return {
       vegetableIds,
       searchLocation,
       activeLocation,
-      selectedState: {
-        id: stateId,
-        name: stateNameEn ?? "",
-        displayNames: {
-          en: stateNameEn ?? "",
-          hi: stateNameHi ?? "",
-        },
-      },
-      selectedDistrict:
-        districtId && districtNameEn
-          ? {
-              id: districtId,
-              name: districtNameEn ?? "",
-              displayNames: {
-                en: districtNameEn,
-                hi: districtNameHi || "",
-              },
-            }
-          : null,
-      selectedVillage:
-        villageId && villageNameEn
-          ? {
-              id: villageId,
-              name: villageNameEn,
-              displayNames: {
-                en: villageNameEn,
-                hi: villageNameHi || "",
-              },
-            }
-          : null,
+      selectedLocation: activeLocation,
     };
   }
 
@@ -195,9 +157,7 @@ function getAppliedFilters(
     vegetableIds,
     searchLocation: null,
     activeLocation: null,
-    selectedState: null,
-    selectedDistrict: null,
-    selectedVillage: null,
+    selectedLocation: null,
   };
 }
 
@@ -237,19 +197,9 @@ export default function SellersPage() {
     () => initialFilters.activeLocation,
   );
 
-  const [selectedState, setSelectedState] = useState<StateOption | null>(
-    () => initialFilters.selectedState,
-  );
-
-  const [selectedDistrict, setSelectedDistrict] =
-    useState<DistrictOption | null>(() => initialFilters.selectedDistrict);
-
-  const [selectedVillage, setSelectedVillage] = useState<VillageOption | null>(
-    () => initialFilters.selectedVillage,
-  );
-
-  const [districtSearch, setDistrictSearch] = useState("");
-  const [villageSearch, setVillageSearch] = useState("");
+  const [selectedLocation, setSelectedLocation] =
+    useState<LocationOption | null>(null);
+  const [locationSearch, setLocationSearch] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState(false);
 
@@ -276,11 +226,20 @@ export default function SellersPage() {
     params.delete("latitude");
     params.delete("longitude");
     params.delete("stateId");
-    params.delete("stateName");
+
     params.delete("districtId");
-    params.delete("districtName");
+
+    params.delete("blockId");
+
     params.delete("villageId");
-    params.delete("villageName");
+
+    params.delete("maujaId");
+
+    params.delete("habitationId");
+
+    params.delete("en");
+
+    params.delete("hi");
 
     if (locationSearch?.mode === "CURRENT") {
       params.set("locationMode", "CURRENT");
@@ -291,20 +250,13 @@ export default function SellersPage() {
     if (locationSearch?.mode === "MANUAL" && selectedLocation) {
       params.set("locationMode", "MANUAL");
       params.set("stateId", selectedLocation.stateId);
-      params.set("stateName", selectedLocation.stateNameEn);
-
-      if (selectedLocation.districtId) {
-        params.set("districtId", selectedLocation.districtId);
-      }
-      if (selectedLocation.districtNameEn) {
-        params.set("districtName", selectedLocation.districtNameEn);
-      }
-      if (selectedLocation.villageId) {
-        params.set("villageId", selectedLocation.villageId);
-      }
-      if (selectedLocation.villageNameEn) {
-        params.set("villageName", selectedLocation.villageNameEn);
-      }
+      params.set("districtId", selectedLocation.districtId);
+      params.set("blockId", selectedLocation.blockId);
+      params.set("villageId", selectedLocation.villageId);
+      params.set("maujaId", selectedLocation.maujaId);
+      params.set("habitationId", selectedLocation.habitationId);
+      params.set("en", selectedLocation.displayNames.en);
+      params.set("hi", selectedLocation.displayNames.hi);
     }
 
     const query = params.toString();
@@ -329,13 +281,10 @@ export default function SellersPage() {
     `/sellers?sellerId=${selectedSeller?.sellerId}` + `&action=call`;
 
   const handleClearManualLocation = () => {
-    setSelectedState(null);
-    setSelectedDistrict(null);
-    setSelectedVillage(null);
-    setDistrictSearch("");
-    setVillageSearch("");
+    setSelectedLocation(null);
     setActiveLocation(null);
     setSearchLocation(null);
+    setLocationSearch("");
 
     updateFilters(null, selectedVegetableIds, null);
   };
@@ -360,11 +309,7 @@ export default function SellersPage() {
 
     setSearchLocation(currentLocation);
     setActiveLocation(null);
-    setSelectedState(null);
-    setSelectedDistrict(null);
-    setSelectedVillage(null);
-    setDistrictSearch("");
-    setVillageSearch("");
+    setLocationSearch("");
 
     updateFilters(null, selectedVegetableIds, currentLocation);
   };
@@ -381,39 +326,31 @@ export default function SellersPage() {
     let activeLocationDetails: ManualLocation | null = null;
     let locationSearch: SearchLocation | null = searchLocation;
 
-    if (selectedState) {
+    if (selectedLocation) {
+      const {
+        ids: { stateId, districtId, blockId, villageId, maujaId, habitationId },
+      } = selectedLocation;
       const searchLocationDetails: SearchLocation = {
         mode: "MANUAL",
-        state: selectedState.name,
-        ...(selectedDistrict?.name && {
-          district: selectedDistrict.name,
-        }),
-        ...(selectedVillage?.name && {
-          village: selectedVillage.name,
-        }),
+        stateId,
+        districtId,
+        blockId,
+        villageId,
+        maujaId,
+        habitationId,
       };
 
       setSearchLocation(searchLocationDetails);
       locationSearch = searchLocationDetails;
 
       activeLocationDetails = {
-        stateId: selectedState.id,
-        stateNameEn: selectedState.displayNames.en,
-        stateNameHi: selectedState.displayNames.hi,
-        ...(selectedDistrict?.id && {
-          districtId: selectedDistrict.id,
-        }),
-        ...(selectedDistrict?.name && {
-          districtNameEn: selectedDistrict.displayNames.en,
-          districtNameHi: selectedDistrict.displayNames.hi,
-        }),
-        ...(selectedVillage?.id && {
-          villageId: selectedVillage.id,
-        }),
-        ...(selectedVillage?.name && {
-          villageNameEn: selectedVillage.displayNames.en,
-          villageNameHi: selectedVillage.displayNames.hi,
-        }),
+        stateId,
+        districtId,
+        blockId,
+        villageId,
+        maujaId,
+        habitationId,
+        displayNames: selectedLocation.displayNames,
       };
 
       setActiveLocation(activeLocationDetails);
@@ -425,36 +362,12 @@ export default function SellersPage() {
     updateFilters(activeLocationDetails, selectedVegetableIds, locationSearch);
   };
 
-  const handleStateSelect = (state: StateOption) => {
-    setSelectedState(state);
-
-    setSelectedDistrict(null);
-
-    setSelectedVillage(null);
-
-    setDistrictSearch("");
-
-    setVillageSearch("");
+  const handleLocationSelect = (location: LocationOption) => {
+    setSelectedLocation(location);
   };
 
-  const handleDistrictSelect = (district: DistrictOption) => {
-    setSelectedDistrict(district);
-
-    setSelectedVillage(null);
-
-    setVillageSearch("");
-  };
-
-  const handleVillageSelect = (village: VillageOption) => {
-    setSelectedVillage(village);
-  };
-
-  const handleDistrictSearch = (district: string) => {
-    setDistrictSearch(district);
-  };
-
-  const handleVillageSearch = (village: string) => {
-    setVillageSearch(village);
+  const handleLocationSearch = (location: string) => {
+    setLocationSearch(location);
   };
 
   const getCallSellerId = (sellerId: string) => {
@@ -523,7 +436,7 @@ export default function SellersPage() {
         cursor: pageParam,
       });
 
-      const response = await sellerService.getSellers(params)
+      const response = await sellerService.getSellers(params);
 
       return response;
     },
@@ -754,7 +667,8 @@ export default function SellersPage() {
 
           "
               >
-                {[
+                {activeLocation.displayNames[currentLocale]}
+                {/* {[
                   currentLocale === "hi"
                     ? activeLocation.villageNameHi
                     : activeLocation.villageNameEn,
@@ -770,7 +684,7 @@ export default function SellersPage() {
 
                   .filter(Boolean)
 
-                  .join(", ")}
+                  .join(", ")} */}
               </p>
 
               <button
@@ -889,7 +803,9 @@ export default function SellersPage() {
               <MapPin className="h-4 w-4 text-primary" />
 
               <span className="truncate">
-                {currentLocale === "hi"
+                {activeLocation?.displayNames[currentLocale] ??
+                  t("location.currentLocation.title")}
+                {/* {currentLocale === "hi"
                   ? activeLocation?.villageNameHi ||
                     activeLocation?.districtNameHi ||
                     activeLocation?.stateNameHi ||
@@ -897,7 +813,7 @@ export default function SellersPage() {
                   : activeLocation?.villageNameEn ||
                     activeLocation?.districtNameEn ||
                     activeLocation?.stateNameEn ||
-                    t("location.currentLocation.title")}
+                    t("location.currentLocation.title")} */}
               </span>
             </button>
 
@@ -1030,25 +946,20 @@ export default function SellersPage() {
           "
           >
             <DesktopFilters
+              key={activeLocation?.habitationId ?? "no-location"}
               showManualLocationSelector={showManualLocationSelector}
               setShowManualLocationSelector={setShowManualLocationSelector}
               handleLocationChange={handleLocationChange}
               handleChooseLocation={handleChooseLocation}
               handleManualLocationClose={handleManualLocationClose}
-              handleStateSelect={handleStateSelect}
-              handleDistrictSelect={handleDistrictSelect}
-              handleVillageSelect={handleVillageSelect}
-              handleDistrictSearch={handleDistrictSearch}
-              handleVillageSearch={handleVillageSearch}
-              selectedState={selectedState}
-              selectedDistrict={selectedDistrict}
-              selectedVillage={selectedVillage}
-              villageSearch={villageSearch}
-              districtSearch={districtSearch}
               vegetables={vegetables}
               selectedVegetableIds={selectedVegetableIds}
               setSelectedVegetableIds={setSelectedVegetableIds}
               isVegetablesLoading={isVegetablesLoading}
+              handleLocationSelect={handleLocationSelect}
+              handleLocationSearch={handleLocationSearch}
+              selectedLocation={selectedLocation}
+              locationSearch={locationSearch}
               handleSellerSearch={handleSellerSearch}
             />
           </aside>
@@ -1134,7 +1045,7 @@ export default function SellersPage() {
       "
                 >
                   <div className="flex justify-between rounded-2xl border border-green-200 bg-green-50/60 p-2">
-                    <p className="flex gap-2 items-start">
+                    <div className="flex gap-2 items-start">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
                         🔔
                       </div>
@@ -1142,7 +1053,7 @@ export default function SellersPage() {
                       <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                         {notificationStatus ? tn("enabled") : tn("disabled")}
                       </span>
-                    </p>
+                    </div>
                     <NotificationPermissionButton
                       onStatusChange={setNotificationStatus}
                     />
@@ -1202,35 +1113,23 @@ export default function SellersPage() {
 
       {showMobileFilters && (
         <MobileFilterSheet onClose={() => setShowMobileFilters(false)}>
-          {!showManualLocationSelector ? (
-            <LocationSelector
-              location=""
-              onLocationChange={(location) => {
-                handleLocationChange(location);
-              }}
-              onChooseLocation={handleChooseLocation}
-              handleManualLocationClose={handleManualLocationClose}
-              isManualSelected={Boolean(activeLocation)}
-            />
-          ) : (
-            <LocationSearchBar
-              handleStateSelect={handleStateSelect}
-              handleDistrictSelect={handleDistrictSelect}
-              handleVillageSelect={handleVillageSelect}
-              handleDistrictSearch={handleDistrictSearch}
-              handleVillageSearch={handleVillageSearch}
-              selectedState={selectedState}
-              selectedDistrict={selectedDistrict}
-              selectedVillage={selectedVillage}
-              villageSearch={villageSearch}
-              districtSearch={districtSearch}
-            />
-          )}
+          <LocationSelector
+            location=""
+            onLocationChange={(location) => {
+              handleLocationChange(location);
+            }}
+            onChooseLocation={handleChooseLocation}
+            isManualSelected={Boolean(activeLocation)}
+            handleLocationSelect={handleLocationSelect}
+            handleLocationSearch={handleLocationSearch}
+            selectedLocation={selectedLocation}
+            locationSearch={locationSearch}
+          />
 
           <div
             className="
 
-            mt-5
+            mt-4
 
             border-t
 

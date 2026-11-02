@@ -19,21 +19,48 @@ export interface SellerCardProps {
   isVerified?: boolean;
   distanceInKm?: number;
 
-  location?: {
-    village?: string;
-    district?: string;
-    state?: string;
-    villageDisplayNames: {
-      en: string;
-      hi: string;
+  location: {
+    state: {
+      id: string;
+      displayNames: {
+        en: string;
+        hi: string;
+      };
     };
-    districtDisplayNames: {
-      en: string;
-      hi: string;
+    district: {
+      id: string;
+      displayNames: {
+        en: string;
+        hi: string;
+      };
     };
-    stateDisplayNames: {
-      en: string;
-      hi: string;
+    block: {
+      id: string;
+      displayNames: {
+        en: string;
+        hi: string;
+      };
+    };
+    village: {
+      id: string;
+      displayNames: {
+        en: string;
+        hi: string;
+      };
+    };
+    mauja: {
+      id: string;
+      displayNames: {
+        en: string;
+        hi: string;
+      };
+    };
+    habitation: {
+      id: string;
+      displayNames: {
+        en: string;
+        hi: string;
+      };
     };
   };
 

@@ -247,7 +247,7 @@
 
   "SellerDashboard": {
     "title": "विक्रेता डैशबोर्ड",
-    "greeting": "सुप्रभात, {name} 👋",
+    "greeting": "नमस्ते, {name} 👋",
     "subtitle": "अपनी दुकान और आज की उपलब्धता अपडेट करें।",
     "verified": "सत्यापित",
 
@@ -259,7 +259,9 @@
       "create": "उपलब्धता जोड़ें",
       "verificationPending": "सत्यापन बाकी है",
       "unavailable": "उपलब्ध नहीं",
-      "manageInventory": "उपलब्धता व्यवस्थित करें"
+      "manageInventory": "उपलब्धता व्यवस्थित करें",
+      "vegetablesListedToday": "आज {count} सब्ज़ियाँ सूचीबद्ध हैं",
+    "vegetableListedToday": "आज {count} सब्ज़ी सूचीबद्ध हैं"
     },
 
     "shop": {
@@ -350,7 +352,11 @@
         "description": "राज्य, जिला या गाँव चुनें"
       },
 
-      "selectStateHint": "खोज शुरू करने के लिए कम से कम राज्य चुनें।",
+      "selectLocationHint": "खोज शुरू करने के लिए स्थान चुनें।",
+      "searchAndFilters": "खोज और फ़िल्टर",
+
+      "selectLocation": "स्थान चुनें",
+      "selectedLocation": "चुना गया स्थान",
 
       "state": "राज्य",
       "district": "जिला",
@@ -495,6 +501,9 @@
     "searchVillage": "गाँव खोजें",
     "selectDistrictFirst": "पहले जिला चुनें",
 
+    "selectLocation": "स्थान चुनें",
+    "selectedLocation": "चुना गया स्थान",
+
     "pincode": "पिनकोड",
     "pincodePlaceholder": "6 अंकों का पिनकोड दर्ज करें",
 
@@ -602,6 +611,7 @@
     "sellerLocation": {
       "title": "विक्रेता का स्थान",
       "description": "यह स्थान खरीदारों को दिखाई देगा।",
+      "address": "पता",
       "village": "गाँव",
       "district": "जिला",
       "state": "राज्य",
@@ -623,6 +633,7 @@
       "selectStateFirst": "कृपया पहले अपना राज्य चुनें।",
       "selectDistrict": "कृपया अपना जिला चुनें।",
       "selectVillage": "कृपया अपना गाँव चुनें।",
+      "selectLocation": "कृपया स्थान चुनें",
       "invalidPincode": "कृपया 6 अंकों का सही पिन कोड दर्ज करें।",
       "captureCurrentLocationRequired": "कृपया अपना वर्तमान स्थान प्राप्त करें।",
       "currentLocation": "वर्तमान स्थान",
@@ -670,6 +681,8 @@
     "saving": "सेव हो रहा है...",
     "applying": "आवेदन भेजा जा रहा है...",
     "pleaseTryAgain": "कृपया दोबारा प्रयास करें।",
-    "creating": "जोड़ा जा रहा है..."
+    "creating": "जोड़ा जा रहा है...",
+    "typeAtLeastOneCharacter": "कम से कम {count} अक्षर टाइप करें",
+    "searching": "खोज रहे हैं..."
   }
 }

@@ -246,7 +246,7 @@
 
   "SellerDashboard": {
     "title": "Seller Dashboard",
-    "greeting": "Good morning, {name} 👋",
+    "greeting": "Namaste, {name} 👋",
     "subtitle": "Manage your shop and today's availability.",
     "verified": "Verified",
 
@@ -258,7 +258,9 @@
       "create": "Create Inventory",
       "verificationPending": "Verification Pending",
       "unavailable": "Unavailable",
-      "manageInventory": "Manage Inventory"
+      "manageInventory": "Manage Inventory",
+      "vegetablesListedToday": "{count} vegetables listed today",
+      "vegetableListedToday": "{count} vegetable listed today"
     },
 
     "shop": {
@@ -357,7 +359,11 @@
         "description": "Choose state, district or village"
       },
 
-      "selectStateHint": "Select at least a state to start searching.",
+      "selectLocationHint": "Select a location to start searching.",
+      "searchAndFilters": "Search & Filters",
+
+      "selectLocation": "Select location",
+      "selectedLocation": "Selected Location",
 
       "state": "State",
       "district": "District",
@@ -502,6 +508,10 @@
     "searchVillage": "Search village",
     "selectDistrictFirst": "Select district first",
 
+    "selectLocation": "Select location",
+
+    "selectedLocation": "Selected Location",
+
     "pincode": "Pincode",
     "pincodePlaceholder": "Enter 6-digit pincode",
 
@@ -609,6 +619,8 @@
     "sellerLocation": {
       "title": "Seller Location",
       "description": "Location shown to buyers.",
+      "address": "Address",
+
       "village": "Village",
       "district": "District",
       "state": "State",
@@ -630,6 +642,7 @@
       "selectStateFirst": "Please select your state first.",
       "selectDistrict": "Please select your district.",
       "selectVillage": "Please select your village.",
+      "selectLocation": "Select location",
       "invalidPincode": "Please enter a valid 6 digit pincode.",
       "captureCurrentLocationRequired": "Please capture your current location.",
       "currentLocation": "Current Location",
@@ -677,6 +690,8 @@
     "saving": "Saving...",
     "applying": "Applying...",
     "pleaseTryAgain": "Please try again.",
-    "creating": "Creating..."
+    "creating": "Creating...",
+    "typeAtLeastOneCharacter": "Type at least {count} character",
+    "searching": "Searching..."
   }
 }

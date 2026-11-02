@@ -10,6 +10,9 @@ export interface FormErrors {
 }
 
 export interface ProfileLocation {
+  habitationId: string;
+  maujaId: string;
+  blockId: string;
   villageId: string;
   districtId: string;
   stateId: string;
@@ -37,11 +40,8 @@ export interface UserProfile {
   geoLocation?: GeoLocation | null;
 }
 
-export type UserStatus =
-  | "ACTIVE"
-  | "SUSPENDED"
-  | "BLOCKED";
+export type UserStatus = "ACTIVE" | "SUSPENDED" | "BLOCKED";
 
-  export interface AccountStatusBadgeProps {
+export interface AccountStatusBadgeProps {
   status: string;
 }

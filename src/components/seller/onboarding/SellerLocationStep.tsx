@@ -1,27 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { ArrowLeft, Check, LocateFixed, MapPin } from "lucide-react";
 
-import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import SearchableLocationField from "@/components/location/SearchableLocationField";
 
-import { locationService } from "@/services/location.service";
-
 import type { SellerOnboardingForm } from "./BecameSellerForm";
-
-interface Option {
-  id: string;
-  name: string;
-  displayNames: {
-    en: string;
-    hi: string;
-  };
-}
-
+import { LocationOption } from "@/types/location.types";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+import { useLocations } from "@/hooks/useLocations";
 interface Props {
   form: SellerOnboardingForm;
 
@@ -44,130 +34,21 @@ export default function SellerLocationStep({
   onSubmit,
   isSellerProfile,
 }: Props) {
+  const [selectedLocation, setSelectedLocation] =
+    useState<LocationOption | null>(null);
+  const [locationSearch, setLocationSearch] = useState("");
+
+  const { locationList, locationsLoading } = useLocations(locationSearch);
+
   const t = useTranslations("BecomeSeller");
 
-  const [stateSearch, setStateSearch] = useState(form.state?.name ?? "");
+  const locale = useLocale();
 
-  const [districtSearch, setDistrictSearch] = useState(
-    form.district?.name ?? "",
-  );
-
-  const [villageSearch, setVillageSearch] = useState(form.village?.name ?? "");
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
 
   const [geoLoading, setGeoLoading] = useState(false);
 
   const [geoError, setGeoError] = useState("");
-
-  const { data: states = [], isLoading: statesLoading } = useQuery({
-    queryKey: ["locations", "states"],
-
-    queryFn: () => locationService.getStates(),
-
-    staleTime: 1000 * 60 * 30,
-  });
-
-  const debouncedDistrictSearch = districtSearch.trim();
-
-  const debouncedVillageSearch = villageSearch.trim();
-
-  const { data: districts = [], isLoading: districtsLoading } = useQuery({
-    queryKey: [
-      "locations",
-      "districts",
-      form.state?.id,
-      debouncedDistrictSearch,
-    ],
-
-    queryFn: () => {
-      if (!form.state) {
-        return Promise.resolve([]);
-      }
-
-      return locationService.searchDistricts({
-        stateId: form.state.id,
-        search: debouncedDistrictSearch,
-      });
-    },
-
-    enabled: Boolean(form.state) && debouncedDistrictSearch.length >= 1,
-  });
-
-  const { data: villages = [], isLoading: villagesLoading } = useQuery({
-    queryKey: [
-      "locations",
-      "villages",
-      form.district?.id,
-      debouncedVillageSearch,
-    ],
-
-    queryFn: () => {
-      if (!form.district) {
-        return Promise.resolve([]);
-      }
-
-      return locationService.searchVillages({
-        districtId: form.district.id,
-
-        search: debouncedVillageSearch,
-      });
-    },
-
-    enabled: Boolean(form.district) && debouncedVillageSearch.length >= 2,
-  });
-
-  const filteredStates = useMemo(() => {
-    const search = stateSearch.trim().toLowerCase();
-
-    if (!search) {
-      return states;
-    }
-
-    return states.filter((state: Option) =>
-      state.name.toLowerCase().includes(search),
-    );
-  }, [states, stateSearch]);
-
-  const handleStateSelect = (state: Option) => {
-    setForm((previous) => ({
-      ...previous,
-
-      state,
-
-      district: null,
-
-      village: null,
-    }));
-
-    setStateSearch(state.name);
-
-    setDistrictSearch("");
-
-    setVillageSearch("");
-  };
-
-  const handleDistrictSelect = (district: Option) => {
-    setForm((previous) => ({
-      ...previous,
-
-      district,
-
-      village: null,
-    }));
-
-    setDistrictSearch(district.name);
-
-    setVillageSearch("");
-  };
-
-  const handleVillageSelect = (village: Option) => {
-    setForm((previous) => ({
-      ...previous,
-
-      village,
-    }));
-
-    setVillageSearch(village.name);
-  };
 
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -217,6 +98,17 @@ export default function SellerLocationStep({
     );
   };
 
+  const handleLocationSelect = (location: LocationOption) => {
+    setForm((prev) => ({
+      ...prev,
+      location: {
+        ...location,
+        ids: location.ids,
+      },
+    }));
+    setSelectedLocation(location);
+  };
+
   return (
     <>
       <div>
@@ -240,7 +132,6 @@ export default function SellerLocationStep({
           {t("locationDescription")}
         </p>
       </div>
-
       <button
         type="button"
         onClick={handleUseCurrentLocation}
@@ -280,7 +171,6 @@ export default function SellerLocationStep({
             ? t("currentLocationAdded")
             : t("useCurrentLocation")}
       </button>
-
       {geoError && (
         <p
           className="
@@ -293,7 +183,6 @@ export default function SellerLocationStep({
           {geoError}
         </p>
       )}
-
       <div
         className="
           my-6
@@ -328,46 +217,25 @@ export default function SellerLocationStep({
           "
         />
       </div>
-
       <div className="space-y-5">
         <SearchableLocationField
-          label={`${t("state")} *`}
-          placeholder={t("searchState")}
-          value={form.state}
-          options={filteredStates}
-          onSearchChange={setStateSearch}
-          onSelect={handleStateSelect}
-          isLoading={statesLoading}
-          localSearch
+          label={t("selectLocation")}
+          placeholder={t("selectLocation")}
+          value={selectedLocation}
+          options={locationList}
+          onSearchChange={setLocationSearch}
+          onSelect={handleLocationSelect}
+          isLoading={locationsLoading}
         />
 
-        <SearchableLocationField
-          label={`${t("district")} *`}
-          placeholder={form.state ? t("searchDistrict") : t("selectStateFirst")}
-          value={form.district}
-          options={districts}
-          onSearchChange={setDistrictSearch}
-          onSelect={handleDistrictSelect}
-          disabled={!form.state}
-          isLoading={districtsLoading}
-          minimumSearchLength={1}
-        />
+        {selectedLocation && (
+          <small>
+            <strong>{t("selectedLocation")}: </strong>
+            {selectedLocation?.displayNames[currentLocale]}
+          </small>
+        )}
 
-        <SearchableLocationField
-          label={`${t("village")} *`}
-          placeholder={
-            form.district ? t("searchVillage") : t("selectDistrictFirst")
-          }
-          value={form.village}
-          options={villages}
-          onSearchChange={setVillageSearch}
-          onSelect={handleVillageSelect}
-          disabled={!form.district}
-          isLoading={villagesLoading}
-          minimumSearchLength={2}
-        />
-
-        <div>
+        <div className="mt-4">
           <label
             htmlFor="pincode"
             className="
@@ -430,7 +298,6 @@ export default function SellerLocationStep({
           </div>
         </div>
       </div>
-
       <div
         className="
           mt-7

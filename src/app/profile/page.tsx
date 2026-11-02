@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { BadgeCheck, MapPin, Phone, UserRound } from "lucide-react";
 
@@ -9,7 +9,9 @@ import { useAuth } from "@/providers/AuthProvider";
 import EditProfileForm from "@/components/profile/EditProfileForm";
 import ProfileField from "@/components/profile/ProfileField";
 import EditSellerLocationForm from "@/components/profile/EditSellerLocationForm";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+import { Option } from "@/components/location/SearchableLocationField";
 export default function ProfilePage() {
   const { user } = useAuth();
 
@@ -19,15 +21,74 @@ export default function ProfilePage() {
 
   const t = useTranslations("Profile");
 
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
+
+  const showAddress: Option | null = useMemo(() => {
+    if (!user?.location) {
+      return null;
+    }
+
+    const {
+      habitation,
+      mauja,
+      village,
+      block,
+      district,
+      state,
+      habitationId,
+      maujaId,
+      villageId,
+      blockId,
+      districtId,
+      stateId,
+    } = user.location;
+    const uniquePlace = () => {
+      if (habitation.en === mauja.en && habitation.en === village.en) {
+        return {
+          en: habitation.en,
+          hi: habitation.hi,
+        };
+      } else if (mauja.en === village.en) {
+        return {
+          en: `${habitation.en} < ${mauja.en}`,
+          hi: `${habitation.hi} < ${mauja.hi}`,
+        };
+      } else if (habitation.en === mauja.en) {
+        return {
+          en: `${habitation.en} < ${village.en}`,
+          hi: `${habitation.hi} < ${village.hi}`,
+        };
+      } else {
+        return {
+          en: `${habitation.en} < ${mauja.en} < ${village.en}`,
+          hi: `${habitation.hi} < ${mauja.hi} < ${village.hi}`,
+        };
+      }
+    };
+
+    return {
+      ids: {
+        habitationId,
+        maujaId,
+        villageId,
+        blockId,
+        districtId,
+        stateId,
+      },
+      displayNames: {
+        en: `${uniquePlace().en} < ${block.en} < ${district.en} < ${state.en}`,
+        hi: `${uniquePlace().hi} < ${block.hi} < ${district.hi} < ${state.hi}`,
+      },
+    };
+  }, [user]);
+
   if (!user) {
     return null;
   }
 
   const sellerProfile = user.sellerProfile;
 
-  const state = user.location?.state;
-  const district = user.location?.district;
-  const village = user.location?.village;
   const pincode = user.location?.pincode;
 
   return (
@@ -39,7 +100,6 @@ export default function ProfilePage() {
       </div>
 
       <div className="space-y-6">
-
         <section className="rounded-3xl border border-[#e7d8b9] bg-white p-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
@@ -176,22 +236,15 @@ export default function ProfilePage() {
                 <EditSellerLocationForm
                   onCancel={() => setIsEditingLocation(false)}
                   onSuccess={() => setIsEditingLocation(false)}
+                  currentLocation = {showAddress}
                 />
               ) : (
                 <div className="mt-6 grid gap-6 sm:grid-cols-2">
                   <ProfileField
-                    label={t("sellerLocation.village")}
-                    value={village?.name ?? "Not set"}
-                  />
-
-                  <ProfileField
-                    label={t("sellerLocation.district")}
-                    value={district?.name ?? "Not set"}
-                  />
-
-                  <ProfileField
-                    label={t("sellerLocation.state")}
-                    value={state?.name ?? "Not set"}
+                    label={t("sellerLocation.address")}
+                    value={
+                      showAddress?.displayNames[currentLocale] ?? "Not set"
+                    }
                   />
 
                   <ProfileField

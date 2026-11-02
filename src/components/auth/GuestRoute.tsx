@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 
 interface GuestRouteProps {
@@ -10,16 +10,23 @@ interface GuestRouteProps {
 
 export default function GuestRoute({ children }: GuestRouteProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
     if (isLoading) return;
 
-    if (user) {
+    const returnTo = searchParams.get("returnTo");
+
+    if (user?.sellerProfile) {
+      router.replace("/seller/dashboard");
+    } else if (user && !user?.sellerProfile) {
       router.replace("/sellers");
+    } else if (user && returnTo) {
+      router.replace(returnTo ?? "/");
     }
-  }, [isLoading, user, router]);
+  }, [isLoading, user, router, searchParams]);
 
   if (isLoading) {
     return (

@@ -2,20 +2,22 @@
 
 import { FormEvent, useState } from "react";
 import { LoaderCircle, LocateFixed, MapPin } from "lucide-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import SearchableLocationField from "@/components/location/SearchableLocationField";
+import SearchableLocationField, {
+  Option,
+} from "@/components/location/SearchableLocationField";
 
 import { useAuth } from "@/providers/AuthProvider";
 
-import { locationService } from "@/services/location.service";
 import { profileService } from "@/services/profile.service";
 
 import type {
   StateOption,
   DistrictOption,
   VillageOption,
+  LocationOption,
 } from "@/types/location.types";
 
 import type {
@@ -25,49 +27,24 @@ import type {
 } from "@/types/profile.types";
 
 import type { API_ERROR } from "@/lib/axios";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useLocations } from "@/hooks/useLocations";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 
 interface EditSellerLocationFormProps {
   onCancel: () => void;
   onSuccess: () => void;
+  currentLocation: Option | null;
 }
 
 export default function EditSellerLocationForm({
   onCancel,
   onSuccess,
+  currentLocation,
 }: EditSellerLocationFormProps) {
+  const locale = useLocale();
+  const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
   const { user, getUserProfile } = useAuth();
-
-  /*
-   * Location selection
-   */
-
-  const [selectedState, setSelectedState] = useState<StateOption | null>(
-    user?.location.state || null,
-  );
-
-  const [selectedDistrict, setSelectedDistrict] =
-    useState<DistrictOption | null>(user?.location.district || null);
-
-  const [selectedVillage, setSelectedVillage] = useState<VillageOption | null>(
-    user?.location.village || null,
-  );
-
-  /*
-   * Search values
-   */
-
-  const [districtSearch, setDistrictSearch] = useState(
-    user?.location.district.name || "",
-  );
-
-  const [villageSearch, setVillageSearch] = useState(
-    user?.location.village.name || "",
-  );
-
-  /*
-   * Pincode + coordinates
-   */
 
   const [pincode, setPincode] = useState(user?.location.pincode || "");
 
@@ -76,46 +53,14 @@ export default function EditSellerLocationForm({
   const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   const [locationError, setLocationError] = useState("");
+  const [locationSearch, setLocationSearch] = useState("");
+  const [selectedLocation, setSelectedLocations] =
+    useState<LocationOption | null>(currentLocation);
+
+  const { locationList, locationsLoading } = useLocations(locationSearch);
 
   const t = useTranslations("Profile");
   const tc = useTranslations("Common");
-
-  /*
-   * --------------------------------
-   * Queries
-   * --------------------------------
-   */
-
-  const statesQuery = useQuery({
-    queryKey: ["locations", "states"],
-
-    queryFn: locationService.getStates,
-  });
-
-  const districtsQuery = useQuery({
-    queryKey: ["locations", "districts", selectedState?.id, districtSearch],
-
-    queryFn: () =>
-      locationService.searchDistricts({
-        stateId: selectedState!.id,
-        search: districtSearch.trim(),
-      }),
-
-    enabled: !!selectedState && districtSearch.trim().length >= 2,
-  });
-
-  const villagesQuery = useQuery({
-    queryKey: ["locations", "villages", selectedDistrict?.id, villageSearch],
-
-    queryFn: () =>
-      locationService.searchVillages({
-        districtId: selectedDistrict!.id,
-
-        search: villageSearch.trim(),
-      }),
-
-    enabled: !!selectedDistrict && villageSearch.trim().length >= 2,
-  });
 
   /*
    * --------------------------------
@@ -156,65 +101,8 @@ export default function EditSellerLocationForm({
     return null;
   }
 
-  /*
-   * --------------------------------
-   * Selection handlers
-   * --------------------------------
-   */
-
-  const handleStateSelect = (state: StateOption) => {
-    setSelectedState(state);
-
-    /*
-     * State changed.
-     * District + village belonging to
-     * previous state are invalid.
-     */
-    setSelectedDistrict(null);
-    setSelectedVillage(null);
-
-    setDistrictSearch("");
-    setVillageSearch("");
-
-    setPincode("");
-
-    /*
-     * Never retain coordinates when
-     * textual location changes.
-     */
-    setGeoLocation(null);
-
-    setLocationError("");
-  };
-
-  const handleDistrictSelect = (district: DistrictOption) => {
-    setSelectedDistrict(district);
-
-    /*
-     * District changed, so old village
-     * is invalid.
-     */
-    setSelectedVillage(null);
-
-    setVillageSearch("");
-
-    setPincode("");
-
-    setGeoLocation(null);
-
-    setLocationError("");
-  };
-
-  const handleVillageSelect = (village: VillageOption) => {
-    setSelectedVillage(village);
-
-    /*
-     * Coordinates must represent
-     * newly selected village.
-     */
-    setGeoLocation(null);
-
-    setLocationError("");
+  const handleLocationSelect = (location: LocationOption) => {
+    setSelectedLocations(location);
   };
 
   const handlePincodeChange = (value: string) => {
@@ -243,19 +131,7 @@ export default function EditSellerLocationForm({
      * First require complete textual
      * location.
      */
-    if (!selectedState) {
-      setLocationError(t("sellerLocation.selectStateFirst"));
-
-      return;
-    }
-
-    if (!selectedDistrict) {
-      setLocationError(t("sellerLocation.selectDistrict"));
-
-      return;
-    }
-
-    if (!selectedVillage) {
+    if (!selectedLocation) {
       setLocationError(t("sellerLocation.selectVillage"));
 
       return;
@@ -332,29 +208,11 @@ export default function EditSellerLocationForm({
     );
   };
 
-  /*
-   * --------------------------------
-   * Submit
-   * --------------------------------
-   */
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!selectedState) {
-      setLocationError(t("sellerLocation.selectStateFirst"));
-
-      return;
-    }
-
-    if (!selectedDistrict) {
-      setLocationError(t("sellerLocation.selectDistrict"));
-
-      return;
-    }
-
-    if (!selectedVillage) {
-      setLocationError(t("sellerLocation.selectVillage"));
+    if (!selectedLocation) {
+      setLocationError(t("sellerLocation.selectLocation"));
 
       return;
     }
@@ -373,9 +231,7 @@ export default function EditSellerLocationForm({
 
     const payload: UpdateProfilePayload = {
       location: {
-        stateId: selectedState.id,
-        districtId: selectedDistrict.id,
-        villageId: selectedVillage.id,
+        ...selectedLocation!.ids,
         pincode,
       },
 
@@ -386,8 +242,6 @@ export default function EditSellerLocationForm({
   };
 
   const isSubmitting = updateLocationMutation.isPending;
-
-  const { state, district, village, pincode: existingPincode } = user.location;
 
   return (
     <form onSubmit={handleSubmit} className="mt-6">
@@ -422,19 +276,7 @@ export default function EditSellerLocationForm({
               >
                 {t("sellerLocation.currentLocation")}
               </p>
-
-              <p
-                className="
-                  mt-1
-                  text-sm
-                  leading-6
-                  text-[#536157]
-                "
-              >
-                {[village.name, district.name, state.name, existingPincode]
-                  .filter(Boolean)
-                  .join(", ")}
-              </p>
+              <p>{selectedLocation?.displayNames[currentLocale]}</p>
             </div>
           </div>
         </div>
@@ -442,49 +284,13 @@ export default function EditSellerLocationForm({
 
       <div className="space-y-5">
         <SearchableLocationField
-          key={`state-${selectedState?.id ?? "empty"}`}
-          label={t("sellerLocation.state")}
-          placeholder={t("sellerLocation.searchOrSelectState")}
-          value={selectedState ?? state}
-          options={statesQuery.data ?? []}
-          onSelect={handleStateSelect}
-          disabled={isSubmitting}
-          isLoading={statesQuery.isLoading}
-          localSearch
-        />
-
-        <SearchableLocationField
-          key={`district-${selectedState?.id ?? "empty"}-${selectedDistrict?.id ?? "empty"}`}
-          label={t("sellerLocation.district")}
-          placeholder={
-            selectedState
-              ? t("sellerLocation.searchDistrict")
-              : t("sellerLocation.selectStateFirst")
-          }
-          value={selectedDistrict ?? district}
-          options={districtsQuery.data ?? []}
-          onSearchChange={setDistrictSearch}
-          onSelect={handleDistrictSelect}
-          disabled={!selectedState || isSubmitting}
-          isLoading={districtsQuery.isFetching}
-          minimumSearchLength={2}
-        />
-
-        <SearchableLocationField
-          key={`village-${selectedDistrict?.id ?? "empty"}-${selectedVillage?.id ?? "empty"}`}
-          label={t("sellerLocation.village")}
-          placeholder={
-            selectedDistrict
-              ? t("sellerLocation.searchVillage")
-              : t("sellerLocation.selectDistrictFirst")
-          }
-          value={selectedVillage ?? village}
-          options={villagesQuery.data ?? []}
-          onSearchChange={setVillageSearch}
-          onSelect={handleVillageSelect}
-          disabled={!selectedDistrict || isSubmitting}
-          isLoading={villagesQuery.isFetching}
-          minimumSearchLength={2}
+          label={t("sellerLocation.selectLocation")}
+          placeholder={t("sellerLocation.selectLocation")}
+          value={selectedLocation}
+          options={locationList}
+          onSearchChange={setLocationSearch}
+          onSelect={handleLocationSelect}
+          isLoading={locationsLoading}
         />
 
         <div>
@@ -506,7 +312,7 @@ export default function EditSellerLocationForm({
             type="text"
             inputMode="numeric"
             maxLength={6}
-            value={pincode ?? existingPincode}
+            value={pincode ?? user.location.pincode}
             disabled={isSubmitting}
             placeholder={t("sellerLocation.pincodePlaceholder")}
             onChange={(event) => handlePincodeChange(event.target.value)}

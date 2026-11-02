@@ -22,6 +22,10 @@ function createEmptyItem(): InventoryFormItem {
     id: crypto.randomUUID(),
     vegetableId: "",
     vegetableName: "",
+    displayNames: {
+      en: "",
+      hi: "",
+    },
     unit: "KG",
     availableQty: "",
     marketPrice: "",
@@ -42,6 +46,7 @@ export default function EditDraftInventoryForm({
       id: item._id,
       vegetableId: item.vegetableId._id,
       vegetableName: item.vegetableId.name,
+      displayNames: item.vegetableId.displayNames,
       unit: item.unit,
       availableQty: String(item.availableQty),
       marketPrice: String(item.marketPrice),
@@ -184,7 +189,7 @@ export default function EditDraftInventoryForm({
 
                 {isPublished ? (
                   <div className="flex h-11 items-center rounded-xl border border-[#e7d8b9] bg-[#f8f5ee] px-3 text-sm font-medium text-[#536157]">
-                    {item.vegetableName}
+                    {item.displayNames[currentLocale]}
                   </div>
                 ) : (
                   <Dropdown
@@ -193,7 +198,9 @@ export default function EditDraftInventoryForm({
                     onChange={(value) =>
                       handleItemChange(item.id, "vegetableId", value)
                     }
-                    getOptionLabel={(vegetable) => vegetable.displayNames[currentLocale]}
+                    getOptionLabel={(vegetable) =>
+                      vegetable.displayNames[currentLocale]
+                    }
                     getOptionValue={(vegetable) => vegetable._id}
                     getDisplayName={(vegetable) =>
                       vegetable.displayNames.hi ?? ""

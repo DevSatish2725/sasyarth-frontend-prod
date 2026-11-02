@@ -1,10 +1,14 @@
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { InventoryItem } from "@/types/inventory.types";
+import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 
 export default function InventoryItemCard({ item }: { item: InventoryItem }) {
   const t = useTranslations("SellerInventory");
+
+    const locale = useLocale();
+    const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
 
   const vegetable = item.vegetableId;
 
@@ -53,7 +57,7 @@ export default function InventoryItemCard({ item }: { item: InventoryItem }) {
               sm:text-lg
             "
           >
-            {vegetable.name}
+            {vegetable.displayNames[currentLocale]}
           </h3>
 
           <div className="mt-2 flex items-baseline gap-1">

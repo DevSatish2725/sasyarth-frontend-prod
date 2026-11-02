@@ -30,7 +30,7 @@ export default function NoInventory({
 
         {noYesterdayInventory && (
           <p className="mt-4 rounded-xl bg-[#fff3dc] px-4 py-3 text-sm font-medium text-[#a85f00]">
-            {t("yesterdayInventoryNotFound")}
+            {t("empty.yesterdayInventoryNotFound")}
           </p>
         )}
 

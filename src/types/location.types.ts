@@ -1,15 +1,14 @@
 export interface ManualLocation {
   stateId: string;
-  stateNameEn: string;
-  stateNameHi: string;
-
-  districtId?: string;
-  districtNameEn?: string;
-  districtNameHi?: string;
-
-  villageId?: string;
-  villageNameEn?: string;
-  villageNameHi?: string;
+  districtId: string;
+  blockId: string;
+  villageId: string;
+  maujaId: string;
+  habitationId: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
 }
 
 export interface StateOption {
@@ -39,6 +38,21 @@ export interface VillageOption {
   };
 }
 
+export interface LocationOption {
+  ids: {
+    habitationId: string;
+    maujaId: string;
+    villageId: string;
+    blockId: string;
+    districtId: string;
+    stateId: string;
+  };
+  displayNames: {
+    en: string;
+    hi: string;
+  };
+}
+
 export type SearchLocation =
   | {
       mode: "CURRENT";
@@ -47,7 +61,43 @@ export type SearchLocation =
     }
   | {
       mode: "MANUAL";
-      state: string;
-      district?: string;
-      village?: string;
+      stateId: string;
+      districtId: string;
+      blockId: string;
+      villageId: string;
+      maujaId: string;
+      habitationId: string;
     };
+
+export interface Location {
+  habitationId: string;
+  habitation: {
+    en: string;
+    hi: string;
+  };
+  maujaId: string;
+  mauja: {
+    en: string;
+    hi: string;
+  };
+  villageId: string;
+  village: {
+    en: string;
+    hi: string;
+  };
+  blockId: string;
+  block: {
+    en: string;
+    hi: string;
+  };
+  districtId: string;
+  district: {
+    en: string;
+    hi: string;
+  };
+  stateId: string;
+  state: {
+    en: string;
+    hi: string;
+  };
+}

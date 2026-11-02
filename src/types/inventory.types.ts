@@ -49,6 +49,10 @@ export interface InventoryFormItem {
   id: string;
   vegetableId: string;
   vegetableName: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
   unit: UnitType;
   availableQty: string;
   marketPrice: string;
@@ -119,6 +123,10 @@ export type UnitType = (typeof UNIT)[keyof typeof UNIT];
 export interface InventoryVegetable {
   _id: string;
   name: string;
+  displayNames: {
+    en: string;
+    hi: string;
+  };
   imageUrl?: string;
 }
 

@@ -109,33 +109,12 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
         if (result.response.data.user.preferredLanguage) {
           setClientLanguage(result.response.data.user.preferredLanguage);
         }
-
-        const currentUser = await getUserProfile();
-
-        router.refresh();
-        if (returnTo === "/become-seller") {
-          if (currentUser?.sellerProfile) {
-            router.replace("/seller/dashboard");
-          } else {
-            router.replace("/become-seller");
-          }
-
-          return;
-        }
-        if (currentUser?.sellerProfile) {
-          router.replace("/seller/dashboard");
-
-          return;
-        }
-
-        router.replace(returnTo);
-
+        await getUserProfile();
         return;
       }
 
       const params = new URLSearchParams({
         registrationToken: result.response.data.registrationToken,
-
         returnTo,
       });
 
@@ -240,7 +219,6 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
         lg:rounded-2xl
       "
     >
-
       <div
         className="
           flex
@@ -316,9 +294,7 @@ export default function VerifyOtpForm({ mode }: VerifyOtpFormProps) {
       <Button
         type="submit"
         fullWidth
-        disabled={
-          verifyMutation.isPending || resendMutation.isPending
-        }
+        disabled={verifyMutation.isPending || resendMutation.isPending}
         className="
           mt-6
           min-h-12

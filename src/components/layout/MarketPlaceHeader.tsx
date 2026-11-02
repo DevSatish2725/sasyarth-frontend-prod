@@ -155,31 +155,7 @@ export default function MarketplaceHeader({
                 text-text-primary
               "
                 >
-                  {activeLocation.villageNameEn && (
-                    <span>
-                      {currentLocale === "en"
-                        ? activeLocation.villageNameEn
-                        : activeLocation.villageNameHi}
-                    </span>
-                  )}
-
-                  {activeLocation.districtNameEn && (
-                    <>
-                      <span className="text-text-muted">›</span>
-                      <span>
-                        {currentLocale === "en"
-                          ? activeLocation.districtNameEn
-                          : activeLocation.districtNameHi}
-                      </span>
-                    </>
-                  )}
-
-                  <span className="text-text-muted">›</span>
-                  <span>
-                    {currentLocale === "en"
-                      ? activeLocation.stateNameEn
-                      : activeLocation.stateNameHi}
-                  </span>
+                  {activeLocation.displayNames[currentLocale]}
 
                   <button
                     type="button"

@@ -20,10 +20,7 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const router = useRouter();
 
-  const {
-    user,
-    isLoading,
-  } = useAuth();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     if (isLoading) return;
@@ -33,19 +30,10 @@ export default function ProtectedRoute({
       return;
     }
 
-    if (
-      requireSeller &&
-      !user.sellerProfile
-    ) {
+    if (requireSeller && !user.sellerProfile) {
       router.replace("/become-seller");
     }
-  }, [
-    isLoading,
-    user,
-    requireSeller,
-    redirectTo,
-    router,
-  ]);
+  }, [isLoading, user, requireSeller, redirectTo, router]);
 
   if (isLoading) {
     return (
@@ -57,9 +45,7 @@ export default function ProtectedRoute({
           justify-center
         "
       >
-        <p className="text-text-secondary">
-          Loading...
-        </p>
+        <p className="text-text-secondary">Loading...</p>
       </div>
     );
   }
@@ -68,10 +54,7 @@ export default function ProtectedRoute({
     return null;
   }
 
-  if (
-    requireSeller &&
-    !user.sellerProfile
-  ) {
+  if (requireSeller && !user.sellerProfile) {
     return null;
   }
 

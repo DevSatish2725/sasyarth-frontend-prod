@@ -3,11 +3,17 @@
 import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 import { Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useLocale } from "use-intl";
+import { useLocale, useTranslations } from "use-intl";
 
-interface Option {
-  id: string;
-  name: string;
+export interface Option {
+  ids: {
+    habitationId: string;
+    maujaId: string;
+    villageId: string;
+    blockId: string;
+    districtId: string;
+    stateId: string;
+  };
   displayNames: {
     en: string;
     hi: string;
@@ -31,6 +37,8 @@ interface SearchableLocationFieldProps {
 
   localSearch?: boolean;
 
+  locationSearch?: string;
+
   minimumSearchLength?: number;
 }
 
@@ -45,14 +53,15 @@ export default function SearchableLocationField({
   isLoading = false,
   localSearch = false,
   minimumSearchLength = 0,
+  locationSearch,
 }: SearchableLocationFieldProps) {
   const locale = useLocale();
   const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
-  const [search, setSearch] = useState(
-    value?.displayNames[currentLocale] ?? "",
-  );
+  const [search, setSearch] = useState(locationSearch ?? "");
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const t = useTranslations("Common");
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -63,7 +72,6 @@ export default function SearchableLocationField({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setSearch(value?.displayNames[currentLocale] ?? "");
       }
     };
 
@@ -74,14 +82,7 @@ export default function SearchableLocationField({
     };
   }, [value]);
 
-  const displayedOptions = localSearch
-    ? options.filter((option) =>
-        option.name.toLowerCase().includes(search.trim().toLowerCase()),
-      )
-    : options;
-
   const handleInputChange = (inputValue: string) => {
-    console.log("handleInputChange", inputValue);
     setSearch(inputValue);
     setIsOpen(true);
 
@@ -91,8 +92,6 @@ export default function SearchableLocationField({
   };
 
   const handleSelect = (option: Option) => {
-    setSearch(option.displayNames[currentLocale]);
-
     setIsOpen(false);
 
     onSelect(option);
@@ -211,7 +210,7 @@ export default function SearchableLocationField({
                   text-text-muted
                 "
             >
-              Type at least {minimumSearchLength} characters
+              {t("typeAtLeastOneCharacter", { count: 2 })}
             </p>
           ) : isLoading ? (
             <p
@@ -223,7 +222,7 @@ export default function SearchableLocationField({
             >
               Searching...
             </p>
-          ) : displayedOptions.length === 0 ? (
+          ) : options.length === 0 ? (
             <p
               className="
                   px-4 py-3
@@ -234,9 +233,9 @@ export default function SearchableLocationField({
               No location found
             </p>
           ) : (
-            displayedOptions.map((option) => (
+            options.map((option) => (
               <button
-                key={option.id}
+                key={option.ids.toString()}
                 type="button"
                 onClick={() => handleSelect(option)}
                 className="

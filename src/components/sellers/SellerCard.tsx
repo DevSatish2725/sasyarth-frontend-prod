@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { useLocale } from "next-intl";
 import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+import { useMemo } from "react";
 
 export default function SellerCard({
   seller,
@@ -32,13 +33,41 @@ export default function SellerCard({
 
   const remainingCount = seller.vegetables.length - visibleVegetables.length;
 
-  const locationText = [
-    seller.location?.villageDisplayNames[currentLocale],
-    seller.location?.districtDisplayNames[currentLocale],
-    seller.location?.stateDisplayNames[currentLocale],
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const locationText = useMemo(() => {
+    const { habitation, mauja, village, block, district, state } =
+      seller.location;
+    const uniquePlace = () => {
+      if (
+        habitation.displayNames.en === mauja.displayNames.en &&
+        habitation.displayNames.en === village.displayNames.en
+      ) {
+        return {
+          en: habitation.displayNames.en,
+          hi: habitation.displayNames.hi,
+        };
+      } else if (mauja.displayNames.en === village.displayNames.en) {
+        return {
+          en: `${habitation.displayNames.en} , ${mauja.displayNames.en}`,
+          hi: `${habitation.displayNames.hi} , ${mauja.displayNames.hi}`,
+        };
+      } else if (habitation.displayNames.en === mauja.displayNames.en) {
+        return {
+          en: `${habitation.displayNames.en} , ${village.displayNames.en}`,
+          hi: `${habitation.displayNames.hi} , ${village.displayNames.hi}`,
+        };
+      } else {
+        return {
+          en: `${habitation.displayNames.en} , ${mauja.displayNames.en} , ${village.displayNames.en}`,
+          hi: `${habitation.displayNames.hi} , ${mauja.displayNames.hi} , ${village.displayNames.hi}`,
+        };
+      }
+    };
+
+    return {
+      en: `${uniquePlace().en} , ${block.displayNames.en} , ${district.displayNames.en} , ${state.displayNames.en}`,
+      hi: `${uniquePlace().hi} , ${block.displayNames.hi} , ${district.displayNames.hi} , ${state.displayNames.hi}`,
+    };
+  }, [seller]);
 
   return (
     <article
@@ -135,7 +164,7 @@ export default function SellerCard({
               "
           >
             {locationText && (
-              <span className="truncate">📍 {locationText}</span>
+              <span className="truncate">📍 {locationText[currentLocale]}</span>
             )}
 
             {seller.distanceInKm !== undefined && (

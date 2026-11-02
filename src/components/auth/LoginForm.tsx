@@ -73,17 +73,15 @@ export default function LoginForm() {
       });
       if (axios.isAxiosError(mutationError)) {
         setError(mutationError.response?.data?.message ?? t("sendOtpError"));
-
         return;
       }
 
       if (mutationError instanceof Error) {
         setError(mutationError.message);
-
         return;
       }
 
-      setError(t("somethingWentWrong"));  
+      setError(t("somethingWentWrong"));
     },
   });
 
