@@ -8,6 +8,7 @@ import type {
   CreateInventoryPayload,
   InventoryFormItem,
   CreateInventoryFormProps,
+  UnitType,
 } from "@/types/inventory.types";
 import InventoryItemRow from "./InventoryItemRow";
 import { useTranslations } from "next-intl";
@@ -57,6 +58,11 @@ export default function CreateInventoryForm({
         item.id === id
           ? {
               ...item,
+              allowedUnits:
+                field === "vegetableId"
+                  ? (vegetables.find((veg) => veg._id === value)
+                      ?.allowedUnits as UnitType[]) || []
+                  : item.allowedUnits,
               [field]: value,
             }
           : item,

@@ -97,6 +97,12 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("push", (event) => {
+  console.log("[SW] Push event received");
+
+  if (!event.data) {
+    console.log("[SW] No push payload received");
+    return;
+  }
   if (!event.data) {
     return;
   }
@@ -105,6 +111,7 @@ self.addEventListener("push", (event) => {
 
   try {
     data = event.data.json();
+    console.log("[SW] Push payload:", data);
   } catch {
     data = {
       title: "Sasyarth",

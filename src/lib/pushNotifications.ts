@@ -56,6 +56,16 @@ export async function enablePushNotifications() {
 
   const registration = await navigator.serviceWorker.ready;
 
+  const showNotification = await registration.showNotification(
+    "Sasyarth Local Test",
+    {
+      body: "Your service worker can display notifications.",
+      icon: "/icons/icon-192x192.png",
+    },
+  );
+
+  console.log("showNotification", showNotification);
+
   let subscription = await registration.pushManager.getSubscription();
 
   if (!subscription) {

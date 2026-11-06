@@ -16,6 +16,7 @@ import { VegetableResponse } from "@/types/vegetable.types";
 
 import { useLocale } from "next-intl";
 import { defaultLocale, isSupportedLocale } from "@/i18n/config";
+import { unitOptions } from "@/constants/vegetable.constants";
 
 function createEmptyItem(): InventoryFormItem {
   return {
@@ -48,12 +49,16 @@ export default function EditDraftInventoryForm({
       vegetableName: item.vegetableId.name,
       displayNames: item.vegetableId.displayNames,
       unit: item.unit,
+      allowedUnits: item.vegetableId.allowedUnits,
       availableQty: String(item.availableQty),
       marketPrice: String(item.marketPrice),
       sellerPrice: String(item.sellerPrice),
       isNegotiable: item.isNegotiable,
     })),
   );
+
+  console.log("items", items);
+  console.log("inventory", inventory);
 
   const locale = useLocale();
   const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
@@ -125,6 +130,11 @@ export default function EditDraftInventoryForm({
         item.id === id
           ? {
               ...item,
+              allowedUnits:
+                field === "vegetableId"
+                  ? (vegetables.find((veg) => veg._id === value)
+                      ?.allowedUnits as UnitType[]) || []
+                  : item.allowedUnits,
               [field]: value,
             }
           : item,
@@ -222,24 +232,10 @@ export default function EditDraftInventoryForm({
                   </div>
                 ) : (
                   <Dropdown
-                    options={[
-                      {
-                        value: "KG",
-                        label: "KG",
-                      },
-                      {
-                        value: "PIECE",
-                        label: "Piece",
-                      },
-                      {
-                        value: "BUNDLE",
-                        label: "Bundle",
-                      },
-                      {
-                        value: "DOZEN",
-                        label: "Dozen",
-                      },
-                    ]}
+                    key={item.id} // Add a unique key to force re-render when allowedUnits change
+                    options={unitOptions.filter((option) =>
+                      item?.allowedUnits?.includes(option.value as UnitType),
+                    )}
                     value={item.unit}
                     onChange={(value) =>
                       handleItemChange(item.id, "unit", value as UnitType)

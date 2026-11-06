@@ -28,6 +28,8 @@ export default function NotificationPermissionButton({
   const [loading, setLoading] = useState(false);
   const t = useTranslations("Notifications");
 
+  console.log("notification status", status);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -73,6 +75,8 @@ export default function NotificationPermissionButton({
       const result = await enablePushNotifications();
       if (result.success) {
         setStatus("granted");
+        // Temporary test: send a push notification after five minutes.
+        // testPushAfterFiveMinutes();
         onStatusChange!(true);
         return;
       }

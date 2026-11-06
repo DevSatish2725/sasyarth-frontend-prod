@@ -71,7 +71,9 @@ export default function InventoryItemRow({
             options={vegetables}
             value={item.vegetableId}
             onChange={(value) => onChange(item.id, "vegetableId", value)}
-            getOptionLabel={(vegetable) => vegetable.displayNames[currentLocale]}
+            getOptionLabel={(vegetable) =>
+              vegetable.displayNames[currentLocale]
+            }
             getOptionValue={(vegetable) => vegetable._id}
             getDisplayName={(vegetable) => vegetable.displayNames.hi ?? ""}
             placeholder="Select vegetable"
@@ -87,7 +89,9 @@ export default function InventoryItemRow({
           </label>
 
           <Dropdown
-            options={unitOptions}
+            options={unitOptions.filter((option) =>
+              item?.allowedUnits?.includes(option.value as UnitType),
+            )}
             value={item.unit}
             onChange={(value) => onChange(item.id, "unit", value as UnitType)}
             getOptionLabel={(option) => option.label}

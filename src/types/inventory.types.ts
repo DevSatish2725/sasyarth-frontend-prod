@@ -54,6 +54,7 @@ export interface InventoryFormItem {
     hi: string;
   };
   unit: UnitType;
+  allowedUnits?: UnitType[];
   availableQty: string;
   marketPrice: string;
   sellerPrice: string;
@@ -128,6 +129,7 @@ export interface InventoryVegetable {
     hi: string;
   };
   imageUrl?: string;
+  allowedUnits: UnitType[];
 }
 
 export interface InventoryItem {
@@ -136,6 +138,8 @@ export interface InventoryItem {
   vegetableId: InventoryVegetable;
 
   unit: UnitType;
+
+  allowedUnits: UnitType[];
 
   availableQty: number;
   committedQty: number;
