@@ -63,7 +63,8 @@ import SellerListSkeleton from "@/components/sellers/SellerListSkeleton";
 import EmptySellersState from "@/components/sellers/EmptySellerState";
 
 import DesktopFilters from "@/components/sellers/DesktopFilters";
-import NotificationPermissionButton from "@/components/notifications/NotificationPermissionButton";
+import GoogleMap from "@/components/common/GoogleMap";
+import NotificationPrompt from "@/components/notifications/NotificationPrompt";
 
 interface CurrentLocation {
   latitude: number;
@@ -201,12 +202,15 @@ export default function SellersPage() {
     useState<LocationOption | null>(null);
   const [locationSearch, setLocationSearch] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [notificationStatus, setNotificationStatus] = useState(false);
+
+  const [showGoogleMap, setShowGoogleMap] = useState<number[] | null>(null);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const locale = useLocale();
   const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
+
+  console.log("showGoogleMap", showGoogleMap);
 
   function updateFilters(
     selectedLocation: ManualLocation | null,
@@ -271,7 +275,6 @@ export default function SellersPage() {
   }
 
   const t = useTranslations("FindSellers");
-  const tn = useTranslations("Notifications");
 
   const { user } = useAuth();
 
@@ -306,6 +309,9 @@ export default function SellersPage() {
       latitude: location.latitude,
       longitude: location.longitude,
     };
+
+    console.log("latitude", location.latitude);
+    console.log("longitude", location.longitude);
 
     setSearchLocation(currentLocation);
     setActiveLocation(null);
@@ -668,23 +674,6 @@ export default function SellersPage() {
           "
               >
                 {activeLocation.displayNames[currentLocale]}
-                {/* {[
-                  currentLocale === "hi"
-                    ? activeLocation.villageNameHi
-                    : activeLocation.villageNameEn,
-
-                  currentLocale === "hi"
-                    ? activeLocation.districtNameHi
-                    : activeLocation.districtNameEn,
-
-                  currentLocale === "hi"
-                    ? activeLocation.stateNameHi
-                    : activeLocation.stateNameEn,
-                ]
-
-                  .filter(Boolean)
-
-                  .join(", ")} */}
               </p>
 
               <button
@@ -805,15 +794,6 @@ export default function SellersPage() {
               <span className="truncate">
                 {activeLocation?.displayNames[currentLocale] ??
                   t("location.currentLocation.title")}
-                {/* {currentLocale === "hi"
-                  ? activeLocation?.villageNameHi ||
-                    activeLocation?.districtNameHi ||
-                    activeLocation?.stateNameHi ||
-                    t("location.currentLocation.title")
-                  : activeLocation?.villageNameEn ||
-                    activeLocation?.districtNameEn ||
-                    activeLocation?.stateNameEn ||
-                    t("location.currentLocation.title")} */}
               </span>
             </button>
 
@@ -1044,30 +1024,32 @@ export default function SellersPage() {
         sm:gap-4
       "
                 >
-                  <div className="flex justify-between rounded-2xl border border-green-200 bg-green-50/60 p-2">
-                    <div className="flex gap-2 items-start">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
-                        🔔
-                      </div>
-                      {tn("exploreSellersReminder")}{" "}
-                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                        {notificationStatus ? tn("enabled") : tn("disabled")}
-                      </span>
-                    </div>
-                    <NotificationPermissionButton
-                      onStatusChange={setNotificationStatus}
-                    />
-                  </div>
                   {sellers.map((seller) => (
                     <SellerCard
                       key={seller.sellerId}
                       seller={seller}
+                      user={Boolean(user)}
                       isProcessing={isProcessing}
                       isSaved={savedSellerIds.has(seller.sellerId)}
                       isLoading={callSellerData.isFetching}
                       getCallSellerId={getCallSellerId}
                       handleSaveToggle={handleSaveToggle}
                       guestCallModalOpen={guestCallModalOpen}
+                      showGoogleMap={
+                        (coords: number[]) => {
+                          const googleMapsUrl =
+                            `https://www.google.com/maps/dir/?api=1` +
+                            `&destination=${coords[0]},${coords[1]}` +
+                            `&travelmode=driving`;
+
+                          window.open(
+                            googleMapsUrl,
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                        }
+                        // setShowGoogleMap(coords)
+                      }
                     />
                   ))}
                 </div>
@@ -1264,6 +1246,22 @@ export default function SellersPage() {
           onLogin={() => {
             router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
           }}
+        />
+      )}
+      {showGoogleMap ? (
+        <GoogleMap
+          latitude={showGoogleMap[1]}
+          longitude={showGoogleMap[0]}
+          closeMap={() => setShowGoogleMap(null)}
+        />
+      ) : null}
+      {user && (
+        <NotificationPrompt
+          userId={user.id}
+          title={"रोज़ाना रिमाइंडर"}
+          description={
+            "Sasyarth पर विक्रेताओं से ताज़ी उपज देखने के लिए रिमाइंडर प्राप्त करें।"
+          }
         />
       )}
     </main>

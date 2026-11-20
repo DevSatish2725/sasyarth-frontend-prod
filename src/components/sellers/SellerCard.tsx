@@ -2,7 +2,7 @@ import { getCallSellerId, SellerCardProps } from "@/types/seller.types";
 import Image from "next/image";
 import Link from "next/link";
 import CallSellerButton from "../ui/CallSellerButton";
-import { Bookmark, Package } from "lucide-react";
+import { Bookmark, Navigation, Package, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { useLocale } from "next-intl";
@@ -17,6 +17,8 @@ export default function SellerCard({
   isLoading,
   handleSaveToggle,
   guestCallModalOpen,
+  user,
+  showGoogleMap,
 }: {
   seller: SellerCardProps;
   isProcessing: boolean;
@@ -24,7 +26,9 @@ export default function SellerCard({
   getCallSellerId: getCallSellerId;
   isLoading: boolean;
   guestCallModalOpen: (sellerName: string, sellerId: string) => void;
+  user: boolean;
   handleSaveToggle: (sellerId: string) => void;
+  showGoogleMap: (coords: number[]) => void;
 }) {
   const locale = useLocale();
   const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
@@ -386,7 +390,7 @@ export default function SellerCard({
       <div
         className="
     grid
-    grid-cols-2
+    grid-cols-3
     gap-2
     p-4
 
@@ -420,8 +424,32 @@ export default function SellerCard({
             hover:bg-accent-light
           "
         >
-          🏪 {t("sellers.viewShop")}
+          <Store />
+          <span className="hidden lg:block">{t("sellers.viewShop")}</span>
         </Link>
+        {true ? (
+          <button
+            onClick={() => showGoogleMap(seller.geoLocation!)}
+            className="
+            flex min-h-11
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            border border-accent
+            bg-surface
+            px-3
+            text-sm
+            font-bold
+            text-warning
+            transition-colors
+            hover:bg-accent-light
+          "
+          >
+            <Navigation />{" "}
+            <span className="hidden lg:block">{t("sellers.seeLocation")}</span>
+          </button>
+        ) : null}
       </div>
     </article>
   );

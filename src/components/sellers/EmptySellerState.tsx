@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  MapPin,
-  Search,
-  SlidersHorizontal,
-} from "lucide-react";
+import { MapPin, Search, SlidersHorizontal } from "lucide-react";
 
 import { useTranslations } from "next-intl";
 
@@ -21,7 +17,7 @@ export default function EmptySellersState({
     <section
       className="
         flex
-        min-h-[360px]
+        min-h-90
         items-center
         justify-center
         rounded-2xl
@@ -33,10 +29,10 @@ export default function EmptySellersState({
         text-center
         shadow-[0_2px_12px_rgba(0,0,0,0.035)]
 
-        sm:min-h-[420px]
+        sm:min-h-105
         sm:px-8
 
-        lg:min-h-[460px]
+        lg:min-h-115
       "
     >
       <div className="w-full max-w-md">
@@ -150,6 +146,7 @@ export default function EmptySellersState({
           type="button"
           onClick={onOpenFilters}
           className="
+          lg:hidden
             mt-6
             inline-flex
             min-h-12
@@ -171,7 +168,7 @@ export default function EmptySellersState({
             hover:bg-primary-hover
 
             sm:w-auto
-            sm:min-w-[190px]
+            sm:min-w-47.5
           "
         >
           <SlidersHorizontal className="h-4 w-4" />

@@ -21,14 +21,6 @@ export function isPushSupported() {
   );
 }
 
-export async function getPushPermission() {
-  if (typeof Notification === "undefined") {
-    return "unsupported";
-  }
-
-  return Notification.permission;
-}
-
 export async function enablePushNotifications() {
   if (!isPushSupported()) {
     return {
@@ -55,16 +47,6 @@ export async function enablePushNotifications() {
   }
 
   const registration = await navigator.serviceWorker.ready;
-
-  const showNotification = await registration.showNotification(
-    "Sasyarth Local Test",
-    {
-      body: "Your service worker can display notifications.",
-      icon: "/icons/icon-192x192.png",
-    },
-  );
-
-  console.log("showNotification", showNotification);
 
   let subscription = await registration.pushManager.getSubscription();
 
@@ -108,35 +90,15 @@ export async function disablePushNotifications() {
   await subscription.unsubscribe();
 }
 
-// export async function getPushStatus() {
-//   if (!isPushSupported()) {
-//     return {
-//       supported: false,
-//       permission: "unsupported" as const,
-//       subscribed: false,
-//     };
-//   }
+export async function autoEnablePushNotifications() {
+  // Only proceed if the browser already granted notification permission.
+  if (!isPushSupported() || Notification.permission !== "granted") {
+    return;
+  }
 
-//   const permission = Notification.permission;
-
-//   if (permission !== "granted") {
-//     return {
-//       supported: true,
-//       permission,
-//       subscribed: false,
-//     };
-//   }
-
-//   const registration = await navigator.serviceWorker.ready;
-
-//   const subscription = await registration.pushManager.getSubscription();
-
-//   return {
-//     supported: true,
-//     permission,
-//     subscribed: Boolean(subscription),
-//   };
-// }
+  // Reuse your existing subscription setup logic.
+  await enablePushNotifications();
+}
 
 export async function getPushStatus() {
   if (!isPushSupported()) {

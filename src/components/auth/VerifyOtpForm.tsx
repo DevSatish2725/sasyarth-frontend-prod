@@ -6,13 +6,7 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import {
-  ArrowRight,
-  Clock3,
-  LoaderCircle,
-  RefreshCw,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowRight, LoaderCircle, RefreshCw, ShieldCheck } from "lucide-react";
 
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";

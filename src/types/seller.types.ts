@@ -64,6 +64,8 @@ export interface SellerCardProps {
     };
   };
 
+  geoLocation?: number[];
+
   reputation?: {
     averageRating?: number;
     totalDeals?: number;

@@ -12,6 +12,7 @@ import EditSellerLocationForm from "@/components/profile/EditSellerLocationForm"
 import { useLocale, useTranslations } from "next-intl";
 import { defaultLocale, isSupportedLocale } from "@/i18n/config";
 import { Option } from "@/components/location/SearchableLocationField";
+import NotificationPermissionButton from "@/components/notifications/NotificationPermissionButton";
 export default function ProfilePage() {
   const { user } = useAuth();
 
@@ -19,7 +20,10 @@ export default function ProfilePage() {
 
   const [isEditingLocation, setIsEditingLocation] = useState(false);
 
+  const [notificationStatus, setNotificationStatus] = useState(false);
+
   const t = useTranslations("Profile");
+  const tn = useTranslations("Notifications");
 
   const locale = useLocale();
   const currentLocale = isSupportedLocale(locale) ? locale : defaultLocale;
@@ -93,6 +97,39 @@ export default function ProfilePage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 pt-8 pb-22 lg:pt-8 lg:pb-8">
+      <div className="rounded-2xl border border-green-200 bg-green-50/60 p-4 sm:p-5 mb-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+              🔔
+            </div>
+
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-sm font-semibold text-text-primary sm:text-base">
+                  {user.sellerProfile
+                    ? "रोज़ाना उपलब्धता रिमाइंडर"
+                    : "रोज़ाना रिमाइंडर"}
+                </h3>
+
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                  {notificationStatus ? tn("enabled") : tn("disabled")}
+                </span>
+              </div>
+
+              <p className="mt-1 max-w-xl text-sm leading-5 text-text-secondary">
+                {user.sellerProfile
+                  ? "उपलब्धता प्रकाशित करने के लिए रोज़ाना रिमाइंडर प्राप्त करें।"
+                  : "Sasyarth पर विक्रेताओं से ताज़ी उपज देखने के लिए रिमाइंडर प्राप्त करें।"}
+              </p>
+            </div>
+          </div>
+
+          <NotificationPermissionButton
+            onStatusChange={setNotificationStatus}
+          />
+        </div>
+      </div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#17201a]">{t("title")}</h1>
 
@@ -236,7 +273,7 @@ export default function ProfilePage() {
                 <EditSellerLocationForm
                   onCancel={() => setIsEditingLocation(false)}
                   onSuccess={() => setIsEditingLocation(false)}
-                  currentLocation = {showAddress}
+                  currentLocation={showAddress}
                 />
               ) : (
                 <div className="mt-6 grid gap-6 sm:grid-cols-2">
